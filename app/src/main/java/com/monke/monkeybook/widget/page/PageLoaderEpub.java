@@ -123,8 +123,10 @@ public class PageLoaderEpub extends PageLoader {
         BookShelfBean bookShelf = getBook();
         Metadata metadata = book.getMetadata();
         bookShelf.getBookInfoBean().setName(metadata.getFirstTitle());
-        String author = metadata.getAuthors().get(0).toString().replaceAll("^, |, $", "");
-        bookShelf.getBookInfoBean().setAuthor(FormatWebText.getAuthor(author));
+        if (metadata.getAuthors().size() > 0) {
+            String author = metadata.getAuthors().get(0).toString().replaceAll("^, |, $", "");
+            bookShelf.getBookInfoBean().setAuthor(FormatWebText.getAuthor(author));
+        }
         if (metadata.getDescriptions().size() > 0) {
             bookShelf.getBookInfoBean().setIntroduce(Jsoup.parse(metadata.getDescriptions().get(0)).text());
         }
@@ -184,7 +186,7 @@ public class PageLoaderEpub extends PageLoader {
 
     @Override
     protected String getChapterContent(ChapterListBean chapter) throws Exception {
-        Resource resource = book.getSpine().getResource(chapter.getDurChapterIndex());
+        Resource resource = book.getResources().getByHref(chapter.getDurChapterUrl());
         StringBuilder content = new StringBuilder();
         Document doc = Jsoup.parse(new String(resource.getData(), mCharset));
         Elements elements = doc.getAllElements();

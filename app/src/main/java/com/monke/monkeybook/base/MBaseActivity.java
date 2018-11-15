@@ -16,11 +16,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 
-import com.gyf.barlibrary.ImmersionBar;
 import com.monke.basemvplib.BaseActivity;
 import com.monke.basemvplib.impl.IPresenter;
 import com.monke.monkeybook.MApplication;
 import com.monke.monkeybook.R;
+import com.monke.monkeybook.utils.barUtil.ImmersionBar;
 
 import java.lang.reflect.Method;
 
@@ -120,16 +120,22 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
             } else {
                 mImmersionBar.statusBarDarkFont(false);
             }
-            if (isNavigationBarColorChange()) {
-                mImmersionBar.navigationBarColor(R.color.navigation_bar_bag);
-            } else {
-                mImmersionBar.navigationBarColorInt(Color.BLACK);
+            if (ImmersionBar.canNavigationBarDarkFont()) {
+                mImmersionBar.navigationBarColor(R.color.background);
+                if (isNightTheme()) {
+                    mImmersionBar.navigationBarDarkFont(false);
+                } else {
+                    mImmersionBar.navigationBarDarkFont(true);
+                }
+            }
+            if (!preferences.getBoolean("navigationBarColorChange", false)) {
+                mImmersionBar.navigationBarColor(R.color.black);
+                mImmersionBar.navigationBarDarkFont(false);
             }
             mImmersionBar.init();
         } catch (Exception e) {
             Log.e("MonkBook", e.getLocalizedMessage());
         }
-        mImmersionBar.init();
     }
 
     /**
@@ -137,10 +143,6 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
      */
     protected boolean isImmersionBarEnabled() {
         return preferences.getBoolean("immersionStatusBar", false);
-    }
-
-    private boolean isNavigationBarColorChange() {
-        return preferences.getBoolean("navigationBarColorChange", false);
     }
 
     /**
