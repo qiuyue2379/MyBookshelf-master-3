@@ -5,13 +5,40 @@ static def releaseTime() {
     return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
 }
 
-def name = "MONKOVEL"
+def getVersionCode = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', '--all', '--count'
+            standardOutput = stdout
+        }
+        return Integer.parseInt(stdout.toString().trim())+10000
+    }
+    catch (ignored) {
+        return -1;
+    }
+}
+
+def name = "QIUYUE"
 def version = "2." + releaseTime()
-def gitCommits = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
+//def gitCommits = Integer.parseInt('git rev-list --count HEAD'.execute([], project.rootDir).text.trim())
 
 def keyFile = file('1.jks')
 
+Properties properties = new Properties()
+// local.properties file in the root director
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def keystoreFilepath = properties.getProperty("keystore.path")
+
+if (keystoreFilepath) {
+    keystorePSW = properties.getProperty("keystore.password")
+    keystoreAlias = properties.getProperty("keystore.alias")
+    keystoreAliasPSW = properties.getProperty("keystore.alias_password")
+    keyFile = file(keystoreFilepath)
+}
+
 android {
+    def currentVersionCode = getVersionCode()
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     signingConfigs {
@@ -27,7 +54,7 @@ android {
         applicationId "com.gedoor.monkeybook.qiuyue"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 10000 + gitCommits
+        versionCode currentVersionCode
         versionName version
         project.ext.set("archivesBaseName", name + "_" + version)
         multiDexEnabled true

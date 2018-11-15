@@ -132,7 +132,7 @@ public class AboutActivity extends MBaseActivity {
         vwUpdateLog.setOnClickListener(view -> moProgressHUD.showAssetMarkdown("updateLog.md"));
         vwFaq.setOnClickListener(view -> moProgressHUD.showAssetMarkdown("faq.md"));
         vwShare.setOnClickListener(view -> {
-            String url = "https://www.coolapk.com/apk/com.gedoor.monkeybook";
+            String url = "http://qiuyue.vicp.net:85/apk/qiuyue.apk";
             Bitmap bitmap = encodeAsBitmap(url);
             if (bitmap != null) {
                 moProgressHUD.showImageText(bitmap, url);
