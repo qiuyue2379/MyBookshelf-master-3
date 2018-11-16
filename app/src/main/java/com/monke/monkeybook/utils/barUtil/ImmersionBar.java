@@ -1525,7 +1525,7 @@ public class ImmersionBar {
             mWindow.setNavigationBarColor(ColorUtils.blendARGB(mBarParams.navigationBarColor,
                     mBarParams.navigationBarColorTransform, mBarParams.navigationBarAlpha));  //设置导航栏颜色
             if (Build.VERSION.SDK_INT >= 28 && !mBarParams.navigationBarDivider)
-                mWindow.setNavigationBarDividerColor(Color.TRANSPARENT);
+                    mWindow.setNavigationBarDividerColor(Color.TRANSPARENT);
         }
         return uiFlags;
     }

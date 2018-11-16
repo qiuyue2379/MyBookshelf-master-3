@@ -19,8 +19,8 @@ public class DbHelper {
 
     private DbHelper(){
         mHelper = new DaoOpenHelper(MApplication.getInstance(), "monkebook_db", null);
-        db.setLocale(Locale.CHINESE);
         db = mHelper.getWritableDatabase();
+        db.setLocale(Locale.CHINESE);
         // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         mDaoMaster = new DaoMaster(db);
         mDaoSession = mDaoMaster.newSession();

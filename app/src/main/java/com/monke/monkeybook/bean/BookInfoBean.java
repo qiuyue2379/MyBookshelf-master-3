@@ -121,7 +121,7 @@ public class BookInfoBean implements Parcelable, Cloneable {
     public int describeContents() {
         return 0;
     }
-    
+
     @Override
     protected Object clone() throws CloneNotSupportedException {
         BookInfoBean bookInfoBean = (BookInfoBean) super.clone();

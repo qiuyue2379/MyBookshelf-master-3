@@ -428,7 +428,7 @@ public class PageView extends View {
             if (fileSuffix.equalsIgnoreCase(FileHelp.SUFFIX_EPUB)) {
                 mPageLoader = new PageLoaderEpub(this, bookShelfBean);
             } else {
-                mPageLoader = new PageLoaderEpub(this, bookShelfBean);
+                mPageLoader = new PageLoaderText(this, bookShelfBean);
             }
         }
         // 判断是否 PageView 已经初始化完成

@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="260dp"
-    android:layout_height="185dp"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
     app:cardBackgroundColor="@color/background_card">
 
     <LinearLayout
@@ -119,6 +119,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:padding="3dp"
             android:orientation="horizontal">
 
             <TextView
@@ -126,7 +127,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/selector_book_detail_shelf_bg"
+                android:background="@drawable/selector_fillet_btn_bg"
                 android:clickable="true"
                 android:gravity="center"
                 android:text="取消"
@@ -134,16 +135,20 @@
                 android:textSize="15sp"
                 tools:ignore="KeyboardInaccessibleWidget" />
 
+            <Space
+                android:layout_width="3dp"
+                android:layout_height="match_parent" />
+
             <TextView
                 android:id="@+id/tv_download"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/selector_book_detail_read_bg"
+                android:background="@drawable/selector_fillet_btn_bg"
                 android:clickable="true"
                 android:gravity="center"
                 android:text="下载"
-                android:textColor="#ffffff"
+                android:textColor="@color/tv_text_default"
                 android:textSize="15sp"
                 android:focusable="true" />
         </LinearLayout>
