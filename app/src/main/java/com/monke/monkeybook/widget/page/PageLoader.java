@@ -68,7 +68,7 @@ public abstract class PageLoader {
     private Paint mBatteryPaint;
     // 绘制提示的画笔(章节名称和时间)
     private TextPaint mTipPaint;
-    float pageOffset = 0;
+    private float pageOffset = 0;
     // 绘制标题的画笔
     TextPaint mTitlePaint;
     // 绘制小说内容的画笔
@@ -88,8 +88,8 @@ public abstract class PageLoader {
     int mVisibleWidth;
     int mVisibleHeight;
     //应用的宽高
-    public int mDisplayWidth;
-    public int mDisplayHeight;
+    int mDisplayWidth;
+    private int mDisplayHeight;
     //间距
     private int mMarginTop;
     private int mMarginBottom;
@@ -111,10 +111,10 @@ public abstract class PageLoader {
     //段落距离(基于行间距的额外距离)
     int mTextPara;
     int mTitlePara;
-    int textInterval;
-    int textPara;
-    int titleInterval;
-    int titlePara;
+    private int textInterval;
+    private int textPara;
+    private int titleInterval;
+    private int titlePara;
     private float tipMarginHeight;
     private float tipBottomTop;
     private float tipBottomBot;
@@ -363,11 +363,12 @@ public abstract class PageLoader {
     /**
      * 换源结束
      */
-    public void changeSourceFinish(BookShelfBean bookShelfBean) {
-        if (bookShelfBean == null) {
-            openChapter(bookShelfBean.getDurChapterPage());
+    public void changeSourceFinish(BookShelfBean book) {
+        if (book == null) {
+            openChapter(mCurPagePos);
         } else {
-            mPageChangeListener.onCategoryFinish(bookShelfBean.getChapterList());
+            bookShelfBean = book;
+            mPageChangeListener.onCategoryFinish(book.getChapterList());
             skipToChapter(bookShelfBean.getDurChapter(), bookShelfBean.getDurChapterPage());
         }
     }
