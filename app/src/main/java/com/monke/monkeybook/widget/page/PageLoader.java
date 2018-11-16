@@ -438,7 +438,6 @@ public abstract class PageLoader {
         if (!isChapterListPrepare) {
             return;
         }
-        // mCurPagePos = pos;
         openChapter(pos);
     }
 
@@ -562,7 +561,7 @@ public abstract class PageLoader {
      * 获取正文
      */
     public String getContent(int pagePos) {
-        if (mCurChapter.getStatus() != Enum.PageStatus.FINISH || mCurChapter.getPageSize() <= pagePos) {
+        if (mCurChapter == null || mCurChapter.getStatus() != Enum.PageStatus.FINISH || mCurChapter.getPageSize() <= pagePos) {
             return null;
         }
         TxtPage txtPage = mCurChapter.getPage(pagePos);
