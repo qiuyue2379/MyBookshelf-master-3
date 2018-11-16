@@ -8,6 +8,7 @@ import com.github.yuweiguocn.library.greendao.MigrationHelper;
 import com.monke.monkeybook.MApplication;
 
 import org.greenrobot.greendao.database.Database;
+import java.util.Locale;
 
 public class DbHelper {
     private static DbHelper instance;
@@ -18,6 +19,7 @@ public class DbHelper {
 
     private DbHelper(){
         mHelper = new DaoOpenHelper(MApplication.getInstance(), "monkebook_db", null);
+        db.setLocale(Locale.CHINESE);
         db = mHelper.getWritableDatabase();
         // 注意：该数据库连接属于 DaoMaster，所以多个 Session 指的是相同的数据库连接。
         mDaoMaster = new DaoMaster(db);
