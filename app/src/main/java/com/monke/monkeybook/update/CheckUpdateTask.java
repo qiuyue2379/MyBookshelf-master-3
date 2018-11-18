@@ -78,7 +78,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
             Log.e(Constants.TAG, "parse json error");
         }
     }
-		
+
 	private void showDialog(Context context, String content,
 			String apkUrl) {
 		// TODO Auto-generated method stub

@@ -38,7 +38,6 @@ import com.monke.monkeybook.view.adapter.SearchBookAdapter;
 import com.monke.monkeybook.view.adapter.SearchHistoryAdapter;
 import com.monke.monkeybook.view.adapter.base.BaseListAdapter;
 import com.monke.monkeybook.widget.flowlayout.TagFlowLayout;
-import com.monke.monkeybook.widget.modialog.MoProgressHUD;
 import com.monke.monkeybook.widget.refreshview.OnLoadMoreListener;
 import com.monke.monkeybook.widget.refreshview.RefreshRecyclerView;
 
@@ -74,8 +73,6 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
     private boolean showHistory;
     private boolean useMy716;
     private String searchKey;
-
-    private MoProgressHUD moDialogHUD;
 
     public static void startByKey(Context context, String searchKey) {
         Intent intent = new Intent(context, SearchBookActivity.class);
@@ -123,8 +120,9 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
         View viewRefreshError = LayoutInflater.from(this).inflate(R.layout.view_searchbook_refresh_error, null);
         viewRefreshError.findViewById(R.id.tv_refresh_again).setOnClickListener(v -> {
             //刷新失败 ，重试
+            mPresenter.initPage();
             rfRvSearchBooks.startRefresh();
-            mPresenter.toSearchBooks(null);
+            mPresenter.toSearchBooks(null, true);
         });
         rfRvSearchBooks.setNoDataAndrRefreshErrorView(LayoutInflater.from(this).inflate(R.layout.view_searchbook_no_data, null),
                 viewRefreshError);
@@ -138,7 +136,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
 
         fabSearchStop.setOnClickListener(view -> {
             fabSearchStop.hide();
-            mPresenter.stopSearch(true);
+            mPresenter.stopSearch();
         });
     }
 
@@ -252,6 +250,8 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
             public boolean onQueryTextChange(String newText) {
                 if (!newText.toLowerCase().startsWith("set:")) {
                     mPresenter.querySearchHistory(newText);
+                } else {
+
                 }
                 return false;
             }
@@ -263,7 +263,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
             }
             if (showHistory) {
                 fabSearchStop.hide();
-                mPresenter.stopSearch(true);
+                mPresenter.stopSearch();
             }
             openOrCloseHistory(showHistory);
         });
@@ -296,13 +296,13 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
             @Override
             public void startLoadMore() {
                 fabSearchStop.show();
-                mPresenter.toSearchBooks(null);
+                mPresenter.toSearchBooks(null, false);
             }
 
             @Override
             public void loadMoreErrorTryAgain() {
                 fabSearchStop.show();
-                mPresenter.toSearchBooks(null);
+                mPresenter.toSearchBooks(null, true);
             }
         });
     }
@@ -310,7 +310,8 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
     @Override
     protected void firstRequest() {
         super.firstRequest();
-        mPresenter.fromIntentSearch(getIntent());
+        Intent intent = this.getIntent();
+        searchBook(intent.getStringExtra("searchKey"));
     }
 
     @Override
@@ -328,7 +329,6 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
     @Override
     public void searchBook(String searchKey) {
         if (!TextUtils.isEmpty(searchKey)) {
-            mPresenter.stopSearch(false);
             searchView.setQuery(searchKey, true);
             showHistory = false;
         } else {
@@ -384,10 +384,11 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
         if (!TextUtils.isEmpty(searchKey)) {
             mPresenter.insertSearchHistory();
             //执行搜索请求
-            searchView.postDelayed(() -> {
+            new Handler().postDelayed(() -> {
+                mPresenter.initPage();
                 rfRvSearchBooks.startRefresh();
                 fabSearchStop.show();
-                mPresenter.toSearchBooks(searchKey);
+                mPresenter.toSearchBooks(searchKey, false);
             }, 300);
         }
     }
@@ -421,27 +422,29 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
     }
 
     @Override
-    public void resetSearchBook() {
-        if (fabSearchStop.isOrWillBeHidden()) {
-            fabSearchStop.show();
-        }
+    public void refreshSearchBook() {
         searchBookAdapter.clearAll();
     }
 
     @Override
-    public void refreshFinish() {
-        if (fabSearchStop.isOrWillBeShown()) {
-            fabSearchStop.hide();
-        }
-        rfRvSearchBooks.finishRefresh(true, false);
+    public void refreshFinish(Boolean isAll) {
+        fabSearchStop.hide();
+        rfRvSearchBooks.finishRefresh(isAll, true);
     }
 
     @Override
-    public void searchBookError() {
-        if (fabSearchStop.isOrWillBeShown()) {
-            fabSearchStop.hide();
+    public void loadMoreFinish(Boolean isAll) {
+        fabSearchStop.hide();
+        rfRvSearchBooks.finishLoadMore(isAll, true);
+    }
+
+    @Override
+    public void searchBookError(Boolean isRefresh) {
+        if (isRefresh) {
+            rfRvSearchBooks.refreshError();
+        } else {
+            rfRvSearchBooks.loadMoreError();
         }
-        rfRvSearchBooks.refreshError();
     }
 
     @Override
@@ -451,7 +454,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
 
     @Override
     protected void onDestroy() {
-        mPresenter.stopSearch(true);
+        mPresenter.stopSearch();
         explosionField.clear();
         super.onDestroy();
     }
@@ -464,20 +467,6 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
     @Override
     public SearchBookAdapter getSearchBookAdapter() {
         return searchBookAdapter;
-    }
-
-    @Override
-    public void showBookSourceEmptyTip() {
-        if (moDialogHUD == null) {
-            moDialogHUD = new MoProgressHUD(this);
-        }
-
-        moDialogHUD.showTwoButton("您没有选择任何书源", "去选择"
-                , v -> {
-                    moDialogHUD.dismiss();
-                    BookSourceActivity.startThis(SearchBookActivity.this);
-                }, "取消",
-                v -> moDialogHUD.dismiss());
     }
 
     @Override

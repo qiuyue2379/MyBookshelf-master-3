@@ -40,6 +40,7 @@ public class FormatWebText {
         if (TextUtils.isEmpty(str)) {
             return "";
         }
+
         return trim(str.replace("&nbsp;", "")
                 .replaceAll("[：:()【】\\[\\]（）\\u3000 ]+", "")
                 .replaceAll("\\s", " ")

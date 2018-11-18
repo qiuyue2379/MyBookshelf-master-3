@@ -20,7 +20,7 @@ import com.monke.monkeybook.R;
 import com.monke.monkeybook.bean.DownloadBookBean;
 import com.monke.monkeybook.bean.DownloadChapterBean;
 import com.monke.monkeybook.model.impl.IDownloadTask;
-import com.monke.monkeybook.model.tsak.DownloadTaskImpl;
+import com.monke.monkeybook.model.task.DownloadTaskImpl;
 import com.monke.monkeybook.view.activity.DownloadActivity;
 
 import java.util.ArrayList;
@@ -119,7 +119,6 @@ public class DownloadService extends Service {
 
     private synchronized void addDownload(DownloadBookBean downloadBook) {
         if (checkDownloadTaskExist(downloadBook)) {
-            Toast.makeText(this, "下载任务已存在", Toast.LENGTH_SHORT).show();
             return;
         }
         new DownloadTaskImpl(notificationId, downloadBook) {
@@ -130,7 +129,6 @@ public class DownloadService extends Service {
                 }
                 downloadTasks.put(getId(), this);
                 sendUpDownloadBook(addDownloadAction, downloadBook);
-                toast(String.format(Locale.getDefault(), "%s：任务已添加", downloadBook.getName()));
             }
 
             @Override
@@ -160,13 +158,6 @@ public class DownloadService extends Service {
                 if (downloadTasks.indexOfValue(this) >= 0) {
                     managerCompat.cancel(getId());
                     downloadTasks.remove(getId());
-                    if (downloadBook.getSuccessCount() == 0) {
-                        toast(String.format(Locale.getDefault(), "%s：无章节可下载", downloadBook.getName()));
-                    } else {
-                        toast(String.format(Locale.getDefault(), "%s：共下载%d章", downloadBook.getName(), downloadBook.getSuccessCount()));
-                    }
-                } else if (!downloadBook.isValid()) {
-                    toast(String.format(Locale.getDefault(), "%s：所有章节已缓存，无需重复下载", downloadBook.getName()));
                 }
                 startNextTaskAfterRemove(downloadBook);
             }
