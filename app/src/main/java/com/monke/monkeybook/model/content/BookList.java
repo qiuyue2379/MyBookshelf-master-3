@@ -38,6 +38,7 @@ public class BookList {
                 } else {
                     baseURI = response.raw().request().url().toString();
                 }
+                assert response.body() != null;
                 Document doc = Jsoup.parse(response.body());
                 Elements booksE = AnalyzeElement.getElements(doc, bookSourceBean.getRuleSearchList());
                 if (null != booksE && booksE.size() > 0) {
@@ -51,11 +52,11 @@ public class BookList {
                         item.setKind(analyzeElement.getResult(bookSourceBean.getRuleSearchKind()));
                         item.setLastChapter(FormatWebText.trim(analyzeElement.getResult(bookSourceBean.getRuleSearchLastChapter())));
                         item.setName(FormatWebText.getBookName(analyzeElement.getResult(bookSourceBean.getRuleSearchName())));
-                        item.setNoteUrl(analyzeElement.getResult(bookSourceBean.getRuleSearchNoteUrl()));
+                        item.setNoteUrl(analyzeElement.getResultUrl(bookSourceBean.getRuleSearchNoteUrl()));
                         if (isEmpty(item.getNoteUrl())) {
                             item.setNoteUrl(baseURI);
                         }
-                        item.setCoverUrl(analyzeElement.getResult(bookSourceBean.getRuleSearchCoverUrl()));
+                        item.setCoverUrl(analyzeElement.getResultUrl(bookSourceBean.getRuleSearchCoverUrl()));
                         if (!isEmpty(item.getName())) {
                             books.add(item);
                         }

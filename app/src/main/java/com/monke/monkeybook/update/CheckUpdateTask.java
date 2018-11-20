@@ -54,7 +54,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
     }
 
 	private void parseJson(String result) {
-		// TODO Auto-generated method stub{    
+		// TODO Auto-generated method stub{
         try {
 
             JSONObject obj = new JSONObject(result);
