@@ -76,7 +76,7 @@ public abstract class PageLoader {
     // 绘制小说内容的画笔
     TextPaint mTextPaint;
     // 绘制结束的画笔
-    TextPaint mTextEndPaint;
+    private TextPaint mTextEndPaint;
     // 阅读器的配置选项
     ReadBookControl readBookControl = ReadBookControl.getInstance();
 
@@ -135,7 +135,8 @@ public abstract class PageLoader {
     // 当前章
     int mCurChapterPos;
     int mCurPagePos;
-    int readTextLength;
+    private int readTextLength;
+    private boolean resetReadAloud;
 
     public Bitmap cover;
     private int linePos = 0;
@@ -530,7 +531,7 @@ public abstract class PageLoader {
     /**
      * 获取当前页的页码
      */
-    public int getCurPagePos() {
+    private int getCurPagePos() {
         return mCurPagePos;
     }
 
@@ -598,7 +599,12 @@ public abstract class PageLoader {
     }
 
     public void readAloudStart(int start) {
-        Log.d(TAG, Integer.toString(start) + "---" + mCurChapter.getPageLength(mCurPagePos));
+        start = readTextLength + start;
+        Log.d(TAG, Integer.toString(start) + "---" + mCurChapter.getPageLength(mCurPagePos) + "----" + mCurPagePos);
+        if (start > mCurChapter.getPageLength(mCurPagePos)) {
+            resetReadAloud = false;
+            noAnimationToNextPage();
+        }
     }
 
     /**
@@ -720,7 +726,8 @@ public abstract class PageLoader {
         mPageView.setContentDescription(getContent());
         bookShelfBean.setDurChapter(mCurChapterPos);
         bookShelfBean.setDurChapterPage(mCurPagePos);
-        mPageChangeListener.onPageChange(mCurChapterPos, getCurPagePos());
+        mPageChangeListener.onPageChange(mCurChapterPos, getCurPagePos(), resetReadAloud);
+        resetReadAloud = true;
     }
 
     /**
@@ -1541,6 +1548,6 @@ public abstract class PageLoader {
         /**
          * 作用：当页面改变的时候回调
          */
-        void onPageChange(int chapterIndex, int pageIndex);
+        void onPageChange(int chapterIndex, int pageIndex, boolean resetReadAloud);
     }
 }

@@ -636,25 +636,34 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
                     }
 
                     @Override
-                    public void onPageChange(int chapterIndex, int pageIndex) {
+                    public void onPageChange(int chapterIndex, int pageIndex, boolean resetReadAloud) {
                         mPresenter.getBookShelf().setDurChapter(chapterIndex);
                         mPresenter.getBookShelf().setDurChapterPage(pageIndex);
                         mPresenter.saveProgress();
                         llMenuBottom.getReadProgress().post(
                                 () -> llMenuBottom.getReadProgress().setDurProgress(pageIndex)
                         );
-                        //继续朗读
-                        if ((ReadAloudService.running) && pageIndex >= 0) {
-                            if (mPageLoader.getContent() != null) {
+                        if ((ReadAloudService.running)) {
+                            if (resetReadAloud && mPageLoader.getUnReadContent() != null) {
                                 ReadAloudService.play(ReadBookActivity.this,
                                         false,
-                                        mPageLoader.getContent(),
+                                        mPageLoader.getUnReadContent(),
                                         mPresenter.getBookShelf().getBookInfoBean().getName(),
                                         ChapterContentHelp.getInstance().replaceContent(mPresenter.getBookShelf(), mPresenter.getChapterTitle(chapterIndex))
                                 );
+                                return;
                             }
-                            return;
+                            if (pageIndex == 0 && mPageLoader.getUnReadContent() != null) {
+                                ReadAloudService.play(ReadBookActivity.this,
+                                        false,
+                                        mPageLoader.getUnReadContent(),
+                                        mPresenter.getBookShelf().getBookInfoBean().getName(),
+                                        ChapterContentHelp.getInstance().replaceContent(mPresenter.getBookShelf(), mPresenter.getChapterTitle(chapterIndex))
+                                );
+                                return;
+                            }
                         }
+
                         //启动朗读
                         if (getIntent().getBooleanExtra("readAloud", false)
                                 && pageIndex >= 0 && mPageLoader.getContent() != null) {
@@ -959,7 +968,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
                     ReadAloudService.stop(this);
                     break;
                 }
-                if (!mPageLoader.noAnimationToNextPage()) {
+                if (!mPageLoader.skipNextChapter()) {
                     ReadAloudService.stop(this);
                 }
                 break;
@@ -1186,7 +1195,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
             default:
                 ReadBookActivity.this.popMenuOut();
                 if (mPresenter.getBookShelf() != null && mPageLoader != null) {
-                    ReadAloudService.play(this, true, mPageLoader.getContent(),
+                    ReadAloudService.play(this, true, mPageLoader.getUnReadContent(),
                             mPresenter.getBookShelf().getBookInfoBean().getName(),
                             ChapterContentHelp.getInstance().replaceContent(mPresenter.getBookShelf(), mPresenter.getChapterTitle(mPageLoader.getCurChapterPos()))
                     );
