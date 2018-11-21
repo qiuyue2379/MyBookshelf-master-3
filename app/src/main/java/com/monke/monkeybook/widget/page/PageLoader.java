@@ -13,6 +13,7 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.monke.monkeybook.R;
@@ -134,6 +135,7 @@ public abstract class PageLoader {
     // 当前章
     int mCurChapterPos;
     int mCurPagePos;
+    int readTextLength;
 
     public Bitmap cover;
     private int linePos = 0;
@@ -559,13 +561,13 @@ public abstract class PageLoader {
     }
 
     /**
-     * 获取正文
+     *@return 本页未读内容
      */
-    public String getContent(int pagePos) {
-        if (mCurChapter == null || mCurChapter.getStatus() != Enum.PageStatus.FINISH || mCurChapter.getPageSize() <= pagePos) {
+    public String getContent() {
+        if (mCurChapter == null || mCurChapter.getStatus() != Enum.PageStatus.FINISH || mCurChapter.getPageSize() <= mCurPagePos) {
             return null;
         }
-        TxtPage txtPage = mCurChapter.getPage(pagePos);
+        TxtPage txtPage = mCurChapter.getPage(mCurPagePos);
         StringBuilder s = new StringBuilder();
         int size = txtPage.lines.size();
         int start = mPageMode == Enum.PageMode.SCROLL ? Math.min(Math.max(0, linePos), size - 1) : 0;
@@ -573,6 +575,30 @@ public abstract class PageLoader {
             s.append(txtPage.lines.get(i));
         }
         return s.toString();
+    }
+
+    /**
+     * @return 本章未读内容
+     */
+    public String getUnReadContent() {
+        StringBuilder s = new StringBuilder();
+        s.append(getContent());
+        if (mCurChapter.getPageSize() > mCurPagePos + 1) {
+            for (int i = mCurPagePos + 1; i < mCurChapter.getPageSize(); i++) {
+                s.append(mCurChapter.getPage(i).getContent());
+            }
+        }
+        readTextLength = mCurPagePos > 0 ? mCurChapter.getPageLength(mCurPagePos - 1) : 0;
+        if (mPageMode == Enum.PageMode.SCROLL) {
+            for (int i = 0; i < Math.min(Math.max(0, linePos), mCurChapter.getPage(mCurPagePos).lines.size() - 1); i++) {
+                readTextLength += mCurChapter.getPage(mCurPagePos).lines.get(i).length();
+            }
+        }
+        return s.toString();
+    }
+
+    public void readAloudStart(int start) {
+        Log.d(TAG, Integer.toString(start) + "---" + mCurChapter.getPageLength(mCurPagePos));
     }
 
     /**
@@ -691,7 +717,7 @@ public abstract class PageLoader {
                 }
                 break;
         }
-        mPageView.setContentDescription(getContent(getCurPagePos()));
+        mPageView.setContentDescription(getContent());
         bookShelfBean.setDurChapter(mCurChapterPos);
         bookShelfBean.setDurChapterPage(mCurPagePos);
         mPageChangeListener.onPageChange(mCurChapterPos, getCurPagePos());
