@@ -9,9 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import com.monke.monkeybook.MApplication;
-import com.monke.monkeybook.utils.BitmapUtil;
 import com.monke.monkeybook.widget.page.Enum;
 
 import java.util.ArrayList;
@@ -19,12 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.monke.monkeybook.utils.ScreenUtils.getDisplayMetrics;
 import static com.monke.monkeybook.widget.page.PageLoader.DEFAULT_MARGIN_WIDTH;
 
 public class ReadBookControl {
     private static final int DEFAULT_BG = 1;
-
     private List<Map<String, Integer>> textDrawable;
     private int screenDirection;
     private int speechRate;
@@ -169,18 +167,17 @@ public class ReadBookControl {
         if (textDrawableIndex == -1) {
             textDrawableIndex = DEFAULT_BG;
         }
-        initPageStyle(MApplication.getInstance());
-        setTextDrawable(MApplication.getInstance());
+        initPageStyle();
+        setTextDrawable();
     }
 
-    private void initPageStyle(Context context) {
+    private void initPageStyle() {
         try {
             bgColor = textDrawable.get(textDrawableIndex).get("textBackground");
             if (getBgCustom(textDrawableIndex) == 2 && getBgPath(textDrawableIndex) != null) {
                 bgIsColor = false;
                 bgPath = getBgPath(textDrawableIndex);
                 bgBitmap = BitmapFactory.decodeFile(bgPath);
-                bgBitmap = BitmapUtil.fitBitmap(bgBitmap, getDisplayMetrics().widthPixels);
                 return;
             } else if (getBgCustom(textDrawableIndex) == 1) {
                 bgIsColor = true;
@@ -196,10 +193,10 @@ public class ReadBookControl {
 
     }
 
-    private void setTextDrawable(Context context) {
+    private void setTextDrawable() {
         darkStatusIcon = getDarkStatusIcon(textDrawableIndex);
         textColor = getTextColor(textDrawableIndex);
-        textBackground = getBgDrawable(textDrawableIndex, context);
+        textBackground = getBgDrawable(textDrawableIndex, MApplication.getInstance());
     }
 
     public int getTextColor(int textDrawableIndex) {
@@ -342,6 +339,12 @@ public class ReadBookControl {
     }
 
     public Bitmap getBgBitmap() {
+        if (bgBitmap == null || bgBitmap.isRecycled()) {
+            if (!TextUtils.isEmpty(bgPath)) {
+                bgBitmap = BitmapFactory.decodeFile(bgPath);
+            }
+            return null;
+        }
         return bgBitmap.copy(Bitmap.Config.RGB_565, true);
     }
 
@@ -358,7 +361,7 @@ public class ReadBookControl {
             editor.putInt("textDrawableIndex", textDrawableIndex);
         }
         editor.apply();
-        setTextDrawable(MApplication.getInstance());
+        setTextDrawable();
     }
 
     public void setTextConvert(int textConvert) {
