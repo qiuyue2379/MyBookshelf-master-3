@@ -67,7 +67,10 @@ class TxtChapter {
         this.msg = msg;
     }
 
-    public int getPageLength(int position) {
+    int getPageLength(int position) {
+        if (txtPageLengthList == null || position >= txtPageLengthList.size()) {
+            return -1;
+        }
         return txtPageLengthList.get(position);
     }
 }
