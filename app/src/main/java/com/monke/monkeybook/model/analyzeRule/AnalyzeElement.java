@@ -13,6 +13,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.text.TextUtils.indexOf;
 import static android.text.TextUtils.isEmpty;
 
 /**
@@ -37,20 +38,41 @@ public class AnalyzeElement {
         if (temp == null || isEmpty(rule)) {
             return elements;
         }
-        boolean isAnd;
+        String elementsType;
         String[] ruleStrS;
         if (rule.contains("&")) {
-            isAnd = true;
+            elementsType = "&";
             ruleStrS = rule.split("&");
+        } else if (rule.contains("%")) {
+            elementsType = "%";
+            ruleStrS = rule.split("%");
         } else {
-            isAnd = false;
+            elementsType = "|";
             ruleStrS = rule.split("\\|");
         }
+        List<Elements> elementsList = new ArrayList<>();
         for (String ruleStr : ruleStrS) {
             Elements tempS = getElementsSingle(temp, ruleStr);
-            elements.addAll(tempS);
-            if (elements.size() > 0 && !isAnd) {
+            elementsList.add(tempS);
+            if (elements.size() > 0 && elementsType.equals("|")) {
                 break;
+            }
+        }
+        if (elementsList.size() > 0) {
+            switch (elementsType) {
+                case "%":
+                    for (int i = 0; i < elementsList.get(0).size(); i++) {
+                        for (Elements es : elementsList) {
+                            if (i < es.size()) {
+                                elements.add(es.get(i));
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    for (Elements es : elementsList) {
+                        elements.addAll(es);
+                    }
             }
         }
         return elements;
@@ -105,8 +127,9 @@ public class AnalyzeElement {
                     String[] rulePcs = rulePc[1].split(":");
                     if (rulePcs.length < elements.size() - 1) {
                         for (String pc : rulePcs) {
-                            if (pc.equals("%")) {
-                                elements.set(elements.size() - 1, null);
+                            int pcInt = Integer.parseInt(pc);
+                            if (pcInt < 0 && elements.size() + pcInt >= 0) {
+                                elements.set(elements.size() + pcInt, null);
                             } else if (Integer.parseInt(pc) < elements.size()) {
                                 elements.set(Integer.parseInt(pc), null);
                             }

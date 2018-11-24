@@ -520,13 +520,6 @@ public abstract class PageLoader {
     }
 
     /**
-     * 获取当前章节位置
-     */
-    public int getCurChapterPos() {
-        return mCurChapterPos;
-    }
-
-    /**
      * 获取当前页的页码
      */
     private int getCurPagePos() {
@@ -563,9 +556,8 @@ public abstract class PageLoader {
      *@return 本页未读内容
      */
     public String getContent() {
-        if (mCurChapter == null || mCurChapter.getStatus() != Enum.PageStatus.FINISH || mCurChapter.getPageSize() <= mCurPagePos) {
-            return null;
-        }
+        if (mCurChapter == null) return null;
+        if (mCurChapter.getTxtPageList() == null) return null;
         TxtPage txtPage = mCurChapter.getPage(mCurPagePos);
         StringBuilder s = new StringBuilder();
         int size = txtPage.lines.size();
@@ -580,6 +572,8 @@ public abstract class PageLoader {
      * @return 本章未读内容
      */
     public String getUnReadContent() {
+        if (mCurChapter == null) return null;
+        if (mCurChapter.getTxtPageList() == null) return null;
         StringBuilder s = new StringBuilder();
         s.append(getContent());
         if (mCurChapter.getPageSize() > mCurPagePos + 1) {
@@ -597,11 +591,14 @@ public abstract class PageLoader {
     }
 
     public void readAloudStart(int start) {
+        if (mCurChapter == null) return;
+        if (mCurChapter.getPageLength(mCurPagePos) < 0) return;
+        if (mPageView.isRunning()) return;
         start = readTextLength + start;
-        if (mCurChapter == null || mCurChapter.getPageLength(mCurPagePos) < 0) return;
         if (start > mCurChapter.getPageLength(mCurPagePos)) {
             resetReadAloud = false;
             noAnimationToNextPage();
+            mPageView.invalidate();
         }
     }
 
@@ -618,7 +615,7 @@ public abstract class PageLoader {
     /**
      * 章节数据是否存在
      */
-    protected abstract boolean hasChapterData(ChapterListBean chapter);
+    protected abstract boolean noChapterData(ChapterListBean chapter);
 
     /**
      * 打开当前章节指定页
@@ -780,11 +777,11 @@ public abstract class PageLoader {
         Canvas canvas = new Canvas(bitmap);
         if (mPageMode == Enum.PageMode.SCROLL) {
             bitmap.eraseColor(Color.TRANSPARENT);
-        } else if (readBookControl.bgIsColor()) {
-            canvas.drawColor(readBookControl.getBgColor());
-        } else {
+        } else if (!readBookControl.bgIsColor() && !readBookControl.bgBitmapIsNull()) {
             Rect mDestRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
             canvas.drawBitmap(readBookControl.getBgBitmap(), null, mDestRect, null);
+        } else {
+            canvas.drawColor(readBookControl.getBgColor());
         }
         drawBackground(canvas, txtChapter, txtPage);
     }

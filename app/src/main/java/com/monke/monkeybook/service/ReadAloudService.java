@@ -14,6 +14,7 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -109,7 +110,6 @@ public class ReadAloudService extends Service {
      */
     public static void stop(Context context) {
         if (running) {
-            running = false;
             Intent intent = new Intent(context, ReadAloudService.class);
             intent.setAction(ActionDoneService);
             context.startService(intent);
@@ -120,29 +120,37 @@ public class ReadAloudService extends Service {
      * @param context 暂停
      */
     public static void pause(Context context) {
-        Intent intent = new Intent(context, ReadAloudService.class);
-        intent.setAction(ActionPauseService);
-        context.startService(intent);
+        if (running) {
+            Intent intent = new Intent(context, ReadAloudService.class);
+            intent.setAction(ActionPauseService);
+            context.startService(intent);
+        }
     }
 
     /**
      * @param context 继续
      */
     public static void resume(Context context) {
-        Intent intent = new Intent(context, ReadAloudService.class);
-        intent.setAction(ActionResumeService);
-        context.startService(intent);
+        if (running) {
+            Intent intent = new Intent(context, ReadAloudService.class);
+            intent.setAction(ActionResumeService);
+            context.startService(intent);
+        }
     }
 
-    public static void setTimer(Context context) {
-        Intent intent = new Intent(context, ReadAloudService.class);
-        intent.setAction(ActionSetTimer);
-        context.startService(intent);
+    public static void setTimer(Context context, int minute) {
+        if (running) {
+            Intent intent = new Intent(context, ReadAloudService.class);
+            intent.setAction(ActionSetTimer);
+            intent.putExtra("minute", minute);
+            context.startService(intent);
+        }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
+        running = true;
         preference = MApplication.getInstance().getConfigPreferences();
         textToSpeech = new TextToSpeech(this, new TTSListener());
         audioFocusChangeListener = new AudioFocusChangeListener();
@@ -191,6 +199,18 @@ public class ReadAloudService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return new MyBinder();
+    }
+
+    public class MyBinder extends Binder {
+        public ReadAloudService getService() {
+            return ReadAloudService.this;
+        }
+    }
+
     private void newReadAloud(String content, Boolean aloudButton, String title, String text) {
         if (content == null) {
             stopSelf();
@@ -207,7 +227,6 @@ public class ReadAloudService extends Service {
                 contentList.add(aSplitSpeech);
             }
         }
-        running = true;
         if (aloudButton || speak) {
             speak = false;
             pause = false;
@@ -311,10 +330,7 @@ public class ReadAloudService extends Service {
 
     private void doDs() {
         if (!pause) {
-            Intent setTimerIntent = new Intent(getApplicationContext(), ReadAloudService.class);
-            setTimerIntent.setAction(ActionSetTimer);
-            setTimerIntent.putExtra("minute", -1);
-            startService(setTimerIntent);
+            setTimer(this, -1);
         }
     }
 
@@ -368,14 +384,9 @@ public class ReadAloudService extends Service {
         startForeground(notificationId, notification);
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
     @Override
     public void onDestroy() {
+        running = false;
         super.onDestroy();
         stopForeground(true);
         handler.removeCallbacks(dsRunnable);
@@ -383,8 +394,6 @@ public class ReadAloudService extends Service {
         unRegisterMediaButton();
         unregisterReceiver(broadcastReceiver);
         clearTTS();
-
-        running = false;
     }
 
     private void clearTTS() {
