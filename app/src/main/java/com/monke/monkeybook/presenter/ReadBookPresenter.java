@@ -151,6 +151,7 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
             Observable.create((ObservableOnSubscribe<BookShelfBean>) e -> {
                 bookShelf.setFinalDate(System.currentTimeMillis());
                 BookshelfHelp.saveBookToShelf(bookShelf);
+                bookShelf.upDurChapterName();
                 e.onNext(bookShelf);
                 e.onComplete();
             }).subscribeOn(Schedulers.newThread())
