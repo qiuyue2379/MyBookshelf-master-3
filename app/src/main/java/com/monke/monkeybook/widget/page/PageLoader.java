@@ -60,7 +60,7 @@ public abstract class PageLoader {
     // 上一章的页面列表缓存
     private TxtChapter mPreChapter;
     // 当前章节的页面列表
-    TxtChapter mCurChapter;
+    private TxtChapter mCurChapter;
     // 下一章的页面列表缓存
     private TxtChapter mNextChapter;
 
@@ -391,8 +391,8 @@ public abstract class PageLoader {
         mPreChapter = null;
         parsePrevChapter();
 
-        openChapter(mCurPagePos);
         chapterChangeCallback();
+        openChapter(mCurPagePos);
         pagingEnd(PageAnimation.Direction.NONE);
     }
 
@@ -412,8 +412,8 @@ public abstract class PageLoader {
         mNextChapter = null;
         parseNextChapter();
 
-        openChapter(mCurPagePos);
         chapterChangeCallback();
+        openChapter(mCurPagePos);
         pagingEnd(PageAnimation.Direction.NONE);
         return true;
     }
@@ -668,11 +668,14 @@ public abstract class PageLoader {
     private void upPage() {
         if (mPageMode != Enum.PageMode.SCROLL) {
             mPageView.drawPage(0);
+            mPageView.invalidate();
             if (mCurPagePos > 0 || mCurChapter.getPosition() > 0) {
                 mPageView.drawPage(-1);
+                mPageView.invalidate();
             }
             if (mCurPagePos < mCurChapter.getPageSize() - 1 || mCurChapter.getPosition() < bookShelfBean.getChapterList().size() - 1) {
                 mPageView.drawPage(1);
+                mPageView.invalidate();
             }
         }
     }

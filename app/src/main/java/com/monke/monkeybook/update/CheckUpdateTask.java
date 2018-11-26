@@ -2,6 +2,7 @@ package com.monke.monkeybook.update;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -23,7 +24,8 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
     private Context mContext;
     private int mType;
     private boolean mShowProgressDialog;
-    private static final String url = Constants.UPDATE_URL;
+    private static final String url = Constants.UPDATE_URLL;
+    private static final String urli = Constants.UPDATE_URLI;
 
     CheckUpdateTask(Context context, int type, boolean showProgressDialog) {
 
@@ -57,10 +59,17 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 		// TODO Auto-generated method stub{
         try {
 
-            JSONObject obj = new JSONObject(result);
-            String updateMessage = obj.getString(Constants.APK_UPDATE_CONTENT);
-            String apkUrl = obj.getString(Constants.APK_DOWNLOAD_URL);
-            String apkCode = obj.getString(Constants.APK_VERSION_CODE);
+            JSONArray getJsonArray=new JSONArray(result);
+            JSONObject getJsonObj = getJsonArray.getJSONObject(0);
+            JSONObject obj = getJsonObj.getJSONObject("apkInfo");
+
+            String apkCode = obj.getString("versionName");
+            String apkUrl = urli  + obj.getString("outputFile");
+            String updateMessage = "有版本更新，请下载";
+
+            //String updateMessage = obj.getString(Constants.APK_UPDATE_CONTENT);
+            //String apkUrl = obj.getString(Constants.APK_DOWNLOAD_URL);
+            //String apkCode = obj.getString(Constants.APK_VERSION_CODE);
 
             String versionCode = AppUtils.getVersionName(mContext);
 
