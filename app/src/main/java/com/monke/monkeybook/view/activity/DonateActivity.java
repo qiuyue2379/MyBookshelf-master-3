@@ -84,19 +84,19 @@ public class DonateActivity extends MBaseActivity {
     @Override
     protected void bindEvent() {
         vwZfbTz.setOnClickListener(view -> Donate.aliDonate(this));
-        vwZfbHb.setOnClickListener(view -> openActionViewIntent("https://qiuyue2379.github.io/MyBookshelf/zfbhbrwm1.jpg"));
-        vwZfbRwm.setOnClickListener(view -> openActionViewIntent("https://qiuyue2379.github.io/MyBookshelf/zfbskrwm0.jpg"));
-        vwWxRwm.setOnClickListener(view -> openActionViewIntent("https://qiuyue2379.github.io/MyBookshelf/wxskrwm.jpg"));
-        vwQqRwm.setOnClickListener(view -> openActionViewIntent("https://qiuyue2379.github.io/MyBookshelf/qqskrwm.jpg"));
+        vwZfbHb.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/zfbhbrwm.png"));
+        vwZfbRwm.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/zfbskrwm.jpg"));
+        vwWxRwm.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/wxskrwm.jpg"));
+        vwQqRwm.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/qqskrwm.jpg"));
         vwZfbHbSsm.setOnClickListener(view -> getZfbHb(this));
     }
 
     public static void getZfbHb(Context context) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clipData = ClipData.newPlainText(null, "546670331");
+        ClipData clipData = ClipData.newPlainText(null, "537954522");
         if (clipboard != null) {
             clipboard.setPrimaryClip(clipData);
-            Toast.makeText(context, "隐藏书源已开启\n红包码已复制\n支付宝首页搜索“546670331” 立即领红包", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "隐藏书源已开启\n红包码已复制\n支付宝首页搜索“537954522” 立即领红包", Toast.LENGTH_LONG).show();
         }
         try {
             PackageManager packageManager = context.getApplicationContext().getPackageManager();

@@ -293,7 +293,7 @@ public class ReadBookControl {
         editor.apply();
     }
 
-    private boolean getIsNightTheme()  {
+    private boolean getIsNightTheme() {
         return readPreference.getBoolean("nightTheme", false);
     }
 
