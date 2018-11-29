@@ -1,7 +1,6 @@
 //Copyright (c) 2017. 章钦豪. All rights reserved.
 package com.monke.monkeybook.presenter;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,13 +27,11 @@ import com.trello.rxlifecycle2.android.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 
 public class BookListPresenter extends BasePresenterImpl<BookListContract.View> implements BookListContract.Presenter {
@@ -91,15 +88,22 @@ public class BookListPresenter extends BasePresenterImpl<BookListContract.View> 
         Observable<BookShelfBean> data = Observable.fromIterable(new ArrayList<>(bookShelfBeans));
         Observable<Long> time = Observable.interval(1, TimeUnit.SECONDS);
         Observable.zip(data, time, (bookShelfBean, aLong) -> {
-            int chapterNum = bookShelfBean.getChapterListSize();
-            DownloadBookBean downloadBook = new DownloadBookBean();
-            downloadBook.setName(bookShelfBean.getBookInfoBean().getName());
-            downloadBook.setNoteUrl(bookShelfBean.getNoteUrl());
-            downloadBook.setCoverUrl(bookShelfBean.getBookInfoBean().getCoverUrl());
-            downloadBook.setStart(bookShelfBean.getDurChapter());
-            downloadBook.setEnd(downloadNum > 0 ? Math.min(chapterNum - 1, bookShelfBean.getDurChapter() + downloadNum - 1) : chapterNum - 1);
-            downloadBook.setFinalDate(System.currentTimeMillis());
-            DownloadService.addDownload(mView.getContext(), downloadBook);
+            if (!bookShelfBean.getTag().equals(BookShelfBean.LOCAL_TAG) && (!onlyNew || bookShelfBean.getHasUpdate())) {
+                int chapterNum = bookShelfBean.getChapterListSize();
+                for (int start = bookShelfBean.getDurChapter(); start < chapterNum; start++) {
+                    if (!BookshelfHelp.isChapterCached(bookShelfBean.getBookInfoBean(), bookShelfBean.getChapterList(start))) {
+                        DownloadBookBean downloadBook = new DownloadBookBean();
+                        downloadBook.setName(bookShelfBean.getBookInfoBean().getName());
+                        downloadBook.setNoteUrl(bookShelfBean.getNoteUrl());
+                        downloadBook.setCoverUrl(bookShelfBean.getBookInfoBean().getCoverUrl());
+                        downloadBook.setStart(start);
+                        downloadBook.setEnd(downloadNum > 0 ? Math.min(chapterNum - 1, start + downloadNum - 1) : chapterNum - 1);
+                        downloadBook.setFinalDate(System.currentTimeMillis());
+                        DownloadService.addDownload(mView.getContext(), downloadBook);
+                        break;
+                    }
+                }
+            }
             return bookShelfBean;
         }).compose(RxUtils::toSimpleSingle)
                 .subscribe();
