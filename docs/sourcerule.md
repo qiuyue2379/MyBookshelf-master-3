@@ -16,9 +16,9 @@
 - !是排除,有些位置不符合需要排除用!,后面的序号用:隔开0是第1个,负数为倒数序号,-1最后一个,-2倒数第2个,依次
 - @的最后一段为获取内容,如text,textNodes,href,src,html等
 - 如果有不同网页的规则可以用 | 或 & 分隔 或 %
- - |会以第一个取到值的为准,
- - & 会合并所有规则取到的值,
- - % 会依次取数,如三个列表,先取列表1的第一个,再取列表2的第一个,再取列表3的第一个,再取列表1的第2个.......
+- |会以第一个取到值的为准,
+- & 会合并所有规则取到的值,
+- % 会依次取数,如三个列表,先取列表1的第一个,再取列表2的第一个,再取列表3的第一个,再取列表1的第2个.......
 - 如需要正则替换在最后加上 #正则表达式
 - 例:class.odd.0@tag.a.0@text|tag.dd.0@tag.h1@text#全文阅读
 - 例:class.odd.0@tag.a.0@text&tag.dd.0@tag.h1@text#全文阅读
@@ -40,8 +40,10 @@
 - 起点风云榜::https://www.qidian.com/rank/yuepiao?page=searchPage
 - url规则和搜索规则一样,多个规则用&&或换行分开,如
 - 起点风云榜::https://www.qidian.com/rank/yuepiao?page=searchPage&&原创风云榜::https://www.qidian.com/rank/yuepiao?style=1&page=searchPage
-- 也可以写成,域名可以省略,如省略会调用书源域名
+- 也可以每行写一个,域名可以省略,如省略会调用书源域名
+
 起点风云榜::/rank/yuepiao?page=searchPage
+
 原创风云榜::/rank/yuepiao?style=1&page=searchPage
 
 #### RuleSearchList 搜索列表
@@ -65,6 +67,9 @@
 #### RuleSearchCoverUrl 搜索里的书封面
 - 例:tag.img.0@src
 
+#### RuleBookUrlPattern 书籍页面里的URL正则
+- 例:https?://www.piaotian.com/bookinfo/.*"
+
 #### RuleBookName 书籍页面里的书名称
 - 例:class.active.0@text
 
@@ -77,6 +82,12 @@
 #### RuleCoverUrl 书籍页面里的封面
 - 例:class.panel-body.0@class.img-thumbnail.0@src
 
+#### RuleBookKind 书籍页面里的分类
+- 例:id.centerm@tag.td.3@text#.*：
+
+#### RuleBookLastChapter 书籍页面里的最新章节
+- 例class.grid.0@tag.td.0@tag.a@text
+
 #### RuleChapterUrl 书籍页面里的目录地址
 - 如果目录地址和书籍地址一样则留空
 - 例:class.list-group-item tac.0@tag.a.0@href
@@ -85,7 +96,7 @@
 - 如果没有下一页则留空
 - 例:class.page.0@text.下一页.0@href
 **也可以获取所有目录页url的列表,会依次获取**
- - 例:class.chapter.0@tag.a@href  (class.chapter.0)里包含第1页第2页第三页等
+- 例:class.chapter.0@tag.a@href  (class.chapter.0)里包含第1页第2页第三页等
 
 #### RuleChapterList 目录页面的目录列表
 - 前面加 - 号倒序排列
