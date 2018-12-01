@@ -30,24 +30,20 @@ class PageList {
             }
             return txtChapter;
         }
-        List<TxtPage> pages = null;
+        String content;
         try {
-            pages = loadPageList(chapter, pageLoader.getChapterContent(chapter));
+            content = pageLoader.getChapterContent(chapter);
         } catch (Exception e) {
-            e.printStackTrace();
+            txtChapter.setStatus(Enum.PageStatus.ERROR);
+            txtChapter.setMsg("读取内容出错\n" + e.getLocalizedMessage());
+            return txtChapter;
         }
-        if (pages != null) {
-            txtChapter.setTxtPageList(pages);
-            txtChapter.setStatus(Enum.PageStatus.FINISH);
-            if (txtChapter.getTxtPageList().isEmpty()) {
-                txtChapter.setStatus(Enum.PageStatus.EMPTY);
-                // 添加一个空数据
-                TxtPage page = new TxtPage();
-                page.lines = new ArrayList<>(1);
-                txtChapter.getTxtPageList().add(page);
-            }
+        if (content == null) {
+            txtChapter.setStatus(Enum.PageStatus.ERROR);
+            txtChapter.setMsg("缓存文件不存在");
+            return txtChapter;
         }
-        return txtChapter;
+        return loadPageList(chapter, content);
     }
 
     /**
@@ -56,10 +52,9 @@ class PageList {
      * @param chapter：章节信息
      * @param content：章节的文本
      */
-    private List<TxtPage> loadPageList(ChapterListBean chapter, @NonNull String content) {
+    private TxtChapter loadPageList(ChapterListBean chapter, @NonNull String content) {
         //生成的页面
-        List<TxtPage> pages = new ArrayList<>();
-        if (pageLoader.bookShelfBean == null) return pages;
+        TxtChapter txtChapter = new TxtChapter(chapter.getDurChapterIndex());
         content = contentHelper.replaceContent(pageLoader.bookShelfBean.getBookInfoBean().getName(), pageLoader.bookShelfBean.getTag(), content);
         String allLine[] = content.split("\n");
         List<String> lines = new ArrayList<>();
@@ -80,6 +75,7 @@ class PageList {
                 if (paragraph.equals("")) continue;
                 paragraph = StringUtils.halfToFull("  ") + paragraph + "\n";
             }
+            addParagraphLength(txtChapter, paragraph.length());
             int wordCount;
             String subStr;
             while (paragraph.length() > 0) {
@@ -93,11 +89,12 @@ class PageList {
                 if (rHeight <= 0) {
                     // 创建Page
                     TxtPage page = new TxtPage();
-                    page.position = pages.size();
+                    page.position = txtChapter.getTxtPageList().size();
                     page.title = chapter.getDurChapterName();
                     page.lines = new ArrayList<>(lines);
                     page.titleLines = titleLinesCount;
-                    pages.add(page);
+                    txtChapter.addPage(page);
+                    addTxtPageLength(txtChapter, page.getContent().length());
                     // 重置Lines
                     lines.clear();
                     rHeight = pageLoader.mVisibleHeight - pageLoader.contentMarginHeight * 2;
@@ -120,7 +117,6 @@ class PageList {
                 if (!subStr.equals("\n")) {
                     //将一行字节，存储到lines中
                     lines.add(subStr);
-
                     //设置段落间距
                     if (showTitle) {
                         titleLinesCount += 1;
@@ -147,14 +143,32 @@ class PageList {
         if (lines.size() != 0) {
             //创建Page
             TxtPage page = new TxtPage();
-            page.position = pages.size();
+            page.position = txtChapter.getTxtPageList().size();
             page.title = chapter.getDurChapterName();
             page.lines = new ArrayList<>(lines);
             page.titleLines = titleLinesCount;
-            pages.add(page);
+            txtChapter.addPage(page);
+            addTxtPageLength(txtChapter, page.getContent().length());
             //重置Lines
             lines.clear();
         }
-        return pages;
+        txtChapter.setStatus(Enum.PageStatus.FINISH);
+        return txtChapter;
+    }
+
+    private void addTxtPageLength(TxtChapter txtChapter, int length) {
+        if (txtChapter.getTxtPageLengthList().isEmpty()) {
+            txtChapter.addTxtPageLength(length);
+        } else {
+            txtChapter.addTxtPageLength(txtChapter.getTxtPageLengthList().get(txtChapter.getTxtPageLengthList().size() - 1) + length);
+        }
+    }
+
+    private void addParagraphLength(TxtChapter txtChapter, int length) {
+        if (txtChapter.getParagraphLengthList().isEmpty()) {
+            txtChapter.addParagraphLength(length);
+        } else {
+            txtChapter.addParagraphLength(txtChapter.getParagraphLengthList().get(txtChapter.getParagraphLengthList().size() - 1) + length);
+        }
     }
 }
