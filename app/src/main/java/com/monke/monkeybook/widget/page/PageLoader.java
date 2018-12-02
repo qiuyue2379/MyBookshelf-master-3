@@ -134,8 +134,8 @@ public abstract class PageLoader {
     // 当前章
     int mCurChapterPos;
     int mCurPagePos;
-    private int readTextLength;
-    private boolean resetReadAloud;
+    private int readTextLength; //已读字符数
+    private boolean resetReadAloud; //是否重新朗读
     private int readAloudParagraph; //正在朗读章节
 
     public Bitmap cover;
@@ -976,6 +976,9 @@ public abstract class PageLoader {
         }
     }
 
+    /**
+     * 绘制内容-滚动
+     */
     @SuppressWarnings("ConstantConditions")
     void drawContent(Canvas canvas, float offset) {
         if (offset > MAX_SCROLL_OFFSET) {
@@ -1063,8 +1066,8 @@ public abstract class PageLoader {
             TxtPage page = chapter.getPage(pagePos);
             if (page.lines == null) break;
             if (top > totalHeight) break;
-            int strLength = 0;
             float topi = top;
+            int strLength = 0;
             isLight = ReadAloudService.running && readAloudParagraph == 0;
             mTitlePaint.setColor(isLight ? mContext.getResources().getColor(R.color.colorAccent) : readBookControl.getTextColor());
             for (int i = 0; i < page.titleLines; i++) {
