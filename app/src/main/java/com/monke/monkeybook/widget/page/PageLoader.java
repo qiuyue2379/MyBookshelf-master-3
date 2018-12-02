@@ -136,7 +136,7 @@ public abstract class PageLoader {
     int mCurPagePos;
     private int readTextLength;
     private boolean resetReadAloud;
-    private int readAloudParagraph;
+    private int readAloudParagraph; //正在朗读章节
 
     public Bitmap cover;
     private int linePos = 0;
@@ -1522,6 +1522,7 @@ public abstract class PageLoader {
 
     private void chapterChangeCallback() {
         if (mPageChangeListener != null) {
+            readAloudParagraph = 0;
             mPageChangeListener.onChapterChange(mCurChapterPos);
             mPageChangeListener.onPageCountChange(mCurChapter != null ? mCurChapter.getPageSize() : 0);
         }
