@@ -2,15 +2,17 @@ package com.monke.monkeybook.widget.page.animation;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
+import com.monke.monkeybook.MApplication;
+import com.monke.monkeybook.R;
 import com.monke.monkeybook.help.ReadBookControl;
 
 /**
- * Created by newbiechen on 17-7-24.
  * 翻页动画抽象类
  */
 
@@ -21,49 +23,45 @@ public abstract class PageAnimation {
     protected View mView;
     protected ReadBookControl readBookControl = ReadBookControl.getInstance();
     //滑动装置
-    protected Scroller mScroller;
+    Scroller mScroller;
     //监听器
     protected OnPageChangeListener mListener;
     //移动方向
-    protected Direction mDirection = Direction.NONE;
+    Direction mDirection = Direction.NONE;
 
     //屏幕的尺寸
-    protected int mScreenWidth;
-    protected int mScreenHeight;
-    //屏幕的间距
-    protected int mMarginWidth;
-    protected int mMarginTop;
-    protected int mMarginBottom;
+    int mScreenWidth;
+    int mScreenHeight;
+    int mMarginTop;
     //视图的尺寸
-    protected int mViewWidth;
-    protected int mViewHeight;
+    int mViewWidth;
+    int mViewHeight;
     //起始点
-    protected float mStartX;
-    protected float mStartY;
+    float mStartX;
+    float mStartY;
     //触碰点
-    protected float mTouchX;
-    protected float mTouchY;
+    float mTouchX;
+    float mTouchY;
     //上一个触碰点
-    protected float mLastX;
-    protected float mLastY;
+    float mLastX;
+    float mLastY;
 
-    protected boolean isRunning = false;
-    protected boolean changePage = false;
+    boolean isRunning = false;
+    boolean changePage = false;
 
-    public PageAnimation(int w, int h, View view, OnPageChangeListener listener) {
+    PageAnimation(int w, int h, View view, OnPageChangeListener listener) {
         this(w, h, 0, 0, 0, view, listener);
     }
 
-    public PageAnimation(int w, int h, int marginWidth, int marginTop, int marginBottom, View view, OnPageChangeListener listener) {
+    PageAnimation(int w, int h, int marginWidth, int marginTop, int marginBottom, View view, OnPageChangeListener listener) {
         mScreenWidth = w;
         mScreenHeight = h;
 
-        mMarginWidth = marginWidth;
+        //屏幕的间距
         mMarginTop = marginTop;
-        mMarginBottom = marginBottom;
 
-        mViewWidth = mScreenWidth - mMarginWidth * 2;
-        mViewHeight = mScreenHeight - mMarginTop - mMarginBottom;
+        mViewWidth = mScreenWidth - marginWidth * 2;
+        mViewHeight = mScreenHeight - mMarginTop - marginBottom;
 
         mView = view;
         mListener = listener;
@@ -167,7 +165,44 @@ public abstract class PageAnimation {
     public abstract Bitmap getContentBitmap(int pageOnCur);
 
     public enum PageMode {
-        COVER, SIMULATION, SLIDE, SCROLL, NONE
+        COVER(MApplication.getAppResources().getString(R.string.page_mode_COVER)),
+        SIMULATION(MApplication.getAppResources().getString(R.string.page_mode_SIMULATION)),
+        SLIDE(MApplication.getAppResources().getString(R.string.page_mode_SLIDE)),
+        SCROLL(MApplication.getAppResources().getString(R.string.page_mode_SCROLL)),
+        NONE(MApplication.getAppResources().getString(R.string.page_mode_NONE));
+
+        private String name;
+
+        PageMode(String name) {
+            this.name = name;
+        }
+
+        public static PageAnimation.PageMode getPageMode(int pageMode) {
+            switch (pageMode) {
+                case 0:
+                    return COVER;
+                case 1:
+                    return SIMULATION;
+                case 2:
+                    return SLIDE;
+                case 3:
+                    return SCROLL;
+                case 4:
+                    return NONE;
+                default:
+                    return COVER;
+            }
+        }
+
+        public static String[] getAllPageMode() {
+            return new String[]{COVER.name, SIMULATION.name, SLIDE.name, SCROLL.name, NONE.name};
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return this.name;
+        }
     }
 
     public enum Direction {
