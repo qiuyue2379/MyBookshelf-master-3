@@ -46,6 +46,7 @@ import com.monke.monkeybook.model.BookSourceManager;
 import com.monke.monkeybook.model.UpLastChapterModel;
 import com.monke.monkeybook.presenter.MainPresenter;
 import com.monke.monkeybook.presenter.contract.MainContract;
+import com.monke.monkeybook.update.UpdateChecker;
 import com.monke.monkeybook.view.fragment.BookListFragment;
 import com.monke.monkeybook.view.fragment.FindBookFragment;
 import com.monke.monkeybook.widget.modialog.MoDialogHUD;
