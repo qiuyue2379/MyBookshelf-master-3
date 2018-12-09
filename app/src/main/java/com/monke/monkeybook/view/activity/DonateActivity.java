@@ -96,7 +96,7 @@ public class DonateActivity extends MBaseActivity {
         ClipData clipData = ClipData.newPlainText(null, "537954522");
         if (clipboard != null) {
             clipboard.setPrimaryClip(clipData);
-            Toast.makeText(context, "隐藏书源已开启\n红包码已复制\n支付宝首页搜索“537954522” 立即领红包", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "高级功能已开启\n红包码已复制\n支付宝首页搜索“537954522” 立即领红包", Toast.LENGTH_LONG).show();
         }
         try {
             PackageManager packageManager = context.getApplicationContext().getPackageManager();

@@ -37,7 +37,6 @@ import com.monke.monkeybook.update.UpdateChecker;
  * Created by GKF on 2017/12/15.
  * 关于
  */
-
 public class AboutActivity extends MBaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;

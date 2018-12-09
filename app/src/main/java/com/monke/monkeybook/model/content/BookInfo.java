@@ -83,11 +83,10 @@ class BookInfo {
                     bookInfoBean.setCoverUrl(analyzeByJSonPath.read(sourceRule.rule));
                 }
                 sourceRule = new SourceRule(bookSourceBean.getRuleChapterUrl());
-                bookInfoBean.setCoverUrl(analyzeByJSonPath.read(sourceRule.rule));
+                bookInfoBean.setChapterUrl(analyzeByJSonPath.read(sourceRule.rule));
                 if (isEmpty(bookInfoBean.getChapterUrl())) {
                     bookInfoBean.setChapterUrl(bookShelfBean.getNoteUrl());
                 }
-                bookInfoBean.setChapterUrl(bookShelfBean.getNoteUrl());
             }
             bookInfoBean.setOrigin(name);
             bookShelfBean.setBookInfoBean(bookInfoBean);
