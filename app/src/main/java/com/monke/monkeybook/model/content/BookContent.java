@@ -31,8 +31,9 @@ class BookContent {
     private BookSourceBean bookSourceBean;
     private String ruleBookContent;
     private boolean isAJAX;
-    private AnalyzeByXPath analyzeByXPath;
-    private AnalyzeByJSoup analyzeByJSoup;
+    private AnalyzeByXPath analyzeByXPath = new AnalyzeByXPath();
+    private AnalyzeByJSoup analyzeByJSoup = new AnalyzeByJSoup();
+    private AnalyzeByJSonPath analyzeByJSonPath = new AnalyzeByJSonPath();
 
     BookContent(String tag, BookSourceBean bookSourceBean) {
         this.tag = tag;
@@ -51,7 +52,7 @@ class BookContent {
                 e.onComplete();
                 return;
             }
-            if (ruleBookContent.startsWith("@") && !MApplication.getInstance().getDonateHb()) {
+            if ((ruleBookContent.startsWith("@") || StringUtils.isJSONType(s)) && !MApplication.getInstance().getDonateHb()) {
                 e.onError(new Throwable(MApplication.getInstance().getString(R.string.donate_s)));
                 e.onComplete();
                 return;
@@ -103,26 +104,29 @@ class BookContent {
         WebContentBean webContentBean = new WebContentBean();
         if (!StringUtils.isJSONType(s)) {
             Document doc = Jsoup.parse(s);
-            analyzeByJSoup = new AnalyzeByJSoup(doc, chapterUrl);
-            analyzeByXPath = new AnalyzeByXPath(doc);
-            webContentBean.content = analyzeToString(ruleBookContent);
-            if (!TextUtils.isEmpty(bookSourceBean.getRuleContentUrlNext())) {
-                webContentBean.nextUrl = analyzeToString(bookSourceBean.getRuleContentUrlNext(), chapterUrl);
+            SourceRule sourceRuleBookContent = new SourceRule(ruleBookContent);
+            SourceRule sourceRuleContentUrlNext = new SourceRule(bookSourceBean.getRuleContentUrlNext());
+            if (sourceRuleBookContent.mode == SourceRule.Mode.XPath || sourceRuleContentUrlNext.mode == SourceRule.Mode.XPath) {
+                analyzeByXPath.parse(doc);
+            }
+            analyzeByJSoup.parse(doc, chapterUrl);
+            webContentBean.content = analyzeToString(sourceRuleBookContent);
+            if (!TextUtils.isEmpty(sourceRuleContentUrlNext.rule)) {
+                webContentBean.nextUrl = analyzeToString(sourceRuleContentUrlNext, chapterUrl);
             }
         } else {
-            AnalyzeByJSonPath analyzeByJSonPath = new AnalyzeByJSonPath(s);
+            analyzeByJSonPath.parse(s);
             SourceRule sourceRule = new SourceRule(ruleBookContent);
             webContentBean.content = analyzeByJSonPath.read(sourceRule.rule);
         }
         return webContentBean;
     }
 
-    private String analyzeToString(String rule) {
-        return analyzeToString(rule, null);
+    private String analyzeToString(SourceRule sourceRule) {
+        return analyzeToString(sourceRule, null);
     }
 
-    private String analyzeToString(String rule, String baseUrl) {
-        SourceRule sourceRule = new SourceRule(rule);
+    private String analyzeToString(SourceRule sourceRule, String baseUrl) {
         String result;
         switch (sourceRule.mode) {
             case XPath:

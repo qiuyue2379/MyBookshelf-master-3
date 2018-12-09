@@ -9,14 +9,15 @@ import java.util.List;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 public class AnalyzeByJSonPath {
-    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
+    private ScriptEngine engine;
     ReadContext ctx;
 
-    public AnalyzeByJSonPath(String json) {
-        ctx = JsonPath.parse(json);
+    private void initScriptEngine() {
+        if (engine == null) {
+            engine = new ScriptEngineManager().getEngineByName("rhino");
+        }
     }
 
     public void parse(String json) {
@@ -29,25 +30,25 @@ public class AnalyzeByJSonPath {
 
     public String read(String rule) {
         if (TextUtils.isEmpty(rule)) return null;
-        String result = "";
+        String result = null;
         SourceRule sourceRule = splitSourceRule(rule);
-        Object object = ctx.read(sourceRule.rule);
-        if (object instanceof List) {
-            object = ((List<String>) object).get(0);
-        }
-        if (!TextUtils.isEmpty(sourceRule.jsStr)) {
-            try {
+        try {
+            Object object = ctx.read(sourceRule.rule);
+            if (object instanceof List) {
+                object = ((List<String>) object).get(0);
+            }
+            if (!TextUtils.isEmpty(sourceRule.jsStr)) {
+                initScriptEngine();
                 engine.put("result", object);
                 result = (String) engine.eval(sourceRule.jsStr);
-            } catch (ScriptException e) {
-                e.printStackTrace();
-            }
-        } else {
-            if (object instanceof Integer) {
-                result = Integer.toString((Integer) object);
             } else {
-                result = (String) object;
+                if (object instanceof Integer) {
+                    result = Integer.toString((Integer) object);
+                } else {
+                    result = (String) object;
+                }
             }
+        } catch (Exception ignored) {
         }
         return result;
     }

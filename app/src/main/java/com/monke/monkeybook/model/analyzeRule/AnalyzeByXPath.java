@@ -17,15 +17,21 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 public class AnalyzeByXPath {
-    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
+    private ScriptEngine engine;
     private JXDocument jxDocument;
 
-    public AnalyzeByXPath(Document doc) {
+    public void parse(Document doc) {
         jxDocument = JXDocument.create(doc);
     }
 
-    public AnalyzeByXPath(Elements doc) {
+    public void parse(Elements doc) {
         jxDocument = new JXDocument(doc);
+    }
+
+    private void initScriptEngine() {
+        if (engine == null) {
+            engine = new ScriptEngineManager().getEngineByName("rhino");
+        }
     }
 
     public Elements getElements(String xPath) {
@@ -64,11 +70,11 @@ public class AnalyzeByXPath {
             result = NetworkUtil.getAbsoluteURL(baseUrl, result);
         }
         if (!TextUtils.isEmpty(sourceRule.jsStr)) {
+            initScriptEngine();
             try {
                 engine.put("result", result);
                 result = (String) engine.eval(sourceRule.jsStr);
-            } catch (ScriptException e) {
-                e.printStackTrace();
+            } catch (ScriptException ignored) {
             }
         }
         return result;
