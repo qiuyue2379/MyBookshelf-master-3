@@ -14,13 +14,11 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.hwangjr.rxbus.RxBus;
 import com.monke.basemvplib.impl.IPresenter;
+import com.monke.monkeybook.MApplication;
 import com.monke.monkeybook.R;
 import com.monke.monkeybook.base.MBaseActivity;
-import com.monke.monkeybook.help.ACache;
 import com.monke.monkeybook.help.Donate;
-import com.monke.monkeybook.help.RxBusTag;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,8 +105,7 @@ public class DonateActivity extends MBaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            ACache.get(context).put("getZfbHb", "True", 3 * ACache.TIME_DAY);
-            RxBus.get().post(RxBusTag.GET_ZFB_Hb, true);
+            MApplication.getInstance().upDonateHb();
         }
     }
 
