@@ -25,18 +25,6 @@ def version = "2." + releaseTime()
 
 def keyFile = file('1.jks')
 
-Properties properties = new Properties()
-// local.properties file in the root director
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-def keystoreFilepath = properties.getProperty("keystore.path")
-
-if (keystoreFilepath) {
-    keystorePSW = properties.getProperty("keystore.password")
-    keystoreAlias = properties.getProperty("keystore.alias")
-    keystoreAliasPSW = properties.getProperty("keystore.alias_password")
-    keyFile = file(keystoreFilepath)
-}
-
 android {
     def currentVersionCode = getVersionCode()
     compileSdkVersion 28
@@ -171,6 +159,6 @@ dependencies {
 
 greendao {
     schemaVersion 49
-    daoPackage 'com.monke.monkeybook.dao'
+    daoPackage 'com.kunfei.bookshelf.dao'
     targetGenDir 'src/main/java'
 }
