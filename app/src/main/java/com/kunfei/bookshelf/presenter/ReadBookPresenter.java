@@ -65,6 +65,7 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
 
     private int open_from;
     private BookShelfBean bookShelf;
+    private BookSourceBean bookSourceBean;
 
     @Override
     public void initData(Activity activity) {
@@ -99,6 +100,9 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
                 bookShelf.getBookInfoBean().setChapterList(BookshelfHelp.getChapterList(bookShelf.getNoteUrl()));
                 bookShelf.getBookInfoBean().setBookmarkList(BookshelfHelp.getBookmarkList(bookShelf.getBookInfoBean().getName()));
                 mView.setAdd(BookshelfHelp.isInBookShelf(bookShelf.getNoteUrl()));
+                if (!bookShelf.getTag().equals(BookShelfBean.LOCAL_TAG)) {
+                    bookSourceBean = BookSourceManager.getBookSourceByUrl(bookShelf.getTag());
+                }
             }
             e.onNext(bookShelf);
             e.onComplete();
@@ -128,22 +132,20 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
      */
     public void disableDurBookSource() {
         try {
-            switch (bookShelf.getTag()) {
-                case BookShelfBean.LOCAL_TAG:
-                    break;
-                default:
-                    BookSourceBean bookSource = DbHelper.getInstance().getmDaoSession().getBookSourceBeanDao().queryBuilder()
-                            .where(BookSourceBeanDao.Properties.BookSourceUrl.eq(bookShelf.getTag())).unique();
-                    bookSource.setEnable(false);
-                    bookSource.addGroup("禁用");
-                    DbHelper.getInstance().getmDaoSession().getBookSourceBeanDao().insertOrReplace(bookSource);
-                    BookSourceManager.refreshBookSource();
-                    mView.toast("已禁用" + bookSource.getBookSourceName());
-                    break;
+            if (bookSourceBean != null) {
+                bookSourceBean.addGroup("禁用");
+                DbHelper.getInstance().getmDaoSession().getBookSourceBeanDao().insertOrReplace(bookSourceBean);
+                BookSourceManager.refreshBookSource();
+                mView.toast("已禁用" + bookSourceBean.getBookSourceName());
             }
         } catch (Exception e) {
             Log.e("MonkBook", e.getLocalizedMessage() + "\n" + e.getMessage());
         }
+    }
+
+    @Override
+    public BookSourceBean getBookSource() {
+        return bookSourceBean;
     }
 
     @Override
