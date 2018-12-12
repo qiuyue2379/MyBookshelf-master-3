@@ -2,8 +2,8 @@ package com.kunfei.bookshelf.model.analyzeRule;
 
 import android.text.TextUtils;
 
-import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.help.FormatWebText;
+import com.kunfei.bookshelf.utils.StringUtils;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
@@ -39,17 +39,22 @@ public class AnalyzeByJSoup {
         if (temp == null || isEmpty(rule)) {
             return elements;
         }
+        SourceRule sourceRule = new SourceRule(rule);
         String elementsType;
         String[] ruleStrS;
-        if (rule.contains("&")) {
+        if (sourceRule.elementsRule.contains("&")) {
             elementsType = "&";
-            ruleStrS = rule.split("&");
-        } else if (rule.contains("%")) {
+            ruleStrS = rule.split("&+");
+        } else if (sourceRule.elementsRule.contains("%")) {
             elementsType = "%";
-            ruleStrS = rule.split("%");
+            ruleStrS = rule.split("%+");
         } else {
             elementsType = "|";
-            ruleStrS = rule.split("\\|");
+            if (sourceRule.isCss) {
+                ruleStrS = rule.split("\\|\\|");
+            } else {
+                ruleStrS = rule.split("\\|+");
+            }
         }
         List<Elements> elementsList = new ArrayList<>();
         for (String ruleStr : ruleStrS) {
@@ -217,7 +222,7 @@ public class AnalyzeByJSoup {
         }
         String result = "";
         //分离正则表达式
-        SourceRule sourceRule = splitSourceRule(ruleStr.trim());
+        SourceRule sourceRule = new SourceRule(ruleStr.trim());
         if (isEmpty(sourceRule.elementsRule)) {
             result = element.data();
         } else {
@@ -252,7 +257,7 @@ public class AnalyzeByJSoup {
      **/
     String getResultUrl(String ruleStr) {
         String result = "";
-        SourceRule sourceRule = splitSourceRule(ruleStr);
+        SourceRule sourceRule = new SourceRule(ruleStr);
         List<String> urlList = getAllResultList(sourceRule.elementsRule);
         if (urlList.size() > 0) {
             result = urlList.get(0);
@@ -271,8 +276,8 @@ public class AnalyzeByJSoup {
         if (isEmpty(ruleStr)) {
             return textS;
         }
-        //分离正则表达式
-        SourceRule sourceRule = splitSourceRule(ruleStr);
+        //拆分规则
+        SourceRule sourceRule = new SourceRule(ruleStr);
         if (isEmpty(sourceRule.elementsRule)) {
             textS.add(element.data());
         } else {
@@ -280,10 +285,14 @@ public class AnalyzeByJSoup {
             String ruleStrS[];
             if (sourceRule.elementsRule.contains("&")) {
                 isAnd = true;
-                ruleStrS = sourceRule.elementsRule.split("&");
+                ruleStrS = sourceRule.elementsRule.split("&+");
             } else {
                 isAnd = false;
-                ruleStrS = sourceRule.elementsRule.split("\\|");
+                if (sourceRule.isCss) {
+                    ruleStrS = sourceRule.elementsRule.split("\\|\\|");
+                } else {
+                    ruleStrS = sourceRule.elementsRule.split("\\|+");
+                }
             }
             for (String ruleStrX : ruleStrS) {
                 List<String> temp = getResultList(ruleStrX);
@@ -402,26 +411,29 @@ public class AnalyzeByJSoup {
         return textS;
     }
 
-    private SourceRule splitSourceRule(String ruleStr) {
-        SourceRule sourceRule = new SourceRule();
-        String[] ruleStrS;
-        //分离正则表达式
-        ruleStrS = ruleStr.trim().split("#");
-        sourceRule.elementsRule = ruleStrS[0];
-        if (ruleStrS.length > 1) {
-            sourceRule.replaceRegex = ruleStrS[1];
-        }
-        if (ruleStrS.length > 2) {
-            sourceRule.replacement = ruleStrS[2];
-        }
-
-        return sourceRule;
-    }
-
     class SourceRule {
-        String elementsRule = "";
+        boolean isCss = false;
+        String elementsRule;
         String replaceRegex = "";
         String replacement = "";
+
+        SourceRule(String ruleStr) {
+            if (StringUtils.startWithIgnoreCase(ruleStr, "@CSS:")) {
+                isCss = true;
+                elementsRule = ruleStr.substring(5);
+                return;
+            }
+            String[] ruleStrS;
+            //分离正则表达式
+            ruleStrS = ruleStr.trim().split("#");
+            elementsRule = ruleStrS[0];
+            if (ruleStrS.length > 1) {
+                replaceRegex = ruleStrS[1];
+            }
+            if (ruleStrS.length > 2) {
+                replacement = ruleStrS[2];
+            }
+        }
     }
 
 }
