@@ -10,13 +10,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.kunfei.bookshelf.help.FileHelp;
-import com.kunfei.bookshelf.utils.SharedPreferencesUtil;
-import com.kunfei.bookshelf.utils.barUtil.ImmersionBar;
-import com.kunfei.bookshelf.view.activity.ReadBookActivity;
-import com.kunfei.bookshelf.widget.page.animation.NonePageAnim;
-import com.kunfei.bookshelf.widget.page.animation.PageAnimation;
-import com.kunfei.bookshelf.widget.page.animation.ScrollPageAnim;
 import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.help.FileHelp;
 import com.kunfei.bookshelf.help.ReadBookControl;
@@ -349,7 +342,7 @@ public class PageView extends View {
                         return true;
                     }
 
-                    if (!readBookControl.getCanClickTurn()) {
+                    if (!readBookControl.getCanClickTurn() || isRunning()) {
                         return true;
                     }
 
