@@ -171,7 +171,6 @@ public class ReadBookControl {
 
     @SuppressWarnings("ConstantConditions")
     private void initPageStyle() {
-        bgColor = textDrawable.get(textDrawableIndex).get("textBackground");
         if (getBgCustom(textDrawableIndex) == 2 && getBgPath(textDrawableIndex) != null) {
             bgIsColor = false;
             String bgPath = getBgPath(textDrawableIndex);
@@ -180,7 +179,9 @@ public class ReadBookControl {
             int width = dm.widthPixels;
             int height = dm.heightPixels;
             bgBitmap = BitmapUtil.getFitSampleBitmap(bgPath, width, height);
-            return;
+            if (bgBitmap != null) {
+                return;
+            }
         } else if (getBgCustom(textDrawableIndex) == 1) {
             bgIsColor = true;
             bgColor = getBgColor(textDrawableIndex);
@@ -323,6 +324,9 @@ public class ReadBookControl {
     }
 
     public Drawable getTextBackground(Context context) {
+        if (bgIsColor) {
+            return new ColorDrawable(bgColor);
+        }
         return new BitmapDrawable(context.getResources(), bgBitmap);
     }
 

@@ -17,11 +17,6 @@ import android.text.TextUtils;
 import android.util.SparseArray;
 import android.widget.Toast;
 
-import com.kunfei.bookshelf.bean.DownloadBookBean;
-import com.kunfei.bookshelf.bean.DownloadChapterBean;
-import com.kunfei.bookshelf.model.impl.IDownloadTask;
-import com.kunfei.bookshelf.model.task.DownloadTaskImpl;
-import com.kunfei.bookshelf.view.activity.DownloadActivity;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.bean.DownloadBookBean;
@@ -83,10 +78,11 @@ public class DownloadService extends Service {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        cancelDownload();
         isRunning = false;
         executor.shutdown();
         managerCompat.cancelAll();
+        super.onDestroy();
     }
 
     @Override
@@ -108,7 +104,7 @@ public class DownloadService extends Service {
                         removeDownload(noteUrl);
                         break;
                     case cancelAction:
-                        cancelDownload();
+                        finishSelf();
                         break;
                     case obtainDownloadListAction:
                         refreshDownloadList();
@@ -135,7 +131,7 @@ public class DownloadService extends Service {
             @Override
             public void onDownloadPrepared(DownloadBookBean downloadBook) {
                 if (canStartNextTask()) {
-                    startDownload(scheduler, threadsNum);
+                    startDownload(scheduler);
                 }
                 downloadTasks.put(getId(), this);
                 sendUpDownloadBook(addDownloadAction, downloadBook);
@@ -179,7 +175,6 @@ public class DownloadService extends Service {
             IDownloadTask downloadTask = downloadTasks.valueAt(i);
             downloadTask.stopDownload();
         }
-        finishSelf();
     }
 
     private void removeDownload(String noteUrl) {
@@ -229,7 +224,7 @@ public class DownloadService extends Service {
         for (int i = 0; i < downloadTasks.size(); i++) {
             IDownloadTask downloadTask = downloadTasks.valueAt(i);
             if (!downloadTask.isDownloading()) {
-                downloadTask.startDownload(scheduler, threadsNum);
+                downloadTask.startDownload(scheduler);
                 break;
             }
         }

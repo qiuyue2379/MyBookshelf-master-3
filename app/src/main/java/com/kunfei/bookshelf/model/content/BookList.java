@@ -61,9 +61,18 @@ class BookList {
                     item.setKind(analyzer.getString(bookSourceBean.getRuleBookKind()));
                     item.setLastChapter(analyzer.getString(bookSourceBean.getRuleBookLastChapter()));
                     books.add(item);
+                } else {
+                    e.onError(new Throwable("未获取到书名"));
+                    e.onComplete();
+                    return;
                 }
             } else {
                 AnalyzeCollection collections = analyzer.getElements(bookSourceBean.getRuleSearchList());
+                if (collections.size() == 0) {
+                    e.onError(new Throwable("搜索列表为空"));
+                    e.onComplete();
+                    return;
+                }
                 while (collections.hasNext()){
                     AnalyzeRule anaer = collections.next();
                     String bookName = anaer.getString(bookSourceBean.getRuleSearchName());
@@ -83,7 +92,11 @@ class BookList {
                     }
                 }
             }
-
+            if (books.isEmpty()) {
+                e.onError(new Throwable("未获取到书名"));
+                e.onComplete();
+                return;
+            }
             e.onNext(books);
             e.onComplete();
         });
