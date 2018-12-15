@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.widget.CardView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.TypedValue;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.R;
@@ -18,6 +17,7 @@ import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.bean.SearchBookBean;
 import com.kunfei.bookshelf.model.WebBookModel;
 import com.kunfei.bookshelf.utils.RxUtils;
+import com.victor.loading.rotate.RotateLoading;
 
 import java.util.List;
 
@@ -28,17 +28,16 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 public class SourceDebugActivity extends MBaseActivity {
-
-    @BindView(R.id.searchView)
-    SearchView searchView;
-    @BindView(R.id.card_search)
-    CardView cardSearch;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.searchView)
+    SearchView searchView;
+    @BindView(R.id.loading)
+    RotateLoading loading;
     @BindView(R.id.action_bar)
     AppBarLayout actionBar;
-    @BindView(R.id.ll_content)
-    LinearLayout llContent;
+    @BindView(R.id.tv_content)
+    TextView tvContent;
 
     private String sourceUrl;
     private CompositeDisposable compositeDisposable;
@@ -80,6 +79,27 @@ public class SourceDebugActivity extends MBaseActivity {
         setContentView(R.layout.activity_source_debug);
         ButterKnife.bind(this);
         this.setSupportActionBar(toolbar);
+        setupActionBar();
+    }
+
+    //设置ToolBar
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    //菜单
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -87,26 +107,13 @@ public class SourceDebugActivity extends MBaseActivity {
      */
     @Override
     protected void initData() {
+        sourceUrl = getIntent().getStringExtra("sourceUrl");
         initSearchView();
     }
 
     private void initSearchView() {
-        SearchView.SearchAutoComplete mSearchAutoComplete = searchView.findViewById(R.id.search_src_text);
         searchView.setQueryHint(getString(R.string.search_book_key));
-        //获取到TextView的控件
-        mSearchAutoComplete.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        mSearchAutoComplete.setPadding(15, 0, 0, 0);
         searchView.onActionViewExpanded();
-        LinearLayout editFrame = searchView.findViewById(android.support.v7.appcompat.R.id.search_edit_frame);
-        ImageView closeButton = searchView.findViewById(android.support.v7.appcompat.R.id.search_close_btn);
-        ImageView goButton = searchView.findViewById(android.support.v7.appcompat.R.id.search_go_btn);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) editFrame.getLayoutParams();
-        params.setMargins(20, 0, 10, 0);
-        editFrame.setLayoutParams(params);
-        closeButton.setScaleX(0.9f);
-        closeButton.setScaleY(0.9f);
-        closeButton.setPadding(0, 0, 0, 0);
-        goButton.setPadding(0, 0, 0, 0);
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -128,8 +135,9 @@ public class SourceDebugActivity extends MBaseActivity {
         if (TextUtils.isEmpty(sourceUrl)) return;
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
-            compositeDisposable = new CompositeDisposable();
         }
+        compositeDisposable = new CompositeDisposable();
+        loading.start();
         WebBookModel.getInstance().searchOtherBook(key, 1, sourceUrl)
                 .compose(RxUtils::toSimpleSingle)
                 .subscribe(new Observer<List<SearchBookBean>>() {
@@ -140,12 +148,25 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     @Override
                     public void onNext(List<SearchBookBean> searchBookBeans) {
-
+                        tvContent.setText("搜索列表获取成功");
+                        SearchBookBean searchBookBean = searchBookBeans.get(0);
+                        tvContent.setText(String.format("%s\n书名:%s", tvContent.getText(), searchBookBean.getName()));
+                        tvContent.setText(String.format("%s\n作者:%s", tvContent.getText(), searchBookBean.getAuthor()));
+                        tvContent.setText(String.format("%s\n分类:%s", tvContent.getText(), searchBookBean.getKind()));
+                        tvContent.setText(String.format("%s\n简介:%s", tvContent.getText(), searchBookBean.getOrigin()));
+                        tvContent.setText(String.format("%s\n最新章节:%s", tvContent.getText(), searchBookBean.getLastChapter()));
+                        tvContent.setText(String.format("%s\n书籍地址:%s", tvContent.getText(), searchBookBean.getNoteUrl()));
+                        if (!TextUtils.isEmpty(searchBookBean.getNoteUrl())) {
+                            bookInfoDebug(searchBookBean.getNoteUrl());
+                        } else {
+                            loading.stop();
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        tvContent.setText(e.getMessage());
+                        loading.stop();
                     }
 
                     @Override
@@ -156,4 +177,7 @@ public class SourceDebugActivity extends MBaseActivity {
 
     }
 
+    private void bookInfoDebug(String noteUrl) {
+
+    }
 }
