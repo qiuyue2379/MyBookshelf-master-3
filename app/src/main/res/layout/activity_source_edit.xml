@@ -28,7 +28,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,7 +44,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_book_source_url"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/book_source_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -54,7 +56,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_book_source_name"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/book_source_name" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -65,7 +68,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_bookSourceGroup"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/book_source_group" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -76,18 +80,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_loginUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_checkUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/tie_checkUrl"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/book_source_login_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -98,7 +92,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleFindUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_find_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -109,7 +104,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -120,7 +116,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchList"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_list" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -131,7 +128,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_name" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -142,7 +140,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchAuthor"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_author" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -153,7 +152,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchKind"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_kind" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -164,7 +164,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchLastChapter"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_last_chapter" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -175,7 +176,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchCoverUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_cover_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -186,7 +188,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleSearchNoteUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_search_note_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -197,7 +200,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookUrlPattern"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/book_url_pattern" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -208,7 +212,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_book_name" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -219,7 +224,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookAuthor"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_book_author" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -230,7 +236,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleCoverUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_cover_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -241,7 +248,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookKind"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_book_kind" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -252,29 +260,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookLastChapter"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_ruleChapterUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/tie_ruleChapterUrl"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_ruleChapterUrlNext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <android.support.v7.widget.AppCompatEditText
-                    android:id="@+id/tie_ruleChapterUrlNext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_book_last_chapter" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -285,7 +272,20 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleIntroduce"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_introduce" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_ruleChapterListUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/tie_ruleChapterListUrl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_chapter_list_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -296,7 +296,20 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleChapterList"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_chapter_list" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/til_ruleChapterListUrlNext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/tie_ruleChapterListUrlNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_chapter_list_url_next" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -307,7 +320,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleChapterName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_chapter_name" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -318,7 +332,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleContentUrl"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_content_url" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -329,7 +344,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleContentUrlNext"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_content_url_next" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -340,7 +356,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_ruleBookContent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/rule_book_content" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -351,7 +368,8 @@
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/tie_httpUserAgent"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/source_user_agent" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
     </ScrollView>

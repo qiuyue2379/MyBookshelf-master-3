@@ -110,10 +110,10 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     AppCompatEditText tieRuleCoverUrl;
     @BindView(R.id.til_ruleCoverUrl)
     TextInputLayout tilRuleCoverUrl;
-    @BindView(R.id.tie_ruleChapterUrl)
-    AppCompatEditText tieRuleChapterUrl;
-    @BindView(R.id.til_ruleChapterUrl)
-    TextInputLayout tilRuleChapterUrl;
+    @BindView(R.id.tie_ruleChapterListUrl)
+    AppCompatEditText tieRuleChapterListUrl;
+    @BindView(R.id.til_ruleChapterListUrl)
+    TextInputLayout tilRuleChapterListUrl;
     @BindView(R.id.tie_ruleIntroduce)
     AppCompatEditText tieRuleIntroduce;
     @BindView(R.id.til_ruleIntroduce)
@@ -146,14 +146,10 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     AppCompatEditText tieBookSourceGroup;
     @BindView(R.id.til_bookSourceGroup)
     TextInputLayout tilBookSourceGroup;
-    @BindView(R.id.tie_checkUrl)
-    AppCompatEditText tieCheckUrl;
-    @BindView(R.id.til_checkUrl)
-    TextInputLayout tilCheckUrl;
-    @BindView(R.id.tie_ruleChapterUrlNext)
-    AppCompatEditText tieRuleChapterUrlNext;
-    @BindView(R.id.til_ruleChapterUrlNext)
-    TextInputLayout tilRuleChapterUrlNext;
+    @BindView(R.id.tie_ruleChapterListUrlNext)
+    AppCompatEditText tieRuleChapterListUrlNext;
+    @BindView(R.id.til_ruleChapterListUrlNext)
+    TextInputLayout tilRuleChapterListUrlNext;
     @BindView(R.id.tie_ruleContentUrlNext)
     AppCompatEditText tieRuleContentUrlNext;
     @BindView(R.id.til_ruleContentUrlNext)
@@ -300,14 +296,13 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         bookSourceBeanN.setBookSourceUrl(trim(tieBookSourceUrl.getText()));
         bookSourceBeanN.setLoginUrl(trim(tieLoginUrl.getText()));
         bookSourceBeanN.setBookSourceGroup(trim(tieBookSourceGroup.getText()));
-        bookSourceBeanN.setCheckUrl(trim(tieCheckUrl.getText()));
         bookSourceBeanN.setRuleBookAuthor(trim(tieRuleBookAuthor.getText()));
         bookSourceBeanN.setRuleBookContent(trim(tieRuleBookContent.getText()));
         bookSourceBeanN.setRuleBookName(trim(tieRuleBookName.getText()));
         bookSourceBeanN.setRuleChapterList(trim(tieRuleChapterList.getText()));
         bookSourceBeanN.setRuleChapterName(trim(tieRuleChapterName.getText()));
-        bookSourceBeanN.setRuleChapterUrl(trim(tieRuleChapterUrl.getText()));
-        bookSourceBeanN.setRuleChapterUrlNext(trim(tieRuleChapterUrlNext.getText()));
+        bookSourceBeanN.setRuleChapterUrl(trim(tieRuleChapterListUrl.getText()));
+        bookSourceBeanN.setRuleChapterUrlNext(trim(tieRuleChapterListUrlNext.getText()));
         bookSourceBeanN.setRuleContentUrl(trim(tieRuleContentUrl.getText()));
         bookSourceBeanN.setRuleCoverUrl(trim(tieRuleCoverUrl.getText()));
         bookSourceBeanN.setRuleIntroduce(trim(tieRuleIntroduce.getText()));
@@ -339,14 +334,13 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         tieBookSourceUrl.setText(trim(bookSourceBean.getBookSourceUrl()));
         tieBookSourceGroup.setText(trim(bookSourceBean.getBookSourceGroup()));
         tieLoginUrl.setText(trim(bookSourceBean.getLoginUrl()));
-        tieCheckUrl.setText(trim(bookSourceBean.getCheckUrl()));
         tieRuleBookAuthor.setText(trim(bookSourceBean.getRuleBookAuthor()));
         tieRuleBookContent.setText(trim(bookSourceBean.getRuleBookContent()));
         tieRuleBookName.setText(trim(bookSourceBean.getRuleBookName()));
         tieRuleChapterList.setText(trim(bookSourceBean.getRuleChapterList()));
         tieRuleChapterName.setText(trim(bookSourceBean.getRuleChapterName()));
-        tieRuleChapterUrl.setText(trim(bookSourceBean.getRuleChapterUrl()));
-        tieRuleChapterUrlNext.setText(trim(bookSourceBean.getRuleChapterUrlNext()));
+        tieRuleChapterListUrl.setText(trim(bookSourceBean.getRuleChapterUrl()));
+        tieRuleChapterListUrlNext.setText(trim(bookSourceBean.getRuleChapterUrlNext()));
         tieRuleContentUrl.setText(trim(bookSourceBean.getRuleContentUrl()));
         tieRuleCoverUrl.setText(trim(bookSourceBean.getRuleCoverUrl()));
         tieRuleIntroduce.setText(trim(bookSourceBean.getRuleIntroduce()));
@@ -371,14 +365,13 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         tilBookSourceUrl.setHint(getString(R.string.book_source_url));
         tilBookSourceGroup.setHint(getString(R.string.book_source_group));
         tilLoginUrl.setHint(getString(R.string.book_source_login_url));
-        tilCheckUrl.setHint(getString(R.string.book_source_check_url));
         tilRuleBookAuthor.setHint(getString(R.string.rule_book_author));
         tilRuleBookContent.setHint(getString(R.string.rule_book_content));
         tilRuleBookName.setHint(getString(R.string.rule_book_name));
         tilRuleChapterList.setHint(getString(R.string.rule_chapter_list));
         tilRuleChapterName.setHint(getString(R.string.rule_chapter_name));
-        tilRuleChapterUrl.setHint(getString(R.string.rule_chapter_page_url));
-        tilRuleChapterUrlNext.setHint(getString(R.string.urle_chapter_url_next));
+        tilRuleChapterListUrl.setHint(getString(R.string.rule_chapter_list_url));
+        tilRuleChapterListUrlNext.setHint(getString(R.string.rule_chapter_list_url_next));
         tilRuleContentUrl.setHint(getString(R.string.rule_content_url));
         tilRuleCoverUrl.setHint(getString(R.string.rule_cover_url));
         tilRuleIntroduce.setHint(getString(R.string.rule_introduce));
