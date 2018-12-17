@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -17,10 +18,15 @@ import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +47,7 @@ import com.kunfei.bookshelf.presenter.contract.SourceEditContract;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.SoftInputUtil;
 import com.kunfei.bookshelf.utils.StringUtils;
+import com.kunfei.bookshelf.view.popupwindow.KeyboardToolPop;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -190,6 +197,8 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     private int serialNumber;
     private boolean enable;
     private String title;
+    private PopupWindow mSoftKeyboardTopPopupWindow;
+    private boolean mIsSoftKeyBoardShowing = false;
 
     public static void startThis(Activity activity, BookSourceBean sourceBean) {
         Intent intent = new Intent(activity, SourceEditActivity.class);
@@ -256,6 +265,13 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
 
         setHint();
         setText(bookSourceBean);
+        mSoftKeyboardTopPopupWindow = new KeyboardToolPop(this, new KeyboardToolPop.OnClickListener() {
+            @Override
+            public void click(String text) {
+                insertTextToEditText(text);
+            }
+        });
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(new KeyboardOnGlobalChangeListener());
     }
 
     private boolean saveBookSource() {
@@ -592,4 +608,64 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         }
         return super.onKeyDown(keyCode, keyEvent);
     }
+
+    private void insertTextToEditText(String txt) {
+        if (TextUtils.isEmpty(txt)) return;
+        View view = getWindow().getDecorView().findFocus();
+        if (view instanceof EditText) {
+            EditText editText = (EditText) view;
+            int start = editText.getSelectionStart();
+            int end = editText.getSelectionEnd();
+            Editable edit = editText.getEditableText();//获取EditText的文字
+            if (start < 0 || start >= edit.length()) {
+                edit.append(txt);
+            } else {
+                edit.replace(start, end, txt);//光标所在位置插入文字
+            }
+        }
+    }
+
+    private void showKeyboardTopPopupWindow(int x, int y) {
+        if (mSoftKeyboardTopPopupWindow != null && mSoftKeyboardTopPopupWindow.isShowing()) {
+            updateKeyboardTopPopupWindow(x, y); //可能是输入法切换了输入模式，高度会变化（比如切换为语音输入）
+            return;
+        }
+        if (mSoftKeyboardTopPopupWindow != null) {
+            mSoftKeyboardTopPopupWindow.showAtLocation(llContent, Gravity.BOTTOM, x, y);
+        }
+    }
+
+    private void updateKeyboardTopPopupWindow(int x, int y) {
+        if (mSoftKeyboardTopPopupWindow != null && mSoftKeyboardTopPopupWindow.isShowing()) {
+            mSoftKeyboardTopPopupWindow.update(x, y, mSoftKeyboardTopPopupWindow.getWidth(), mSoftKeyboardTopPopupWindow.getHeight());
+        }
+    }
+
+    private void closePopupWindow() {
+        if (mSoftKeyboardTopPopupWindow != null && mSoftKeyboardTopPopupWindow.isShowing()) {
+            mSoftKeyboardTopPopupWindow.dismiss();
+        }
+    }
+
+    private class KeyboardOnGlobalChangeListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        @Override
+        public void onGlobalLayout() {
+            Rect rect = new Rect();
+            // 获取当前页面窗口的显示范围
+            getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+            int screenHeight = SoftInputUtil.getScreenHeight(SourceEditActivity.this);
+            int keyboardHeight = screenHeight - rect.bottom; // 输入法的高度
+            boolean preShowing = mIsSoftKeyBoardShowing;
+            if (Math.abs(keyboardHeight) > screenHeight / 5) {
+                mIsSoftKeyBoardShowing = true; // 超过屏幕五分之一则表示弹出了输入法
+                showKeyboardTopPopupWindow(SoftInputUtil.getScreenWidth(SourceEditActivity.this) / 2, keyboardHeight);
+            } else {
+                if (preShowing) {
+                    closePopupWindow();
+                }
+                mIsSoftKeyBoardShowing = false;
+            }
+        }
+    }
+
 }
