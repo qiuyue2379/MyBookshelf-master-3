@@ -5,7 +5,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -24,22 +24,37 @@ import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.kunfei.bookshelf.BitIntentDataManager;
 import com.kunfei.bookshelf.BuildConfig;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
+import com.kunfei.bookshelf.base.observer.SimpleObserver;
 import com.kunfei.bookshelf.bean.BookSourceBean;
+import com.kunfei.bookshelf.model.BookSourceManager;
 import com.kunfei.bookshelf.presenter.SourceEditPresenter;
 import com.kunfei.bookshelf.presenter.contract.SourceEditContract;
+import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.SoftInputUtil;
+import com.kunfei.bookshelf.utils.StringUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Hashtable;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.disposables.Disposable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -50,7 +65,7 @@ import static android.text.TextUtils.isEmpty;
 
 public class SourceEditActivity extends MBaseActivity<SourceEditContract.Presenter> implements SourceEditContract.View {
     public final static int EDIT_SOURCE = 1101;
-    private final int REQUEST_QR_IMAGE = 202;
+    private final int REQUEST_QR = 202;
 
     @BindView(R.id.action_bar)
     AppBarLayout actionBar;
@@ -270,10 +285,8 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     }
 
     private void scanBookSource() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setCameraId(Camera.CameraInfo.CAMERA_FACING_BACK);
-        integrator.setCaptureActivity(QRCodeScanActivity.class);
-        integrator.initiateScan();
+        Intent intent = new Intent(this, QRCodeScanActivity.class);
+        startActivityForResult(intent, REQUEST_QR);
     }
 
     private String trim(Editable editable) {
@@ -393,31 +406,64 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
 
     @SuppressLint("SetWorldReadable")
     private void shareBookSource() {
-        Bitmap bitmap = mPresenter.encodeAsBitmap(getBookSourceStr());
-        try {
-            File file = new File(this.getExternalCacheDir(), "bookSource.png");
-            FileOutputStream fOut = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-            //noinspection ResultOfMethodCallIgnored
-            file.setReadable(true, false);
-            Uri contentUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
-            final Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, contentUri);
-            intent.setType("image/png");
-            startActivity(Intent.createChooser(intent, "分享书源"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+        Single.create((SingleOnSubscribe<Bitmap>) emitter -> {
+            BitMatrix result;
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            try {
+                Hashtable<EncodeHintType, Object> hst = new Hashtable();
+                hst.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+                hst.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+                result = multiFormatWriter.encode(getBookSourceStr(), BarcodeFormat.QR_CODE, 600, 600, hst);
+                int[] pixels = new int[600 * 600];
+                for (int y = 0; y < 600; y++) {
+                    for (int x = 0; x < 600; x++) {
+                        if (result.get(x, y)) {
+                            pixels[y * 600 + x] = Color.BLACK;
+                        } else {
+                            pixels[y * 600 + x] = Color.WHITE;
+                        }
+                    }
+                }
+                Bitmap bitmap = Bitmap.createBitmap(600, 600, Bitmap.Config.ARGB_8888);
+                bitmap.setPixels(pixels, 0, 600, 0, 0, 600, 600);
+                emitter.onSuccess(bitmap);
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        }).compose(RxUtils::toSimpleSingle)
+                .subscribe(new SingleObserver<Bitmap>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-    private void selectLocalImage() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_QR_IMAGE);
+                    }
+
+                    @Override
+                    public void onSuccess(Bitmap bitmap) {
+                        try {
+                            File file = new File(SourceEditActivity.this.getExternalCacheDir(), "bookSource.png");
+                            FileOutputStream fOut = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                            fOut.flush();
+                            fOut.close();
+                            //noinspection ResultOfMethodCallIgnored
+                            file.setReadable(true, false);
+                            Uri contentUri = FileProvider.getUriForFile(SourceEditActivity.this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
+                            final Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                            intent.setType("image/png");
+                            startActivity(Intent.createChooser(intent, "分享书源"));
+                        } catch (Exception e) {
+                            toast(e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        toast(e.getLocalizedMessage());
+                    }
+                });
+
     }
 
     private void openRuleSummary() {
@@ -474,9 +520,6 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
             case R.id.action_share_it:
                 shareBookSource();
                 break;
-            case R.id.action_qr_code_image:
-                selectLocalImage();
-                break;
             case R.id.action_rule_summary:
                 openRuleSummary();
                 break;
@@ -496,17 +539,37 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_QR_IMAGE && resultCode == RESULT_OK && null != data) {
-            mPresenter.analyzeBitmap(data.getData());
-            return;
-        }
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() != null) {
-                mPresenter.setText(result.getContents());
+        if (requestCode == REQUEST_QR && resultCode == RESULT_OK && null != data) {
+            String result = data.getStringExtra("result");
+            if (StringUtils.isJSONType(result)) {
+                mPresenter.setText(result);
+            } else {
+                try {
+                    URL url = new URL(result);
+                    BookSourceManager.importSourceFromWww(url)
+                            .subscribe(new SimpleObserver<List<BookSourceBean>>() {
+                                @SuppressLint("DefaultLocale")
+                                @Override
+                                public void onNext(List<BookSourceBean> bookSourceBeans) {
+                                    if (bookSourceBeans.size() > 1) {
+                                        toast(String.format("导入成功%d个书源, 显示第一个", bookSourceBeans.size()));
+                                        setText(bookSourceBeans.get(0));
+                                    } else if (bookSourceBeans.size() == 1) {
+                                        setText(bookSourceBeans.get(0));
+                                    } else {
+                                        toast("未导入");
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    toast(e.getLocalizedMessage());
+                                }
+                            });
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
