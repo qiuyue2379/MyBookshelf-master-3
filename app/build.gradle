@@ -114,10 +114,6 @@ dependencies {
     //AutoFitTextView
     implementation 'me.grantland:autofittextview:0.2.1'
 
-    //View简易动画
-    implementation 'com.daimajia.easing:library:2.1@aar'
-    implementation 'com.daimajia.androidanimations:library:2.3@aar'
-
     //CircleImageView
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
@@ -127,6 +123,7 @@ dependencies {
 
     //动画
     implementation 'com.victor:lib:1.0.4'
+    implementation 'tyrantgit:explosionfield:1.0.1'
 
     //简易权限获取
     implementation 'pub.devrel:easypermissions:2.0.0'
