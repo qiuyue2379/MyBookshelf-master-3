@@ -13,12 +13,11 @@ import com.kunfei.bookshelf.R;
 
 public class KeyboardToolPop extends PopupWindow {
 
-
     public KeyboardToolPop(Context context, OnClickListener onClickListener) {
         super(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         @SuppressLint("InflateParams")
-        View view = LayoutInflater.from(context).inflate(R.layout.view_soft_keyboard_top_tool, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.pop_soft_keyboard_top_tool, null);
         this.setContentView(view);
 
         setTouchable(true);
@@ -41,7 +40,5 @@ public class KeyboardToolPop extends PopupWindow {
     public interface OnClickListener {
         void click(String text);
     }
-
-
 
 }
