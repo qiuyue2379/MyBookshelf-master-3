@@ -117,7 +117,7 @@ public class BookSourceBean implements Parcelable, Cloneable {
                           String ruleSearchKind, String ruleSearchLastChapter, String ruleSearchCoverUrl, String ruleSearchNoteUrl, String ruleBookName,
                           String ruleBookAuthor, String ruleChapterUrl, String ruleChapterUrlNext, String ruleCoverUrl, String ruleIntroduce, String ruleChapterList,
                           String ruleChapterName, String ruleContentUrl, String ruleContentUrlNext, String ruleBookContent, String ruleBookKind,
-                          String ruleBookLastChapter, String ruleBookUrlPattern, String httpUserAgent) {
+            String ruleBookLastChapter, String ruleBookUrlPattern, String httpUserAgent) {
         this.bookSourceUrl = bookSourceUrl;
         this.bookSourceName = bookSourceName;
         this.bookSourceGroup = bookSourceGroup;

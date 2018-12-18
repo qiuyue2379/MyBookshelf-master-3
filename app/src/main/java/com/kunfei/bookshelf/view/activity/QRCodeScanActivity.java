@@ -100,6 +100,7 @@ public class QRCodeScanActivity extends AppCompatActivity implements QRCodeView.
 
     @Override
     public void onScanQRCodeOpenCameraError() {
+
     }
 
     @Override

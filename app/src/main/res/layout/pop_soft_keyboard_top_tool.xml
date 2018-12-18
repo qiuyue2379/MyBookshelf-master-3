@@ -172,6 +172,7 @@
                 android:padding="6dp"
                 android:text="textNodes"
                 android:textSize="14sp" />
+
         </LinearLayout>
 
     </HorizontalScrollView>

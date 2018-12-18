@@ -23,6 +23,5 @@ public interface SourceEditContract {
         String getBookSourceStr();
 
         void saveSuccess();
-
     }
 }

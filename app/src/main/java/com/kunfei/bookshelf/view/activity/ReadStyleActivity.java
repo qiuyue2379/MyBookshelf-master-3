@@ -164,13 +164,13 @@ public class ReadStyleActivity extends MBaseActivity {
                     ColorUtil.intToString(textColor),
                     null,
                     inputText -> {
-                        try {
-                            textColor = Color.parseColor(inputText);
-                            upText();
-                        } catch (Exception e) {
-                            toast("颜色值错误", ERROR);
-                        }
-                    });
+                try {
+                    textColor = Color.parseColor(inputText);
+                    upText();
+                } catch (Exception e) {
+                    toast("颜色值错误", ERROR);
+                }
+            });
             return true;
         });
         //选择背景颜色
@@ -200,15 +200,15 @@ public class ReadStyleActivity extends MBaseActivity {
                     ColorUtil.intToString(bgColor),
                     null,
                     inputText -> {
-                        try {
-                            bgColor = Color.parseColor(inputText);
-                            bgDrawable = new ColorDrawable(bgColor);
-                            bgCustom = 1;
-                            upBg();
-                        } catch (Exception e) {
-                            toast("颜色值错误", ERROR);
-                        }
-                    });
+                try {
+                    bgColor = Color.parseColor(inputText);
+                    bgDrawable = new ColorDrawable(bgColor);
+                    bgCustom = 1;
+                    upBg();
+                } catch (Exception e) {
+                    toast("颜色值错误", ERROR);
+                }
+            });
             return true;
         });
         //选择背景图片

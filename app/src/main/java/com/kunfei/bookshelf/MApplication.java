@@ -40,8 +40,8 @@ public class MApplication extends Application {
     private static String versionName;
     private static int versionCode;
     private SharedPreferences configPreferences;
-    private boolean donateHb;
     private SharedPreferences cookiePreferences;
+    private boolean donateHb;
 
     public static MApplication getInstance() {
         return instance;

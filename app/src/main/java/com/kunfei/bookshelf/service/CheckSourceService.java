@@ -178,20 +178,20 @@ public class CheckSourceService extends Service {
         }
 
         private void startCheck() {
-            try {
-                new URL(sourceBean.getBookSourceUrl());
-                BaseModelImpl.getRetrofitString(sourceBean.getBookSourceUrl())
-                        .create(IHttpGetApi.class)
-                        .getWebContent(sourceBean.getBookSourceUrl(), AnalyzeHeaders.getMap(sourceBean))
-                        .subscribeOn(scheduler)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(getObserver());
-            } catch (Exception e) {
-                sourceBean.addGroup("失效");
-                BookSourceManager.addBookSource(sourceBean);
-                BookSourceManager.refreshBookSource();
-                nextCheck();
-            }
+                try {
+                    new URL(sourceBean.getBookSourceUrl());
+                    BaseModelImpl.getRetrofitString(sourceBean.getBookSourceUrl())
+                            .create(IHttpGetApi.class)
+                            .getWebContent(sourceBean.getBookSourceUrl(), AnalyzeHeaders.getMap(sourceBean))
+                            .subscribeOn(scheduler)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(getObserver());
+                } catch (Exception e) {
+                    sourceBean.addGroup("失效");
+                    BookSourceManager.addBookSource(sourceBean);
+                    BookSourceManager.refreshBookSource();
+                    nextCheck();
+                }
         }
 
         private Observer<Object> getObserver() {
