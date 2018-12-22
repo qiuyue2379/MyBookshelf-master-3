@@ -1,4 +1,4 @@
-package com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.listener;
+package com.kunfei.bookshelf.widget.recycler.expandable;
 
 import android.view.View;
 

@@ -1,4 +1,4 @@
-package com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.adapter;
+package com.kunfei.bookshelf.widget.recycler.expandable;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -6,17 +6,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.bean.BaseItem;
-import com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.bean.GroupItem;
-import com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.bean.RecyclerViewData;
-import com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.holder.BaseExpandAbleViewHolder;
-import com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.listener.OnRecyclerViewListener;
+import com.kunfei.bookshelf.widget.recycler.expandable.bean.BaseItem;
+import com.kunfei.bookshelf.widget.recycler.expandable.bean.GroupItem;
+import com.kunfei.bookshelf.widget.recycler.expandable.bean.RecyclerViewData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.holder.BaseExpandAbleViewHolder.VIEW_TYPE_CHILD;
-import static com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.holder.BaseExpandAbleViewHolder.VIEW_TYPE_PARENT;
+import static com.kunfei.bookshelf.widget.recycler.expandable.BaseExpandAbleViewHolder.VIEW_TYPE_CHILD;
+import static com.kunfei.bookshelf.widget.recycler.expandable.BaseExpandAbleViewHolder.VIEW_TYPE_PARENT;
 
 
 /**
@@ -28,9 +26,9 @@ import static com.kunfei.bookshelf.widget.refreshview.expandablerecyclerview.hol
  * VH :ViewHolder
  */
 
-public abstract class BaseRecyclerViewAdapter<T, S, VH extends BaseExpandAbleViewHolder> extends RecyclerView.Adapter<VH> {
+public abstract class BaseExpandableRecyclerAdapter<T, S, VH extends BaseExpandAbleViewHolder> extends RecyclerView.Adapter<VH> {
 
-    public static final String TAG = BaseRecyclerViewAdapter.class.getSimpleName();
+    public static final String TAG = BaseExpandableRecyclerAdapter.class.getSimpleName();
 
     private Context ctx;
     /**
@@ -54,7 +52,7 @@ public abstract class BaseRecyclerViewAdapter<T, S, VH extends BaseExpandAbleVie
     private OnRecyclerViewListener.OnGroupCollapseListener groupCollapseListener;
     private OnRecyclerViewListener.OnGroupExpandedListener groupExpandedListener;
 
-    public BaseRecyclerViewAdapter(Context ctx, List<RecyclerViewData> datas) {
+    public BaseExpandableRecyclerAdapter(Context ctx, List<RecyclerViewData> datas) {
         this.ctx = ctx;
         this.allDatas = datas;
         setShowingDatas();

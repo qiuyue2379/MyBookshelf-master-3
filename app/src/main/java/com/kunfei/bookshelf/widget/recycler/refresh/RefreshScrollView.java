@@ -1,4 +1,4 @@
-package com.kunfei.bookshelf.widget.refreshview;
+package com.kunfei.bookshelf.widget.recycler.refresh;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ScrollView;
+
+import com.kunfei.bookshelf.widget.recycler.refresh.BaseRefreshListener;
+import com.kunfei.bookshelf.widget.recycler.refresh.RefreshProgressBar;
 
 public class RefreshScrollView extends ScrollView {
     private RefreshProgressBar rpb;
