@@ -1,5 +1,7 @@
 package com.kunfei.bookshelf.model.analyzeRule;
 
+import android.text.TextUtils;
+
 import com.kunfei.bookshelf.utils.StringUtils;
 
 import java.net.URL;
@@ -73,7 +75,8 @@ public class AnalyzeSearchUrl {
     /**
      * 解析编码规则
      */
-    private void analyzeQt(final String qtRule) throws Exception {
+    private void analyzeQt(final String qtRule) {
+        if (TextUtils.isEmpty(qtRule)) return;
         String[] qtS = qtRule.split("&");
         for (String qt : qtS) {
             String[] gz = qt.split("=");
