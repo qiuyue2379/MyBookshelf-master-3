@@ -128,8 +128,8 @@ public class ExplosionField extends View {
         view.getGlobalVisibleRect(r);
         int[] location = new int[2];
         getLocationOnScreen(location);
-        //        getLocationInWindow(location);
-        //        view.getLocationInWindow(location);
+//        getLocationInWindow(location);
+//        view.getLocationInWindow(location);
         r.offset(-location[0], -location[1]);
         r.inset(-mExpandInset[0], -mExpandInset[1]);
         int startDelay = 100;

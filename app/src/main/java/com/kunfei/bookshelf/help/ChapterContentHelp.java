@@ -2,9 +2,9 @@ package com.kunfei.bookshelf.help;
 
 import android.text.TextUtils;
 
-import com.luhuiguo.chinese.ChineseUtils;
 import com.kunfei.bookshelf.bean.ReplaceRuleBean;
 import com.kunfei.bookshelf.model.ReplaceRuleManager;
+import com.luhuiguo.chinese.ChineseUtils;
 
 public class ChapterContentHelp {
     private static ChapterContentHelp instance;

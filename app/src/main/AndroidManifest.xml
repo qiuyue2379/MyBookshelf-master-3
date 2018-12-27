@@ -138,6 +138,10 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".view.activity.UpdateActivity"
+            android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".view.activity.ChapterListActivity"
             android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:launchMode="singleTask" />
@@ -166,7 +170,7 @@
         <service android:name=".service.DownloadService" />
         <service android:name=".service.ReadAloudService" />
         <service android:name=".service.CheckSourceService" />
-        <service android:name=".update.DownloadService" />
+        <service android:name=".service.UpdateService" />
 
         <receiver android:name=".service.MediaButtonIntentReceiver">
             <intent-filter>
@@ -175,7 +179,7 @@
         </receiver>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

@@ -4,20 +4,20 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.utils.FileUtil;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.bingoogolapple.qrcode.core.QRCodeView;
@@ -186,17 +186,17 @@ public class QRCodeScanActivity extends AppCompatActivity implements QRCodeView.
 
     private void chooseFromGallery() {
         try {
-	            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-	            intent.addCategory(Intent.CATEGORY_OPENABLE);
-	            intent.setType("image/*");
-	            startActivityForResult(intent, REQUEST_QR_IMAGE);
-	        } catch (Exception ignored) {
-	            FilePicker picker = new FilePicker(this, FilePicker.FILE);
-	            picker.setBackgroundColor(getResources().getColor(R.color.background));
-	            picker.setTopBackgroundColor(getResources().getColor(R.color.background));
-	            picker.setItemHeight(30);
-	            picker.setOnFilePickListener(currentPath -> zxingview.decodeQRCode(currentPath));
-	            picker.show();
-	        }
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/*");
+            startActivityForResult(intent, REQUEST_QR_IMAGE);
+        } catch (Exception ignored) {
+            FilePicker picker = new FilePicker(this, FilePicker.FILE);
+            picker.setBackgroundColor(getResources().getColor(R.color.background));
+            picker.setTopBackgroundColor(getResources().getColor(R.color.background));
+            picker.setItemHeight(30);
+            picker.setOnFilePickListener(currentPath -> zxingview.decodeQRCode(currentPath));
+            picker.show();
+        }
     }
 }

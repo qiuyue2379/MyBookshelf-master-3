@@ -96,7 +96,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference.getKey().equals(getString(R.string.pk_download_path))) {
-        selectDownloadPath(preference);
+            selectDownloadPath(preference);
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
