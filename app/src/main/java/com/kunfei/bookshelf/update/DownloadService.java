@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import android.support.v4.content.FileProvider;
 import android.os.Build;
 import android.app.IntentService;
 import com.kunfei.bookshelf.BuildConfig;
@@ -17,8 +16,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
+import androidx.core.content.FileProvider;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
+
+import android.os.Environment;
 import android.util.Log;
 
 import com.kunfei.bookshelf.MApplication;
@@ -133,5 +135,4 @@ public class DownloadService extends IntentService {
                 Log.d("wwd", "Failed to launcher installing activity");
             }
 	    }
-
 }

@@ -16,7 +16,6 @@ import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
-import com.kunfei.bookshelf.help.UpdateManager;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
 
@@ -30,6 +29,7 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposable;
+import com.kunfei.bookshelf.update.UpdateChecker;
 /**
  * Created by GKF on 2017/12/15.
  * 关于
@@ -116,7 +116,7 @@ public class AboutActivity extends MBaseActivity {
     protected void bindEvent() {
         vwDonate.setOnClickListener(view -> DonateActivity.startThis(this));
         vwDisclaimer.setOnClickListener(view -> moDialogHUD.showAssetMarkdown("disclaimer.md"));
-        vwUpdate.setOnClickListener(view -> UpdateManager.getInstance(this).checkUpdate(true));
+        vwUpdate.setOnClickListener(view -> {UpdateChecker.checkForDialog(AboutActivity.this);});
         vwQq.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText(null, qq);

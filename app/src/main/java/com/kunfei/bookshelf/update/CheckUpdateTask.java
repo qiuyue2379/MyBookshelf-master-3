@@ -11,11 +11,11 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import com.kunfei.bookshelf.MApplication;
 
 public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
