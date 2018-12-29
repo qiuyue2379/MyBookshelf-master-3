@@ -65,11 +65,7 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 
             String apkCode = obj.getString("versionName");
             String apkUrl = urli  + obj.getString("outputFile");
-            String updateMessage = "有版本更新，请下载";
-
-            //String updateMessage = obj.getString(Constants.APK_UPDATE_CONTENT);
-            //String apkUrl = obj.getString(Constants.APK_DOWNLOAD_URL);
-            //String apkCode = obj.getString(Constants.APK_VERSION_CODE);
+            String updateMessage = "新版本:" + apkCode + "， 请下载更新 !";
 
             String versionCode = AppUtils.getVersionName(mContext);
 
