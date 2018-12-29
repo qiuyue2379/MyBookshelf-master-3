@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.observer.SimpleObserver;
 import com.kunfei.bookshelf.bean.BookShelfBean;
-import com.kunfei.bookshelf.bean.ChapterListBean;
+import com.kunfei.bookshelf.bean.BookmarkBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,41 +22,32 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.ThisViewHolder> {
+public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ThisViewHolder> {
 
     private BookShelfBean bookShelfBean;
     private OnItemClickListener itemClickListener;
-    private List<ChapterListBean> chapterListBeans = new ArrayList<>();
-    private int index = 0;
+    private List<BookmarkBean> bookmarkBeans = new ArrayList<>();
     private boolean isSearch = false;
-    private int normalColor;
-    private int highlightColor;
 
-    public ChapterListAdapter(BookShelfBean bookShelfBean, @NonNull OnItemClickListener itemClickListener) {
+    public BookmarkAdapter(BookShelfBean bookShelfBean, @NonNull OnItemClickListener itemClickListener) {
         this.bookShelfBean = bookShelfBean;
         this.itemClickListener = itemClickListener;
-        normalColor = MApplication.getAppResources().getColor(R.color.selector_chapter_item);
-        highlightColor = MApplication.getAppResources().getColor(R.color.colorAccent);
-    }
-
-    public void upChapter(int index) {
-        if (bookShelfBean.getChapterListSize() > index) {
-            notifyItemChanged(index, 0);
-        }
     }
 
     public void search(final String key) {
-        chapterListBeans.clear();
+        bookmarkBeans.clear();
         if (Objects.equals(key, "")) {
             isSearch = false;
             notifyDataSetChanged();
         } else {
             Observable.create((ObservableOnSubscribe<Boolean>) emitter -> {
-                    for (ChapterListBean chapterListBean : bookShelfBean.getChapterList()) {
-                        if (chapterListBean.getDurChapterName().contains(key)) {
-                            chapterListBeans.add(chapterListBean);
-                        }
+                for (BookmarkBean bookmarkBean : bookShelfBean.getBookInfoBean().getBookmarkList()) {
+                    if (bookmarkBean.getChapterName().contains(key)) {
+                        bookmarkBeans.add(bookmarkBean);
+                    } else if (bookmarkBean.getContent().contains(key)) {
+                        bookmarkBeans.add(bookmarkBean);
                     }
+                }
                 emitter.onNext(true);
                 emitter.onComplete();
             }).subscribeOn(Schedulers.io())
@@ -96,31 +86,20 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
         } else {
             holder.line.setVisibility(View.VISIBLE);
         }
-            if (payloads.size() > 0) {
-                holder.tvName.setSelected(true);
-                holder.tvName.getPaint().setFakeBoldText(true);
-                return;
-            }
-            ChapterListBean chapterListBean = isSearch ? chapterListBeans.get(realPosition) : bookShelfBean.getChapter(realPosition);
-            if (chapterListBean.getDurChapterIndex() == index) {
-                holder.tvName.setTextColor(highlightColor);
-            } else {
-                holder.tvName.setTextColor(normalColor);
-            }
 
-            holder.tvName.setText(chapterListBean.getDurChapterName());
-            if (Objects.equals(bookShelfBean.getTag(), BookShelfBean.LOCAL_TAG) || chapterListBean.getHasCache(bookShelfBean.getBookInfoBean())) {
-                holder.tvName.setSelected(true);
-                holder.tvName.getPaint().setFakeBoldText(true);
-            } else {
-                holder.tvName.setSelected(false);
-                holder.tvName.getPaint().setFakeBoldText(false);
+        BookmarkBean bookmarkBean = isSearch ? bookmarkBeans.get(realPosition) : bookShelfBean.getBookmark(realPosition);
+        holder.tvName.setText(bookmarkBean.getContent());
+        holder.llName.setOnClickListener(v -> {
+            if (itemClickListener != null) {
+                itemClickListener.itemClick(bookmarkBean.getChapterIndex(), bookmarkBean.getPageIndex());
             }
-
-            holder.llName.setOnClickListener(v -> {
-                setIndex(realPosition);
-                itemClickListener.itemClick(chapterListBean.getDurChapterIndex(), 0);
-            });
+        });
+        holder.llName.setOnLongClickListener(view -> {
+            if (itemClickListener != null) {
+                itemClickListener.itemLongClick(bookmarkBean);
+            }
+            return true;
+        });
     }
 
     @Override
@@ -129,19 +108,10 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
             return 0;
         else {
             if (isSearch) {
-                return chapterListBeans.size();
+                return bookmarkBeans.size();
             }
-            return bookShelfBean.getChapterListSize();
+            return bookShelfBean.getBookmarkListSize();
         }
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-            this.index = index;
-            notifyItemChanged(this.index, 0);
     }
 
     static class ThisViewHolder extends RecyclerView.ViewHolder {
@@ -159,5 +129,7 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
 
     public interface OnItemClickListener {
         void itemClick(int index, int page);
+
+        void itemLongClick(BookmarkBean bookmarkBean);
     }
 }
