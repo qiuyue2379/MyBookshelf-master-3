@@ -117,6 +117,9 @@ public class DownloadService extends IntentService {
 
 
 	    private void installAPk(File apkFile) {
+            if (!apkFile.exists()) {
+                return;
+            }
             Intent intent = new Intent();
             //执行动作
             intent.setAction(Intent.ACTION_VIEW);
@@ -135,4 +138,5 @@ public class DownloadService extends IntentService {
                 Log.d("wwd", "Failed to launcher installing activity");
             }
 	    }
+
 }
