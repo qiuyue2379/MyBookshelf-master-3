@@ -39,7 +39,7 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         //获取控件对象
-        mWVmhtml=(WebView) findViewById(R.id.WV_Id);
+        mWVmhtml=findViewById(R.id.WV_Id);
         fullVideo=findViewById(R.id.full_video);
         progressBar=findViewById(R.id.progress);
 

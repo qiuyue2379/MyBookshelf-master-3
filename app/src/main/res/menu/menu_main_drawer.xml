@@ -44,9 +44,9 @@
             app:tint="@color/tv_text_default" />
 
         <item
-            android:id="@+id/action_donate"
-            android:icon="@drawable/ic_donate"
-            android:title="@string/donate"
+            android:id="@+id/action_vod"
+            android:icon="@drawable/ic_launch_black_24dp"
+            android:title="@string/vod"
             app:tint="@color/tv_text_default" />
     </group>
 
