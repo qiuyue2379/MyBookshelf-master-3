@@ -63,13 +63,15 @@ public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
             JSONObject getJsonObj = getJsonArray.getJSONObject(0);
             JSONObject obj = getJsonObj.getJSONObject("apkInfo");
 
-            String apkCode = obj.getString("versionName");
+            int apkCode = obj.getInt("versionCode");
+            String apkName = obj.getString("versionName");
             String apkUrl = urli  + obj.getString("outputFile");
-            String updateMessage = "新版本:" + apkCode + "， 请下载更新 !";
+            String updateMessage = "新版本:" + apkName + "， 请下载更新 !";
 
-            String versionCode = AppUtils.getVersionName(mContext);
+           // String versionCode = AppUtils.getVersionName(mContext);
+            int versionCode = AppUtils.getVersionCode(mContext);
 
-            if (Integer.valueOf(apkCode.split("\\.")[2]) > Integer.valueOf(versionCode.split("\\.")[2])) {
+            if (apkCode > versionCode) {
                 if (mType == Constants.TYPE_NOTIFICATION) {
                     showNotification(mContext, updateMessage, apkUrl);
                 } else if (mType == Constants.TYPE_DIALOG) {

@@ -334,5 +334,6 @@
     <string name="at_char">\@</string>
     <string name="and_char"><![CDATA[&]]></string>
     <string name="click_on_selected_show_menu">选中时点击可弹出菜单</string>
+    <string name="vod">影视网站</string>
 
 </resources>
