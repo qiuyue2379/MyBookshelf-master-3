@@ -119,6 +119,10 @@ public class WebViewActivity extends AppCompatActivity {
             if(newProgress >= 100){
                 progressBar.setVisibility(View.GONE);
             }
+            else{
+                progressBar.setVisibility(View.VISIBLE);//开始加载网页时显示进度条
+                progressBar.setProgress(newProgress);//设置进度值
+            }
             super.onProgressChanged(view, newProgress);
         }
         @Override//接受网页标题
