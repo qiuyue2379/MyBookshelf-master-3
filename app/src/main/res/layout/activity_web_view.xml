@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.activity.WebViewActivity">
+    tools:context=".view.activity.WebActivity">
 
     <FrameLayout
         android:id="@+id/full_video"
@@ -22,7 +22,7 @@
         android:id="@+id/progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="3dp"
         android:max="100"
         android:progressDrawable="@drawable/progress" />
 

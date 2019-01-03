@@ -120,7 +120,7 @@ public class AboutActivity extends MBaseActivity {
         vwDonate.setOnClickListener(view -> DonateActivity.startThis(this));
         vwDisclaimer.setOnClickListener(view -> moDialogHUD.showAssetMarkdown("disclaimer.md"));
         vwUpdate.setOnClickListener(view -> {UpdateChecker.checkForDialog(AboutActivity.this);});
-        vwWeb.setOnClickListener(view -> WebViewActivity.startThis(this));
+        vwWeb.setOnClickListener(view -> WebActivity.startThis(this));
         vwQq.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText(null, qq);

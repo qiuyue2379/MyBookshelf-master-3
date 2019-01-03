@@ -388,7 +388,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 }
                 break;
             case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebViewActivity.class));;
+                startActivity(new Intent(MainActivity.this, WebActivity.class));;
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -466,7 +466,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     handler.postDelayed(() -> AboutActivity.startThis(this), 200);
                     break;
                 case R.id.action_vod:
-                    handler.postDelayed(() -> WebViewActivity.startThis(this), 200);
+                    handler.postDelayed(() -> WebActivity.startThis(this), 200);
                     break;
                 case R.id.action_backup:
                     handler.postDelayed(this::backup, 200);
