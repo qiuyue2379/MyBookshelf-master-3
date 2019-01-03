@@ -22,16 +22,15 @@ import com.kunfei.bookshelf.R;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebActivity extends AppCompatActivity {
     //声明引用
-    private String url="http://qiuyue.vicp.net:86/";
     private WebView mWVmhtml;
     private FrameLayout fullVideo;
     private View customView = null;
     private ProgressBar progressBar;
 
     public static void startThis(Context context) {
-        Intent intent = new Intent(context, WebViewActivity.class);
+        Intent intent = new Intent(context, WebActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -41,17 +40,22 @@ public class WebViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         //获取控件对象
-        mWVmhtml = findViewById(R.id.WV_Id);
-        fullVideo = findViewById(R.id.full_video);
-        progressBar = findViewById(R.id.progress);
+        mWVmhtml=findViewById(R.id.WV_Id);
+        fullVideo=findViewById(R.id.full_video);
+        progressBar=findViewById(R.id.progress);
 
-
+        //加载本地html文件
+        // mWVmhtml.loadUrl("file:///android_asset/hello.html");
+        //加载网络URL
+        //mWVmhtml.loadUrl("https://blog.csdn.net/qq_36243942/article/details/82187204");
+        //设置JavaScrip
         mWVmhtml.getSettings().setJavaScriptEnabled(true);
         mWVmhtml.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        //访问首页
-        mWVmhtml.loadUrl(url);
+        //访问百度首页
+        mWVmhtml.loadUrl("http://qiuyue.vicp.net:86/");
         //设置在当前WebView继续加载网页
         mWVmhtml.setWebViewClient(new MyWebViewClient());
+
         mWVmhtml.setWebChromeClient(new MyWebChromeClient());
     }
 
@@ -68,8 +72,7 @@ public class WebViewActivity extends AppCompatActivity {
             //表示在当前的WebView继续打开网页
             if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP) {  //当Sdk版本大于21时才能使用此方法
                 view.loadUrl(request.getUrl().toString());
-                return false;
-                //return true;
+                return true;
             }
             return super.shouldOverrideUrlLoading(view, request);
         }
