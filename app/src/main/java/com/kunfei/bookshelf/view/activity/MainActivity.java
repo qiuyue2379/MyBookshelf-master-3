@@ -381,6 +381,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             case R.id.action_change_icon:
                 LauncherIcon.Change();
                 break;
+            case R.id.action_clearVod:
+                startActivity(new Intent(MainActivity.this, WebActivity.class));;
+                break;
             case android.R.id.home:
                 if (drawer.isDrawerOpen(GravityCompat.START)
                         ) {
@@ -388,9 +391,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 } else {
                     drawer.openDrawer(GravityCompat.START);
                 }
-                break;
-            case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebActivity.class));;
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -406,6 +406,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
     //初始化侧边栏
     private void initDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerToggle.getDrawerArrowDrawable().setColorFilter(ThemeStore.textColorPrimary(this), PorterDuff.Mode.SRC_ATOP);
         mDrawerToggle.syncState();
         drawer.addDrawerListener(mDrawerToggle);
@@ -466,6 +467,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     break;
                 case R.id.action_about:
                     handler.postDelayed(() -> AboutActivity.startThis(this), 200);
+                    break;
+                case R.id.action_donate:
+                    handler.postDelayed(() -> DonateActivity.startThis(this), 200);
                     break;
                 case R.id.action_vod:
                     handler.postDelayed(() -> WebActivity.startThis(this), 200);
