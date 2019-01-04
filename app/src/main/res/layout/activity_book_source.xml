@@ -13,7 +13,7 @@
         android:id="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
+        android:theme="?attr/actionBarStyle"
         android:transitionName="sharedView"
         tools:ignore="UnusedAttribute">
 
@@ -29,6 +29,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionSearch"
+                app:iconifiedByDefault="false"
+                app:searchIcon="@null"
                 app:defaultQueryHint="搜索" />
 
         </androidx.appcompat.widget.Toolbar>

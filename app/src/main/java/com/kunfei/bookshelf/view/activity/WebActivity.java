@@ -22,7 +22,7 @@ import com.kunfei.bookshelf.R;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class WebActivity extends AppCompatActivity {
+public class WebActivity extends AppCompatActivity{
     //声明引用
     private WebView mWVmhtml;
     private FrameLayout fullVideo;
