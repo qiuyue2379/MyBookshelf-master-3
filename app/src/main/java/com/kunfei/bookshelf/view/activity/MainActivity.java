@@ -4,7 +4,6 @@ package com.kunfei.bookshelf.view.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,6 +35,7 @@ import com.kunfei.bookshelf.model.UpLastChapterModel;
 import com.kunfei.bookshelf.presenter.MainPresenter;
 import com.kunfei.bookshelf.presenter.contract.MainContract;
 import com.kunfei.bookshelf.utils.PermissionUtils;
+import com.kunfei.bookshelf.utils.Theme.NavigationViewUtil;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.kunfei.bookshelf.view.fragment.BookListFragment;
 import com.kunfei.bookshelf.view.fragment.FindBookFragment;
@@ -438,10 +438,11 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     //侧边栏按钮
     private void setUpNavigationView() {
         @SuppressLint("InflateParams") View headerView = LayoutInflater.from(this).inflate(R.layout.navigation_header, null);
+        ImageView imageView = headerView.findViewById(R.id.iv_navigation_header);
+        imageView.setColorFilter(ThemeStore.primaryColor(this));
         navigationView.addHeaderView(headerView);
-        ColorStateList colorStateList = getResources().getColorStateList(R.color.selector_navigation_color);
-        navigationView.setItemTextColor(colorStateList);
-        navigationView.setItemIconTintList(colorStateList);
+        NavigationViewUtil.setItemTextColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
+        NavigationViewUtil.setItemIconColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
         Menu drawerMenu = navigationView.getMenu();
         swNightTheme = drawerMenu.findItem(R.id.action_theme).getActionView().findViewById(R.id.sw_night_theme);
         swNightTheme.setChecked(isNightTheme());
