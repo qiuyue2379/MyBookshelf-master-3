@@ -51,6 +51,7 @@ public class WebActivity extends AppCompatActivity{
         //设置JavaScrip
         mWVmhtml.getSettings().setJavaScriptEnabled(true);
         mWVmhtml.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        mWVmhtml.getSettings().setDefaultTextEncodingName("utf-8");
         //访问百度首页
         mWVmhtml.loadUrl("http://qiuyue.vicp.net:86/");
         //设置在当前WebView继续加载网页
@@ -72,7 +73,7 @@ public class WebActivity extends AppCompatActivity{
             //表示在当前的WebView继续打开网页
             if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP) {  //当Sdk版本大于21时才能使用此方法
                 view.loadUrl(request.getUrl().toString());
-                return true;
+                return false;
             }
             return super.shouldOverrideUrlLoading(view, request);
         }
@@ -88,7 +89,15 @@ public class WebActivity extends AppCompatActivity{
             super.onPageFinished(view, url);
             Log.d("WebView","访问网页结束");
         }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            super.onReceivedError(view, errorCode, description, failingUrl);
+            // 加载网页失败时处理 如：提示失败，或显示新的界面
+            Log.d("WebView","访问网页失败");
+        }
     }
+
     class MyWebChromeClient extends WebChromeClient{
         @Override
         public void onHideCustomView() {

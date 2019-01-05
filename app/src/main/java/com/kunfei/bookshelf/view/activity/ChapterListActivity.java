@@ -12,9 +12,12 @@ import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.BaseTabActivity;
 import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.bean.BookShelfBean;
+import com.kunfei.bookshelf.utils.ColorUtil;
+import com.kunfei.bookshelf.utils.Theme.ATH;
+import com.kunfei.bookshelf.utils.Theme.MaterialValueHelper;
+import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.kunfei.bookshelf.view.fragment.BookmarkFragment;
 import com.kunfei.bookshelf.view.fragment.ChapterListFragment;
-import com.kunfei.bookshelf.widget.AppCompat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +88,6 @@ public class ChapterListActivity extends BaseTabActivity {
         setContentView(R.layout.activity_chapterlist);
         ButterKnife.bind(this);
         setupActionBar();
-        AppCompat.setToolbarNavIconTint(toolbar, getResources().getColor(R.color.menu_color_default));
     }
 
     @Override
@@ -113,7 +115,7 @@ public class ChapterListActivity extends BaseTabActivity {
         getMenuInflater().inflate(R.menu.menu_search_view, menu);
         MenuItem search = menu.findItem(R.id.action_search);
         searchView = (SearchView) search.getActionView();
-        AppCompat.useCustomIconForSearchView(searchView, getResources().getString(R.string.search));
+        ATH.setTint(searchView, MaterialValueHelper.getPrimaryTextColor(this, ColorUtil.isColorLight(ThemeStore.primaryColor(this))));
         searchView.setMaxWidth(getResources().getDisplayMetrics().widthPixels);
         searchView.onActionViewCollapsed();
         searchView.setOnCloseListener(() -> {
@@ -137,7 +139,7 @@ public class ChapterListActivity extends BaseTabActivity {
                 return false;
             }
         });
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
