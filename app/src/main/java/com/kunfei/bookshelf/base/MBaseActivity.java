@@ -1,7 +1,6 @@
 //Copyright (c) 2017. 章钦豪. All rights reserved.
 package com.kunfei.bookshelf.base;
 
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -22,8 +21,6 @@ import com.kunfei.bookshelf.utils.ColorUtil;
 import com.kunfei.bookshelf.utils.Theme.MaterialValueHelper;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.kunfei.bookshelf.utils.barUtil.ImmersionBar;
-
-import java.lang.reflect.Method;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -95,7 +92,7 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
     public boolean onMenuOpened(int featureId, Menu menu) {
         if (menu != null) {
             //展开菜单显示图标
-            if (menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
+           /* if (menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
                 try {
                     @SuppressLint("PrivateApi")
                     Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
@@ -104,7 +101,7 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+            }*/
         }
         return super.onMenuOpened(featureId, menu);
     }
@@ -140,7 +137,7 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
                 mImmersionBar.statusBarDarkFont(false);
             }
             if (ImmersionBar.canNavigationBarDarkFont()) {
-                mImmersionBar.navigationBarColor(R.color.background);
+                mImmersionBar.navigationBarColorInt(ThemeStore.primaryColorDark(this));
                 if (ColorUtil.isColorLight(ThemeStore.primaryColor(this))) {
                     mImmersionBar.navigationBarDarkFont(false);
                 } else {
@@ -164,6 +161,9 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
         return preferences.getBoolean("immersionStatusBar", false);
     }
 
+    /**
+     * 设置屏幕方向
+     */
     public void setOrientation(int screenDirection) {
         switch (screenDirection) {
             case 0:
