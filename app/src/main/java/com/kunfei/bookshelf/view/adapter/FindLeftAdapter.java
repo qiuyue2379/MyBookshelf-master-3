@@ -2,6 +2,7 @@ package com.kunfei.bookshelf.view.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +55,9 @@ public class FindLeftAdapter extends RecyclerView.Adapter<FindLeftAdapter.MyView
         FindKindGroupBean groupBean = (FindKindGroupBean) datas.get(i).getGroupData();
         myViewHolder.tvSourceName.setText(groupBean.getGroupName());
         if (i == showIndex) {
-            myViewHolder.findLeft.setBackgroundColor(context.getResources().getColor(R.color.btn_bg_press));
+            myViewHolder.findLeft.setBackgroundColor(context.getResources().getColor(R.color.transparent30));
         } else {
-            myViewHolder.findLeft.setBackgroundColor(context.getResources().getColor(R.color.background));
+            myViewHolder.findLeft.setBackgroundColor(Color.TRANSPARENT);
         }
         myViewHolder.findLeft.setOnClickListener(v -> {
             if (onClickListener != null) {

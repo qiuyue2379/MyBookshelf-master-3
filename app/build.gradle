@@ -143,6 +143,8 @@ dependencies {
     implementation('nl.siegmann.epublib:epublib-core:3.1') {
         exclude group: 'xmlpull'
     }
+
+    implementation 'com.github.recruit-lifestyle:WaveSwipeRefreshLayout:1.6'
 }
 
 greendao {

@@ -61,9 +61,6 @@ public class MApplication extends Application {
         instance = this;
         CrashHandler.getInstance().init(this);
         // default theme
-        if (!ThemeStore.isConfigured(this, 1)) {
-            upThemeStore();
-        }
         try {
             versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
             versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
@@ -82,8 +79,10 @@ public class MApplication extends Application {
         if (TextUtils.isEmpty(downloadPath)) {
             setDownloadPath(FileHelp.getCachePath());
         }
-        AppFrontBackHelper frontBackHelper = new AppFrontBackHelper();
-        frontBackHelper.register(this, new AppFrontBackHelper.OnAppStatusListener() {
+        if (!ThemeStore.isConfigured(this, versionCode)) {
+            upThemeStore();
+        }
+        AppFrontBackHelper.getInstance().register(this, new AppFrontBackHelper.OnAppStatusListener() {
             @Override
             public void onFront() {
                 donateHb = System.currentTimeMillis() - configPreferences.getLong("DonateHb", 0) <= TimeUnit.DAYS.toMillis(3);
@@ -109,12 +108,14 @@ public class MApplication extends Application {
             ThemeStore.editTheme(this)
                     .primaryColor(configPreferences.getInt("colorPrimaryNight", getResources().getColor(R.color.colorPrimaryNight)))
                     .accentColor(configPreferences.getInt("colorAccentNight", getResources().getColor(R.color.colorAccentNight)))
-                    .commit();
+                    .backgroundColor(configPreferences.getInt("colorBackgroundNight", getResources().getColor(R.color.backgroundNight)))
+                    .apply();
         } else {
             ThemeStore.editTheme(this)
                     .primaryColor(configPreferences.getInt("colorPrimary", getResources().getColor(R.color.colorPrimary)))
                     .accentColor(configPreferences.getInt("colorAccent", getResources().getColor(R.color.colorAccent)))
-                    .commit();
+                    .backgroundColor(configPreferences.getInt("colorBackground", getResources().getColor(R.color.background)))
+                    .apply();
         }
     }
 

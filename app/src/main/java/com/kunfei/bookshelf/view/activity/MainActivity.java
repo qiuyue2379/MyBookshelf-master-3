@@ -108,6 +108,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
     @Override
     protected void onCreateActivity() {
+        getWindow().getDecorView().setBackgroundColor(ThemeStore.backgroundColor(this));
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
     }
@@ -172,6 +173,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     //初始化TabLayout和ViewPager
     private void initTabLayout() {
         mTlIndicator.setSelectedTabIndicatorColor(ThemeStore.accentColor(this));
+        mTlIndicator.setBackgroundColor(ThemeStore.backgroundColor(this));
         //TabLayout使用自定义Item
         for (int i = 0; i < mTlIndicator.getTabCount(); i++) {
             TabLayout.Tab tab = mTlIndicator.getTabAt(i);
@@ -435,11 +437,13 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
     }
 
-    //侧边栏按钮
+    /**
+     * 侧边栏按钮
+     */
     private void setUpNavigationView() {
         @SuppressLint("InflateParams") View headerView = LayoutInflater.from(this).inflate(R.layout.navigation_header, null);
         ImageView imageView = headerView.findViewById(R.id.iv_navigation_header);
-        imageView.setColorFilter(ThemeStore.primaryColor(this));
+        imageView.setColorFilter(ThemeStore.accentColor(this));
         navigationView.addHeaderView(headerView);
         NavigationViewUtil.setItemTextColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
         NavigationViewUtil.setItemIconColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));

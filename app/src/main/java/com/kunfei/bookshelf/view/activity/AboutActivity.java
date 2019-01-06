@@ -17,6 +17,7 @@ import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.utils.RxUtils;
+import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
 
 import androidx.appcompat.app.ActionBar;
@@ -98,6 +99,7 @@ public class AboutActivity extends MBaseActivity {
 
     @Override
     protected void onCreateActivity() {
+        getWindow().getDecorView().setBackgroundColor(ThemeStore.backgroundColor(this));
         setContentView(R.layout.activity_about);
     }
 

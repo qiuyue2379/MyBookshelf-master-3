@@ -13,21 +13,24 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import android.graphics.Color;
 import android.os.Build;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.os.Handler;
 
 import com.kunfei.bookshelf.R;
 
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class WebActivity extends AppCompatActivity{
-    //声明引用
     private WebView mWVmhtml;
     private FrameLayout fullVideo;
     private View customView = null;
     private ProgressBar progressBar;
+    private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
+    private Handler handler = new Handler();
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -40,24 +43,42 @@ public class WebActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
         //获取控件对象
-        mWVmhtml=findViewById(R.id.WV_Id);
+        mWVmhtml=findViewById(R.id.WebView);
         fullVideo=findViewById(R.id.full_video);
         progressBar=findViewById(R.id.progress);
+        mWaveSwipeRefreshLayout = findViewById(R.id.wave);
 
-        //加载本地html文件
-        // mWVmhtml.loadUrl("file:///android_asset/hello.html");
-        //加载网络URL
-        //mWVmhtml.loadUrl("https://blog.csdn.net/qq_36243942/article/details/82187204");
-        //设置JavaScrip
+        initWebView();
+    }
+
+    private void initWebView() {
         mWVmhtml.getSettings().setJavaScriptEnabled(true);
         mWVmhtml.getSettings().setMediaPlaybackRequiresUserGesture(false);
         mWVmhtml.getSettings().setDefaultTextEncodingName("utf-8");
-        //访问百度首页
+        //访问首页
         mWVmhtml.loadUrl("http://qiuyue.vicp.net:86/");
         //设置在当前WebView继续加载网页
         mWVmhtml.setWebViewClient(new MyWebViewClient());
-
         mWVmhtml.setWebChromeClient(new MyWebChromeClient());
+
+        //设置中间小圆从白色到黑色
+        mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.BLACK);
+        //设置整体的颜色
+        mWaveSwipeRefreshLayout.setWaveColor(Color.argb(255,74, 134, 232));
+        //下拉刷新
+        mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mWVmhtml.reload();
+                        //三秒后停止刷新
+                        mWaveSwipeRefreshLayout.setRefreshing(false);
+                    }
+                },3000);
+            }
+        });
     }
 
     class MyWebViewClient extends WebViewClient{

@@ -78,6 +78,8 @@ interface ThemeStoreInterface {
 
     ThemeStore textColorSecondaryInverseAttr(@AttrRes int colorAttr);
 
+    ThemeStore backgroundColor(@ColorInt int color);
+
     // Toggle configurations
 
     ThemeStore coloredStatusBar(boolean colored);
@@ -86,5 +88,5 @@ interface ThemeStoreInterface {
 
     // Commit/apply
 
-    void commit();
+    void apply();
 }
