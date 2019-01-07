@@ -106,37 +106,38 @@ public class DownloadService extends IntentService {
         }
     }
 
-	 private void updateProgress(int progress) {
-           //"正在下载:" + progress + "%"
-	        mBuilder.setContentText("正在下载" +  progress + "%").setProgress(100, progress, false);
-	        //setContentInent如果不设置在4.0+上没有问题，在4.0以下会报异常
-	        PendingIntent pendingintent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
-	        mBuilder.setContentIntent(pendingintent);
-	        mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
-	    }
+    private void updateProgress(int progress) {
+        //"正在下载:" + progress + "%"
+        mBuilder.setContentText("正在下载" +  progress + "%").setProgress(100, progress, false);
+        //setContentInent如果不设置在4.0+上没有问题，在4.0以下会报异常
+        PendingIntent pendingintent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
+        mBuilder.setContentIntent(pendingintent);
+        mBuilder.setOngoing(true);
+        mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
+    }
 
 
-	    private void installAPk(File apkFile) {
-            if (!apkFile.exists()) {
-                return;
-            }
-            Intent intent = new Intent();
-            //执行动作
-            intent.setAction(Intent.ACTION_VIEW);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //判读版本是否在7.0以上
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri apkUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", apkFile);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-            } else {
-                intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
-            }
-            try {
-                this.startActivity(intent);
-            } catch (Exception e) {
-                Log.d("wwd", "Failed to launcher installing activity");
-            }
-	    }
+    private void installAPk(File apkFile) {
+        if (!apkFile.exists()) {
+            return;
+        }
+        Intent intent = new Intent();
+        //执行动作
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //判读版本是否在7.0以上
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri apkUri = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileProvider", apkFile);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+        }
+        try {
+            this.startActivity(intent);
+        } catch (Exception e) {
+            Log.d("wwd", "Failed to launcher installing activity");
+        }
+    }
 
 }
