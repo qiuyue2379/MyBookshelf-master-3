@@ -12,17 +12,17 @@
         android:visibility="gone">
     </FrameLayout>
 
-    <jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout
-        android:id="@+id/wave"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+ <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <WebView
         android:id="@+id/WebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    </jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout>
+ </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/progress"
@@ -31,6 +31,5 @@
         android:layout_height="3dp"
         android:max="100"
         android:progressDrawable="@drawable/progress" />
-
 
 </FrameLayout>

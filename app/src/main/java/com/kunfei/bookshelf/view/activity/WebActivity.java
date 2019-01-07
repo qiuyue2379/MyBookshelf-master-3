@@ -13,15 +13,15 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.graphics.Color;
 import android.os.Build;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.os.Handler;
 
+import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
+import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 
-import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class WebActivity extends AppCompatActivity{
@@ -29,8 +29,7 @@ public class WebActivity extends AppCompatActivity{
     private FrameLayout fullVideo;
     private View customView = null;
     private ProgressBar progressBar;
-    private WaveSwipeRefreshLayout mWaveSwipeRefreshLayout;
-    private Handler handler = new Handler();
+    private SwipeRefreshLayout refreshLayout;
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -46,7 +45,7 @@ public class WebActivity extends AppCompatActivity{
         mWVmhtml=findViewById(R.id.WebView);
         fullVideo=findViewById(R.id.full_video);
         progressBar=findViewById(R.id.progress);
-        mWaveSwipeRefreshLayout = findViewById(R.id.wave);
+        refreshLayout = findViewById(R.id.refresh_layout);
 
         initWebView();
     }
@@ -61,23 +60,10 @@ public class WebActivity extends AppCompatActivity{
         mWVmhtml.setWebViewClient(new MyWebViewClient());
         mWVmhtml.setWebChromeClient(new MyWebChromeClient());
 
-        //设置中间小圆从白色到黑色
-        mWaveSwipeRefreshLayout.setColorSchemeColors(Color.WHITE, Color.BLACK);
-        //设置整体的颜色
-        mWaveSwipeRefreshLayout.setWaveColor(Color.argb(255,74, 134, 232));
-        //下拉刷新
-        mWaveSwipeRefreshLayout.setOnRefreshListener(new WaveSwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mWVmhtml.reload();
-                        //三秒后停止刷新
-                        mWaveSwipeRefreshLayout.setRefreshing(false);
-                    }
-                },3000);
-            }
+        refreshLayout.setColorSchemeColors(ThemeStore.accentColor(MApplication.getInstance()));
+        refreshLayout.setOnRefreshListener(() -> {
+            mWVmhtml.reload();
+            refreshLayout.setRefreshing(false);
         });
     }
 
