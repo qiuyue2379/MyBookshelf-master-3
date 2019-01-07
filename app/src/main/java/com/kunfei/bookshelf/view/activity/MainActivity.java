@@ -384,7 +384,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 LauncherIcon.Change();
                 break;
             case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebActivity.class));;
+                startActivity(new Intent(MainActivity.this, WebActivity.class));
                 break;
             case android.R.id.home:
                 if (drawer.isDrawerOpen(GravityCompat.START)
