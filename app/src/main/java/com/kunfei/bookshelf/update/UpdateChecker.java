@@ -1,6 +1,5 @@
 package com.kunfei.bookshelf.update;
 
-
 import android.content.Context;
 import android.util.Log;
 
@@ -12,7 +11,6 @@ public class UpdateChecker {
             Log.e(Constants.TAG, "The arg context is null");
         }
     }
-
 
     public static void checkForNotification(Context context) {
         if (context != null) {

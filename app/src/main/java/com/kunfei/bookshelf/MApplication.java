@@ -35,6 +35,8 @@ public class MApplication extends Application {
     private static MApplication instance;
     private static String versionName;
     private static int versionCode;
+    private static String packageName;
+
     private SharedPreferences configPreferences;
     private SharedPreferences cookiePreferences;
     private boolean donateHb;
@@ -51,6 +53,10 @@ public class MApplication extends Application {
         return versionName;
     }
 
+    public static String packageName() {
+        return packageName;
+    }
+
     public static Resources getAppResources() {
         return getInstance().getResources();
     }
@@ -64,6 +70,7 @@ public class MApplication extends Application {
         try {
             versionCode = getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
             versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            packageName = getPackageManager().getPackageInfo(getPackageName(), 0).packageName;
         } catch (PackageManager.NameNotFoundException e) {
             versionCode = 0;
             versionName = "0.0.0";
