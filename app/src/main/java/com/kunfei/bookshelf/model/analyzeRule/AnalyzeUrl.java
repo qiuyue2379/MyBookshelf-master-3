@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.text.TextUtils.isEmpty;
+import static com.kunfei.bookshelf.help.Constant.MAP_STRING;
 
 /**
  * Created by GKF on 2018/1/24.
@@ -21,6 +22,9 @@ import static android.text.TextUtils.isEmpty;
  */
 
 public class AnalyzeUrl {
+    private static final Pattern headerPattern = Pattern.compile("@Header:\\{.+?\\}", Pattern.CASE_INSENSITIVE);
+    private static final Pattern pagePattern = Pattern.compile("(?<=\\{).+?(?=\\})");
+
     private String hostUrl;
     private String urlPath;
     private Map<String, String> queryMap;
@@ -66,14 +70,13 @@ public class AnalyzeUrl {
      */
     private String analyzeHeader(String ruleUrl, Map<String, String> headerMapF) {
         headerMap.putAll(headerMapF);
-        Pattern pattern = Pattern.compile("@Header:\\{.+?\\}");
-        Matcher matcher = pattern.matcher(ruleUrl);
+        Matcher matcher = headerPattern.matcher(ruleUrl);
         if (matcher.find()) {
-            String headerStr = matcher.group(0);
-            ruleUrl = ruleUrl.replace(headerStr, "");
-            headerStr = headerStr.substring(8);
+            String find = matcher.group(0);
+            ruleUrl = ruleUrl.replace(find, "");
+            find = find.substring(8);
             try {
-                Map<String, String> map = new Gson().fromJson(headerStr, Map.class);
+                Map<String, String> map = new Gson().fromJson(find, MAP_STRING);
                 headerMap.putAll(map);
             } catch (Exception ignored) {
             }
@@ -85,8 +88,7 @@ public class AnalyzeUrl {
      * 解析页数
      */
     private void setPage(final String[] ruleUrlS, final int searchPage) {
-        Pattern pattern = Pattern.compile("(?<=\\{).+?(?=\\})");
-        Matcher matcher = pattern.matcher(ruleUrlS[0]);
+        Matcher matcher = pagePattern.matcher(ruleUrlS[0]);
         if (matcher.find()) {
             String[] pages = matcher.group(0).split(",");
             if (searchPage <= pages.length) {
@@ -94,10 +96,10 @@ public class AnalyzeUrl {
             } else {
                 ruleUrlS[0] = ruleUrlS[0].replaceAll("\\{.*?\\}", pages[pages.length - 1].trim());
             }
-            ruleUrlS[0] = ruleUrlS[0].replace("searchPage-1", String.valueOf(searchPage - 1))
-                    .replace("searchPage+1", String.valueOf(searchPage + 1))
-                    .replace("searchPage", String.valueOf(searchPage));
         }
+        ruleUrlS[0] = ruleUrlS[0].replace("searchPage-1", String.valueOf(searchPage - 1))
+                .replace("searchPage+1", String.valueOf(searchPage + 1))
+                .replace("searchPage", String.valueOf(searchPage));
     }
 
     /**
@@ -114,6 +116,9 @@ public class AnalyzeUrl {
         }
     }
 
+    /**
+     * QueryMap
+     */
     private Map<String, String> getQueryMap(String allQuery) throws Exception {
         String[] queryS = allQuery.split("&");
         Map<String, String> map = new HashMap<>();
