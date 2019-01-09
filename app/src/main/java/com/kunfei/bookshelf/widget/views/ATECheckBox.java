@@ -1,39 +1,34 @@
-package com.kunfei.bookshelf.utils.Theme.views;
+package com.kunfei.bookshelf.widget.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.Switch;
 
 import com.kunfei.bookshelf.utils.Theme.ATH;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 
+import androidx.appcompat.widget.AppCompatCheckBox;
+
 /**
  * @author Aidan Follestad (afollestad)
  */
-public class ATESwitch extends Switch {
+public class ATECheckBox extends AppCompatCheckBox {
 
-    public ATESwitch(Context context) {
+    public ATECheckBox(Context context) {
         super(context);
         init(context, null);
     }
 
-    public ATESwitch(Context context, AttributeSet attrs) {
+    public ATECheckBox(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public ATESwitch(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ATECheckBox(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
         ATH.setTint(this, ThemeStore.accentColor(context));
-    }
-
-    @Override
-    public boolean isShown() {
-        return getParent() != null && getVisibility() == View.VISIBLE;
     }
 }

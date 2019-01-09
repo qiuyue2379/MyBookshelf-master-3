@@ -1,34 +1,39 @@
-package com.kunfei.bookshelf.utils.Theme.views;
+package com.kunfei.bookshelf.widget.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.View;
+import android.widget.Switch;
 
 import com.kunfei.bookshelf.utils.Theme.ATH;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 
-import androidx.appcompat.widget.AppCompatSeekBar;
-
 /**
  * @author Aidan Follestad (afollestad)
  */
-public class ATESeekBar extends AppCompatSeekBar {
+public class ATESwitch extends Switch {
 
-    public ATESeekBar(Context context) {
+    public ATESwitch(Context context) {
         super(context);
         init(context, null);
     }
 
-    public ATESeekBar(Context context, AttributeSet attrs) {
+    public ATESwitch(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public ATESeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ATESwitch(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
         ATH.setTint(this, ThemeStore.accentColor(context));
+    }
+
+    @Override
+    public boolean isShown() {
+        return getParent() != null && getVisibility() == View.VISIBLE;
     }
 }
