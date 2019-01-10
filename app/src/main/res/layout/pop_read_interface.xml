@@ -54,13 +54,12 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <TextView
+            <com.kunfei.bookshelf.widget.views.ATEStrokeTextView
                 android:id="@+id/tvPageMode"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="6"
-                android:background="@drawable/selector_pop_font_bg"
                 android:gravity="center"
                 android:text="@string/page_mode"
                 android:textSize="14sp"
