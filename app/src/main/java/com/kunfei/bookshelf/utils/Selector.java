@@ -418,7 +418,7 @@ public class Selector {
                     hasSetCheckedColor ? mCheckedColor : mDefaultColor,
                     mDefaultColor
             };
-            int[][] states = new int[5][];
+            int[][] states = new int[6][];
             states[0] = new int[]{-android.R.attr.state_enabled};
             states[1] = new int[]{android.R.attr.state_pressed};
             states[2] = new int[]{android.R.attr.state_selected};
