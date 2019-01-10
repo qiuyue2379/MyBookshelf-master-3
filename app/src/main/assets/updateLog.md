@@ -1,4 +1,7 @@
 ## 更新日志
+**2019/01/10**
+ * 完善主题,改不了颜色的暂时都变成了黑白色
+
 **2019/01/08**
  * 支持@Header:{key:value, key:value}定义http头
  * 支持@put:{key:rule, key:rule}存储变量
