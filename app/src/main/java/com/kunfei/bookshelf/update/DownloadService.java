@@ -40,7 +40,6 @@ public class DownloadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO Auto-generated method stub
         mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this, MApplication.channelIdReadAloud);
 
@@ -111,7 +110,6 @@ public class DownloadService extends IntentService {
         //setContentInent如果不设置在4.0+上没有问题，在4.0以下会报异常
         PendingIntent pendingintent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setContentIntent(pendingintent);
-        mBuilder.setOngoing(true);
         mNotifyManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 
