@@ -104,12 +104,16 @@ public class AnalyzeRule {
         return analyzeByJSonPath;
     }
 
+    public List<String> getStringList(String rule) {
+        return getStringList(rule, null);
+    }
+
     public List<String> getStringList(String rule, String baseUrl) {
         List<String> stringList;
         SourceRule source = new SourceRule(rule);
         switch (source.mode) {
             case JSon:
-                stringList = new ArrayList<>();
+                stringList = getAnalyzeByJSonPath().readStringList(source.rule);
                 break;
             case XPath:
                 stringList = getAnalyzeByXPath().getStringList(source.rule);
