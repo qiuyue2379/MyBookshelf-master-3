@@ -1,16 +1,20 @@
 package com.kunfei.bookshelf.view.activity;
 
+import android.annotation.SuppressLint;
 import android.content.pm.ActivityInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.WindowManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.os.Build;
@@ -30,6 +34,8 @@ public class WebActivity extends AppCompatActivity{
     private View customView = null;
     private ProgressBar progressBar;
     private SwipeRefreshLayout refreshLayout;
+    private Bitmap xdefaltvideo;
+    private View xprogressvideo;
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -45,14 +51,18 @@ public class WebActivity extends AppCompatActivity{
         fullVideo=findViewById(R.id.full_video);
         progressBar=findViewById(R.id.progress);
         refreshLayout = findViewById(R.id.refresh_layout);
-
         initWebView();
     }
 
+    /**
+     * 数据初始化
+     */
+    @SuppressLint("SetJavaScriptEnabled")
     private void initWebView() {
-        mWVmhtml.getSettings().setJavaScriptEnabled(true);
-        mWVmhtml.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        mWVmhtml.getSettings().setDefaultTextEncodingName("utf-8");
+        WebSettings settings = mWVmhtml.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setDefaultTextEncodingName("utf-8");
         //访问首页
         mWVmhtml.loadUrl("http://qiuyue.vicp.net:86/");
         //设置在当前WebView继续加载网页
@@ -116,6 +126,27 @@ public class WebActivity extends AppCompatActivity{
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//清除全屏
 
+        }
+
+        //视频加载添加默认图标
+        @Override
+        public Bitmap getDefaultVideoPoster() {
+            //Log.i(LOGTAG, "here in on getDefaultVideoPoster");
+            if (xdefaltvideo == null) {
+                xdefaltvideo = BitmapFactory.decodeResource(
+                        getResources(), R.drawable.videoicon);
+            }
+            return xdefaltvideo;
+        }
+        //视频加载时进程loading
+        @Override
+        public View getVideoLoadingProgressView() {
+            //Log.i(LOGTAG, "here in on getVideoLoadingPregressView");
+            if (xprogressvideo == null) {
+                LayoutInflater inflater = LayoutInflater.from(WebActivity.this);
+                xprogressvideo = inflater.inflate(R.layout.video_loading_progress, null);
+            }
+            return xprogressvideo;
         }
 
         @Override

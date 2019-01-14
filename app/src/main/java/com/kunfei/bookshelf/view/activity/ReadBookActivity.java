@@ -566,6 +566,11 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     private void initMoreSettingPop() {
         moreSettingPop.setListener(new MoreSettingPop.OnChangeProListener() {
             @Override
+            public void upBar() {
+                initImmersionBar();
+            }
+
+            @Override
             public void keepScreenOnChange(int keepScreenOn) {
                 screenTimeOut = getResources().getIntArray(R.array.screen_time_out_value)[keepScreenOn];
                 keepScreenOn(screenTimeOut != 0);
@@ -975,7 +980,6 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
             }
             if (readAdjustPop.getVisibility() == View.VISIBLE) {
                 readAdjustPop.startAnimation(menuBottomOut);
-                readAdjustPop.dismiss();
             }
             if (readInterfacePop.getVisibility() == View.VISIBLE) {
                 readInterfacePop.startAnimation(menuBottomOut);
