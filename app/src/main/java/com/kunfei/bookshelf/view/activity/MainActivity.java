@@ -143,7 +143,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         return super.dispatchTouchEvent(ev);
     }
 
-    /**************abstract***********/
     @Override
     protected List<Fragment> createTabFragments() {
         BookListFragment bookListFragment = new BookListFragment();
@@ -242,6 +241,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         updateTabItemIcon(0, true);
     }
 
+    /**
+     * 显示发现菜单
+     */
     private void showFindMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenu().add(0, 0, 0, "切换显示样式");
@@ -257,6 +259,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         updateTabItemIcon(1, true);
     }
 
+    /**
+     * 更新Tab图标
+     */
     private void updateTabItemIcon(int index, boolean showMenu) {
         TabLayout.Tab tab = mTlIndicator.getTabAt(index);
         if (tab == null) return;
@@ -270,6 +275,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         }
     }
 
+    /**
+     * 更新Tab文字
+     */
     private void updateTabItemText(int group) {
         TabLayout.Tab tab = mTlIndicator.getTabAt(0);
         if (tab == null) return;
@@ -505,7 +513,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         vwNightTheme.getDrawable().mutate().setColorFilter(ThemeStore.accentColor(this), PorterDuff.Mode.SRC_ATOP);
     }
 
-    //备份
+    /**
+     * 备份
+     */
     private void backup() {
         PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
             @Override
@@ -531,7 +541,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         });
     }
 
-    //恢复
+    /**
+     * 恢复
+     */
     private void restore() {
         PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
             @Override
@@ -557,6 +569,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         });
     }
 
+    /**
+     * 新版本运行
+     */
     private void versionUpRun() {
         if (preferences.getInt("versionCode", 0) != MApplication.getVersionCode()) {
             //保存版本号
@@ -568,6 +583,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         }
     }
 
+    /**
+     * 获取权限
+     */
     private void requestPermission() {
         List<String> per = PermissionUtils.checkMorePermissions(this, MApplication.PerList);
         if (per.size() > 0) {
@@ -579,8 +597,10 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     @Override
     protected void firstRequest() {
         if (!isRecreate) {
-            versionUpRun();
-            requestPermission();
+            handler.postDelayed(() -> {
+                versionUpRun();
+                requestPermission();
+            }, 10000);
             handler.postDelayed(this::preloadReader, 200);
         }
         handler.postDelayed(() -> UpLastChapterModel.getInstance().startUpdate(), 60 * 1000);
@@ -668,6 +688,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         }
     }
 
+    /**
+     * 退出
+     */
     public void exit() {
         if ((System.currentTimeMillis() - exitTime) > 2000) {
             showSnackBar(toolbar, "再按一次退出程序");
