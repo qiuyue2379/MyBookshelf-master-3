@@ -1,9 +1,12 @@
 package com.kunfei.bookshelf.model.analyzeRule;
 
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.kunfei.bookshelf.bean.BaseBookBean;
+import com.kunfei.bookshelf.model.content.DefaultModel;
+import com.kunfei.bookshelf.model.impl.IHttpGetApi;
 import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.utils.StringUtils;
 
@@ -20,6 +23,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
+
+import retrofit2.Call;
 
 import static com.kunfei.bookshelf.help.Constant.MAP_STRING;
 
@@ -163,7 +168,7 @@ public class AnalyzeRule {
             result = String.valueOf(_object);
         }
         if (!StringUtils.isTrimEmpty(source.js)) {
-            result = (String) AnalyzeRule.evalJS(source.js, result, _baseUrl, getVariable());
+            result = (String) evalJS(source.js, result, _baseUrl);
         }
         if (!StringUtils.isTrimEmpty(_baseUrl)) {
             result = NetworkUtil.getAbsoluteURL(_baseUrl, result);
@@ -186,18 +191,11 @@ public class AnalyzeRule {
                     collection = new AnalyzeCollection(getAnalyzeByJSoup().getElements(source.rule));
             }
             if (!StringUtils.isTrimEmpty(source.js)) {
-                collection = (AnalyzeCollection) AnalyzeRule.evalJS(source.js, collection, null, getVariable());
+                collection = (AnalyzeCollection) evalJS(source.js, collection, null);
             }
             return collection;
         } else if (!StringUtils.isTrimEmpty(source.js)) {
-            return (AnalyzeCollection) AnalyzeRule.evalJS(source.js, _object, null, getVariable());
-        }
-        return null;
-    }
-
-    private String getVariable() {
-        if (book != null) {
-            return book.getVariable();
+            return (AnalyzeCollection) evalJS(source.js, _object, null);
         }
         return null;
     }
@@ -227,7 +225,6 @@ public class AnalyzeRule {
                     analyzeVariable(putVariable);
                 } catch (Exception ignored) {
                 }
-
             }
             //替换get值
             Matcher getMatcher = getPattern.matcher(ruleStr);
@@ -270,11 +267,11 @@ public class AnalyzeRule {
         private static final ScriptEngine INSTANCE = new ScriptEngineManager().getEngineByName("rhino");
     }
 
-    private static Object evalJS(String jsStr, Object result, String baseUrl, String variable) {
+    private Object evalJS(String jsStr, Object result, String baseUrl) {
         SimpleBindings bindings = new SimpleBindings();
+        bindings.put("java", this);
         bindings.put("result", result);
         bindings.put("baseUrl", baseUrl);
-        bindings.put("json", variable);
         try {
             result = EngineHelper.INSTANCE.eval(jsStr, bindings);
         } catch (ScriptException ignored) {
@@ -282,4 +279,23 @@ public class AnalyzeRule {
         return result;
     }
 
+    /**
+     * js实现跨域访问,不能删
+     */
+    public String ajax(String url) {
+        try {
+            Call<String> call = DefaultModel.getRetrofitString(url)
+                    .create(IHttpGetApi.class).getWebContentCall(url, null);
+            return call.execute().body();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * js实现解码,不能删
+     */
+    public String base64Decoder(String base64) {
+        return new String(Base64.decode(base64.getBytes(), Base64.DEFAULT));
+    }
 }
