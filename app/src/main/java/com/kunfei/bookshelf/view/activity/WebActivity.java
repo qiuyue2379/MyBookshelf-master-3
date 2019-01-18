@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,8 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
@@ -27,6 +30,12 @@ public class WebActivity extends AppCompatActivity
     private VideoEnabledWebChromeClient webChromeClient;
     private SwipeRefreshLayout refreshLayout;
     private ProgressBar progressBar;
+    private View mErrorView;
+
+    private boolean isSuccess = false;
+    private boolean isError = false;
+    private LinearLayout ll_control_error;
+    private RelativeLayout error;
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -41,6 +50,11 @@ public class WebActivity extends AppCompatActivity
         webView = findViewById(R.id.webView);
         progressBar = findViewById(R.id.progress);
         refreshLayout = findViewById(R.id.refresh_layout);
+
+        //View ll_control = getLayoutInflater().inflate(R.layout.activity_error, null);
+        ll_control_error =  findViewById(R.id.ll_control_error);
+        RelativeLayout error =  ll_control_error.findViewById(R.id.online_error_btn_retry);
+
         View nonVideoLayout = findViewById(R.id.nonVideoLayout);
         ViewGroup videoLayout = findViewById(R.id.videoLayout);
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null);
@@ -102,6 +116,15 @@ public class WebActivity extends AppCompatActivity
             webView.reload();
             refreshLayout.setRefreshing(false);
         });
+
+        error.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ll_control_error.setVisibility(View.GONE);
+                webView.reload();
+            }
+        });
+
     }
 
     private class InsideWebViewClient extends WebViewClient {
@@ -111,15 +134,42 @@ public class WebActivity extends AppCompatActivity
             return true;
         }
 
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            //super.onPageStarted(view, url, favicon);
+            //Log.d("WebView","开始访问网页");
+            if (!isError) {
+                //webView.setVisibility(View.VISIBLE);
+                ll_control_error.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            if (!isError) {
+                isSuccess = true;
+                //回调成功后的相关操作
+                ll_control_error.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
+            } else {
+                isError = false;
+                ll_control_error.setVisibility(View.VISIBLE);
+            }
+        }
+
         @SuppressWarnings("deprecation")
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
             // 加载网页失败时处理 如：提示失败，或显示新的界面
-            if (view != null) {
-                view.loadUrl("file:///android_asset/not_found.html");
-            }
-            Log.d("WebView","访问网页失败");
+            //if (view != null) {
+            //    view.loadUrl("file:///android_asset/not_found.html");
+            //}
+            //Log.d("WebView","访问网页失败");
+            isError = true;
+            isSuccess = false;
+            webView.setVisibility(View.GONE);
+            ll_control_error.setVisibility(View.VISIBLE);
         }
     }
 
