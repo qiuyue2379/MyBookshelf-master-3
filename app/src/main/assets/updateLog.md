@@ -1,4 +1,8 @@
 ## 更新日志
+**2019/01/18**
+ * 更换了侧边栏图片,不知道哪个大神制作的
+ * 更换一个编码识别库,优化本地文件编码识别
+
 **2019/01/16**
  * 升级到Android Studio 3.3
  * js添加两个方法,java.ajax(String) java.base64Decoder(String)
