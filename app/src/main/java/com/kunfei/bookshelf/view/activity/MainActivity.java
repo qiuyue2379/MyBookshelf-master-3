@@ -450,6 +450,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
      * 侧边栏按钮
      */
     private void setUpNavigationView() {
+        NavigationViewUtil.setItemTextColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
+        NavigationViewUtil.setItemIconColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
+        NavigationViewUtil.disableScrollbar(navigationView);
         @SuppressLint("InflateParams") View headerView = LayoutInflater.from(this).inflate(R.layout.navigation_header, null);
         ImageView imageView = headerView.findViewById(R.id.iv_navigation_header);
         if (isNightTheme()) {
@@ -458,8 +461,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             imageView.getDrawable().setAlpha(255);
         }
         navigationView.addHeaderView(headerView);
-        NavigationViewUtil.setItemTextColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
-        NavigationViewUtil.setItemIconColors(navigationView, getResources().getColor(R.color.tv_text_default), ThemeStore.accentColor(this));
         Menu drawerMenu = navigationView.getMenu();
         vwNightTheme = drawerMenu.findItem(R.id.action_theme).getActionView().findViewById(R.id.iv_theme_day_night);
         upThemeVw();
