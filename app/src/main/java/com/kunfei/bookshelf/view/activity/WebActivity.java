@@ -5,37 +5,66 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.graphics.Bitmap;
-import android.util.Log;
+import android.os.Handler;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.SslErrorHandler;
 import android.widget.ProgressBar;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.net.http.SslError;
 
+import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
+import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.help.VideoEnabledWebChromeClient;
 import com.kunfei.bookshelf.help.VideoEnabledWebView;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class WebActivity extends AppCompatActivity
-{
-    private VideoEnabledWebView webView;
+public class WebActivity extends MBaseActivity {
+    @BindView(R.id.searchView)
+    SearchView searchView;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.card_search)
+    CardView cardSearch;
+    @BindView(R.id.webView)
+    VideoEnabledWebView webView;
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.ll_control_error)
+    LinearLayout ll_control_error;
+    @BindView(R.id.nonVideoLayout)
+    View nonVideoLayout;
+    @BindView(R.id.videoLayout)
+    ViewGroup videoLayout;
+
     private VideoEnabledWebChromeClient webChromeClient;
-    private SwipeRefreshLayout refreshLayout;
-    private ProgressBar progressBar;
+    private SearchView.SearchAutoComplete mSearchAutoComplete;
     private View mErrorView;
-
     private boolean isSuccess = false;
     private boolean isError = false;
-    private LinearLayout ll_control_error;
     private RelativeLayout error;
+    private String searchKey;
+    private boolean showHistory;
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, WebActivity.class);
@@ -43,23 +72,37 @@ public class WebActivity extends AppCompatActivity
     }
 
     @Override
+    protected IPresenter initInjector() {
+        return null;
+    }
+
+    @Override
+    protected void onCreateActivity() {
+        getWindow().getDecorView().setBackgroundColor(ThemeStore.backgroundColor(this));
+        setContentView(R.layout.activity_web_view);
+    }
+
+    @Override
+    protected void initData() {
+
+    }
+
+    @Override
+    protected void bindView() {
+        ButterKnife.bind(this);
+        initSearchView();
+        this.setSupportActionBar(toolbar);
+        setupActionBar();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_web_view);
-        webView = findViewById(R.id.webView);
-        progressBar = findViewById(R.id.progress);
-        refreshLayout = findViewById(R.id.refresh_layout);
-
-        //View ll_control = getLayoutInflater().inflate(R.layout.activity_error, null);
-        ll_control_error =  findViewById(R.id.ll_control_error);
         RelativeLayout error =  ll_control_error.findViewById(R.id.online_error_btn_retry);
-
-        View nonVideoLayout = findViewById(R.id.nonVideoLayout);
-        ViewGroup videoLayout = findViewById(R.id.videoLayout);
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null);
 
-        webChromeClient = new VideoEnabledWebChromeClient(nonVideoLayout, videoLayout, loadingView, webView)
+        webChromeClient = new VideoEnabledWebChromeClient(this,nonVideoLayout, videoLayout, loadingView, webView)
         {
             @Override //监听加载进度
             public void onProgressChanged(WebView view, int progress)
@@ -74,7 +117,14 @@ public class WebActivity extends AppCompatActivity
                 }
                 super.onProgressChanged(view, progress);
             }
+
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                searchView.setQueryHint(title);
+            }
         };
+
         webChromeClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback()
         {
             @Override
@@ -82,31 +132,16 @@ public class WebActivity extends AppCompatActivity
             {
                 if (fullscreen)
                 {
-                    WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                    attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
-                    attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    getWindow().setAttributes(attrs);
-                    if (android.os.Build.VERSION.SDK_INT >= 19)
-                    {
-                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-                    }
                 }
                 else
                 {
-                    WindowManager.LayoutParams attrs = getWindow().getAttributes();
-                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_FULLSCREEN;
-                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    getWindow().setAttributes(attrs);
-                    if (android.os.Build.VERSION.SDK_INT >= 19)
-                    {
-                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                    }
                 }
 
             }
         });
+
         webView.setWebChromeClient(webChromeClient);
         webView.setWebViewClient(new InsideWebViewClient());
         webView.loadUrl("http://qiuyue.vicp.net:86/");
@@ -161,25 +196,22 @@ public class WebActivity extends AppCompatActivity
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             super.onReceivedError(view, errorCode, description, failingUrl);
-            // 加载网页失败时处理 如：提示失败，或显示新的界面
-            //if (view != null) {
-            //    view.loadUrl("file:///android_asset/not_found.html");
-            //}
-            //Log.d("WebView","访问网页失败");
             isError = true;
             isSuccess = false;
             webView.setVisibility(View.GONE);
             ll_control_error.setVisibility(View.VISIBLE);
         }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed();// 接受所有网站的证书
+        }
     }
 
     @Override
-    public void onBackPressed()
-    {
-        if (!webChromeClient.onBackPressed())
-        {
-            if (webView.canGoBack())
-            {
+    public void onBackPressed() {
+        if (!webChromeClient.onBackPressed()) {
+            if (webView.canGoBack()) {
                 webView.goBack();
             }
             else
@@ -189,4 +221,89 @@ public class WebActivity extends AppCompatActivity
         }
     }
 
+    //设置ToolBar
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.vod);
+        }
+    }
+
+    // 添加菜单
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_web_activity, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    //菜单
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_book_source_manage:
+                BookSourceActivity.startThis(this);
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void initSearchView() {
+        mSearchAutoComplete = searchView.findViewById(R.id.search_src_text);
+        searchView.setQueryHint(getString(R.string.vod));
+        mSearchAutoComplete.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        mSearchAutoComplete.setPadding(15, 0, 0, 0);
+        searchView.setSubmitButtonEnabled(true);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //在文字改变的时候回调，query是改变之后的文字
+                if (TextUtils.isEmpty(query))
+                    return false;
+                searchKey = query.trim();
+                if (!searchKey.toLowerCase().startsWith("http:")) {
+                    toSearch();
+                    searchView.clearFocus();
+                    return false;
+                } else {
+                    finish();
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //文字提交的时候哦回调，newText是最后提交搜索的文字
+                if (!newText.toLowerCase().startsWith("http")) {
+
+                } else {
+                    webView.loadUrl(newText);
+                }
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextFocusChangeListener((view, b) -> {
+            showHistory = b;
+            if (!b && searchView.getQuery().toString().trim().equals("")) {
+                finish();
+            }
+            if (showHistory) {
+                webView.loadUrl(searchView.getQuery().toString().trim());
+            }
+        });
+    }
+
+    private void toSearch() {
+        if (!TextUtils.isEmpty(searchKey)) {
+            //执行搜索请求
+            new Handler().postDelayed(() -> {
+                webView.loadUrl("http://"+searchKey);
+            }, 300);
+        }
+    }
 }

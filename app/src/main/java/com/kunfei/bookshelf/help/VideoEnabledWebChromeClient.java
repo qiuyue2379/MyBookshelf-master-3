@@ -1,18 +1,22 @@
 package com.kunfei.bookshelf.help;
 
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.media.MediaPlayer;
-import android.view.SurfaceView;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.widget.FrameLayout;
-import android.graphics.Canvas;
+import android.widget.VideoView;
 
-public class VideoEnabledWebChromeClient extends WebChromeClient implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener
-{
-    public interface ToggledFullscreenCallback
-    {
+public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPreparedListener, OnCompletionListener, OnErrorListener {
+    public interface ToggledFullscreenCallback {
         void toggledFullscreen(boolean fullscreen);
     }
 
@@ -20,21 +24,17 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
     private ViewGroup activityVideoView;
     private View loadingView;
     private VideoEnabledWebView webView;
-
     private boolean isVideoFullscreen;
     private FrameLayout videoViewContainer;
     private CustomViewCallback videoViewCallback;
-
     private ToggledFullscreenCallback toggledFullscreenCallback;
+    private Activity mContext;
 
-    @SuppressWarnings("unused")
-    public VideoEnabledWebChromeClient()
-    {
+    public VideoEnabledWebChromeClient() {
     }
 
-    @SuppressWarnings("unused")
-    public VideoEnabledWebChromeClient(View activityNonVideoView, ViewGroup activityVideoView)
-    {
+    public VideoEnabledWebChromeClient(Activity activity, View activityNonVideoView, ViewGroup activityVideoView) {
+        this.mContext = activity;
         this.activityNonVideoView = activityNonVideoView;
         this.activityVideoView = activityVideoView;
         this.loadingView = null;
@@ -42,9 +42,8 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         this.isVideoFullscreen = false;
     }
 
-    @SuppressWarnings("unused")
-    public VideoEnabledWebChromeClient(View activityNonVideoView, ViewGroup activityVideoView, View loadingView)
-    {
+    public VideoEnabledWebChromeClient(Activity activity,View activityNonVideoView, ViewGroup activityVideoView, View loadingView) {
+        this.mContext = activity;
         this.activityNonVideoView = activityNonVideoView;
         this.activityVideoView = activityVideoView;
         this.loadingView = loadingView;
@@ -52,9 +51,8 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         this.isVideoFullscreen = false;
     }
 
-    @SuppressWarnings("unused")
-    public VideoEnabledWebChromeClient(View activityNonVideoView, ViewGroup activityVideoView, View loadingView, VideoEnabledWebView webView)
-    {
+    public VideoEnabledWebChromeClient(Activity activity,View activityNonVideoView, ViewGroup activityVideoView, View loadingView, VideoEnabledWebView webView) {
+        this.mContext = activity;
         this.activityNonVideoView = activityNonVideoView;
         this.activityVideoView = activityVideoView;
         this.loadingView = loadingView;
@@ -62,54 +60,49 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         this.isVideoFullscreen = false;
     }
 
-    public boolean isVideoFullscreen()
-    {
+    public boolean isVideoFullscreen() {
         return isVideoFullscreen;
     }
 
-    @SuppressWarnings("unused")
-    public void setOnToggledFullscreen(ToggledFullscreenCallback callback)
-    {
+    public void setOnToggledFullscreen(ToggledFullscreenCallback callback) {
         this.toggledFullscreenCallback = callback;
     }
 
     @Override
-    public void onShowCustomView(View view, CustomViewCallback callback)
-    {
-        if (view instanceof FrameLayout)
-        {
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+        if (view instanceof FrameLayout) {
+            // A video wants to be shown
             FrameLayout frameLayout = (FrameLayout) view;
             View focusedChild = frameLayout.getFocusedChild();
-
+            // Save video related variables
             this.isVideoFullscreen = true;
             this.videoViewContainer = frameLayout;
             this.videoViewCallback = callback;
-
-            activityNonVideoView.setVisibility(View.INVISIBLE);
-            activityVideoView.addView(videoViewContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            // Hide the non-video view, add the video view, and show it
+            activityNonVideoView.setVisibility(View.GONE);
+            activityVideoView.addView(videoViewContainer, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             activityVideoView.setVisibility(View.VISIBLE);
-
-            if (focusedChild instanceof android.widget.VideoView)
-            {
-                android.widget.VideoView videoView = (android.widget.VideoView) focusedChild;
-
+            if (focusedChild instanceof VideoView) {
+                // VideoView (typically API level <11)
+                VideoView videoView = (VideoView) focusedChild;
+                // Handle all the required events
                 videoView.setOnPreparedListener(this);
                 videoView.setOnCompletionListener(this);
                 videoView.setOnErrorListener(this);
-            }
-            else
+            } else // Usually android.webkit.HTML5VideoFullScreen$VideoSurfaceView, sometimes android.webkit.HTML5VideoFullScreen$VideoTextureView
             {
-                if (webView != null && webView.getSettings().getJavaScriptEnabled() && focusedChild instanceof SurfaceView)
-                {
+                // HTML5VideoFullScreen (typically API level 11+)
+                // Handle HTML5 video ended event
+                if (webView != null && webView.getSettings().getJavaScriptEnabled()) {
+                    // Run javascript code that detects the video end and notifies the interface
                     String js = "javascript:";
-                    js += "var _ytrp_html5_video_last;";
-                    js += "var _ytrp_html5_video = document.getElementsByTagName('video')[0];";
-                    js += "if (_ytrp_html5_video != undefined && _ytrp_html5_video != _ytrp_html5_video_last) {";
+                    js += "_ytrp_html5_video = document.getElementsByTagName('video')[0];";
+                    js += "if (_ytrp_html5_video !== undefined) {";
                     {
-                        js += "_ytrp_html5_video_last = _ytrp_html5_video;";
                         js += "function _ytrp_html5_video_ended() {";
                         {
-                            js += "_VideoEnabledWebView.notifyVideoEnd();";
+                            js += "_ytrp_html5_video.removeEventListener('ended', _ytrp_html5_video_ended);";
+                            js += "_VideoEnabledWebView.notifyVideoEnd();"; // Must match Javascript interface name and method of VideoEnableWebView
                         }
                         js += "}";
                         js += "_ytrp_html5_video.addEventListener('ended', _ytrp_html5_video_ended);";
@@ -119,41 +112,42 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
                 }
             }
 
-            if (toggledFullscreenCallback != null)
-            {
+            // Notify full-screen change
+            if (toggledFullscreenCallback != null) {
                 toggledFullscreenCallback.toggledFullscreen(true);
             }
+
+            setFullscreen(true);
         }
     }
 
-    @Override @SuppressWarnings("deprecation")
-    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback)
+    @Override  @SuppressWarnings("deprecation")
+    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) // Only available in API level 14+
     {
         onShowCustomView(view, callback);
     }
 
     @Override
-    public void onHideCustomView()
-    {
-        if (isVideoFullscreen)
-        {
-            activityVideoView.setVisibility(View.INVISIBLE);
+    public void onHideCustomView() {
+        if (isVideoFullscreen) {
+            // Hide the video view, remove it, and show the non-video view
+            activityVideoView.setVisibility(View.GONE);//播放视频的
             activityVideoView.removeView(videoViewContainer);
             activityNonVideoView.setVisibility(View.VISIBLE);
 
-            if (videoViewCallback != null && !videoViewCallback.getClass().getName().contains(".chromium."))
-            {
-                videoViewCallback.onCustomViewHidden();
-            }
+            // Call back
+            if (videoViewCallback != null) videoViewCallback.onCustomViewHidden();
 
+            // Reset video related variables
             isVideoFullscreen = false;
             videoViewContainer = null;
             videoViewCallback = null;
 
-            if (toggledFullscreenCallback != null)
-            {
+            // Notify full-screen change
+            if (toggledFullscreenCallback != null) {
                 toggledFullscreenCallback.toggledFullscreen(false);
             }
+            setFullscreen(false);
         }
     }
 
@@ -166,17 +160,13 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         return bitmap;
     }
 
-    //视频加载时进程loading
     @Override
     public View getVideoLoadingProgressView()
     {
-        if (loadingView != null)
-        {
+        if (loadingView != null) {
             loadingView.setVisibility(View.VISIBLE);
             return loadingView;
-        }
-        else
-        {
+        } else {
             return super.getVideoLoadingProgressView();
         }
     }
@@ -184,8 +174,7 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
     @Override
     public void onPrepared(MediaPlayer mp)
     {
-        if (loadingView != null)
-        {
+        if (loadingView != null) {
             loadingView.setVisibility(View.GONE);
         }
     }
@@ -202,18 +191,26 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements Medi
         return false;
     }
 
-    @SuppressWarnings("unused")
-    public boolean onBackPressed()
-    {
-        if (isVideoFullscreen)
-        {
+    public boolean onBackPressed() {
+        if (isVideoFullscreen) {
             onHideCustomView();
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
+    private void setFullscreen(boolean enable) {
+        if (enable) { //show status bar
+            WindowManager.LayoutParams lp = mContext.getWindow().getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            mContext.getWindow().setAttributes(lp);
+            mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else { //hide status bar
+            WindowManager.LayoutParams lp = mContext.getWindow().getAttributes();
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            mContext.getWindow().setAttributes(lp);
+            mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
 }
