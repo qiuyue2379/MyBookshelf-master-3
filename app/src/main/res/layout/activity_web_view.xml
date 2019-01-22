@@ -71,7 +71,7 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <include layout="@layout/activity_error"/>
+        <include layout="@layout/view_web_error"/>
 
         <ProgressBar
             android:id="@+id/progress"

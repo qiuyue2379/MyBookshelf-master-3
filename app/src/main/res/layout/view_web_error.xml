@@ -20,18 +20,22 @@
         android:id="@+id/img_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="3dip"
-        android:padding="10dip"
-        android:contentDescription="@string/vod"
-        android:src="@drawable/wifi" />
+        android:layout_centerInParent="true"
+        android:contentDescription="@null"
+        android:src="@mipmap/no_data" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:layout_below="@+id/img_error"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="@string/vod_err"
         android:textColor="#737373"
         android:textSize="16sp" />
 
     </RelativeLayout>
+
 </LinearLayout>

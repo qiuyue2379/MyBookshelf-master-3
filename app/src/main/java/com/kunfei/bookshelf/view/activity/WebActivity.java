@@ -12,14 +12,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebSettings;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceError;
 import android.widget.ProgressBar;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.net.http.SslError;
+import android.os.Build;
 
 import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
@@ -42,8 +45,6 @@ public class WebActivity extends MBaseActivity {
     SearchView searchView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.card_search)
-    CardView cardSearch;
     @BindView(R.id.webView)
     VideoEnabledWebView webView;
     @BindView(R.id.progress)
@@ -59,7 +60,6 @@ public class WebActivity extends MBaseActivity {
 
     private VideoEnabledWebChromeClient webChromeClient;
     private SearchView.SearchAutoComplete mSearchAutoComplete;
-    private View mErrorView;
     private boolean isSuccess = false;
     private boolean isError = false;
     private RelativeLayout error;
@@ -96,22 +96,18 @@ public class WebActivity extends MBaseActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         RelativeLayout error =  ll_control_error.findViewById(R.id.online_error_btn_retry);
         View loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null);
 
-        webChromeClient = new VideoEnabledWebChromeClient(this,nonVideoLayout, videoLayout, loadingView, webView)
-        {
+        webChromeClient = new VideoEnabledWebChromeClient(this,nonVideoLayout, videoLayout, loadingView, webView) {
             @Override //监听加载进度
-            public void onProgressChanged(WebView view, int progress)
-            {
+            public void onProgressChanged(WebView view, int progress) {
                 progressBar.setProgress(progress);
                 if(progress >= 100){
                     progressBar.setVisibility(View.GONE);
-                }
-                else{
+                }else{
                     progressBar.setVisibility(View.VISIBLE);//开始加载网页时显示进度条
                     progressBar.setProgress(progress);//设置进度值
                 }
@@ -122,23 +118,23 @@ public class WebActivity extends MBaseActivity {
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
                 searchView.setQueryHint(title);
+                if (title.contains("404")){
+                    isError = true;
+                    isSuccess = false;
+                    webView.setVisibility(View.GONE);
+                    ll_control_error.setVisibility(View.VISIBLE);
+                }
             }
         };
 
-        webChromeClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback()
-        {
+        webChromeClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback() {
             @Override
-            public void toggledFullscreen(boolean fullscreen)
-            {
-                if (fullscreen)
-                {
+            public void toggledFullscreen(boolean fullscreen) {
+                if (fullscreen) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }
-                else
-                {
+                } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
-
             }
         });
 
@@ -152,12 +148,9 @@ public class WebActivity extends MBaseActivity {
             refreshLayout.setRefreshing(false);
         });
 
-        error.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        error.setOnClickListener(View -> {
                 ll_control_error.setVisibility(View.GONE);
                 webView.reload();
-            }
         });
 
     }
@@ -169,12 +162,19 @@ public class WebActivity extends MBaseActivity {
             return true;
         }
 
+        @Override  //WebView代表是当前的WebView
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            //表示在当前的WebView继续打开网页
+            if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP) {  //当Sdk版本大于21时才能使用此方法
+                view.loadUrl(request.getUrl().toString());
+                return false;
+            }
+            return true;
+        }
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            //super.onPageStarted(view, url, favicon);
-            //Log.d("WebView","开始访问网页");
             if (!isError) {
-                //webView.setVisibility(View.VISIBLE);
                 ll_control_error.setVisibility(View.GONE);
             }
         }
@@ -202,8 +202,22 @@ public class WebActivity extends MBaseActivity {
             ll_control_error.setVisibility(View.VISIBLE);
         }
 
+        //处理网页加载失败时
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+            super.onReceivedError(view, request, error);
+            isError = true;
+            isSuccess = false;
+            webView.setVisibility(View.GONE);
+            ll_control_error.setVisibility(View.VISIBLE);
+        }
+
         @Override
         public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                webView.getSettings()
+                        .setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            }
             handler.proceed();// 接受所有网站的证书
         }
     }
@@ -257,7 +271,6 @@ public class WebActivity extends MBaseActivity {
         searchView.setQueryHint(getString(R.string.vod));
         mSearchAutoComplete.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         mSearchAutoComplete.setPadding(15, 0, 0, 0);
-        searchView.setSubmitButtonEnabled(true);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -281,7 +294,7 @@ public class WebActivity extends MBaseActivity {
                 if (!newText.toLowerCase().startsWith("http")) {
 
                 } else {
-                    webView.loadUrl(newText);
+                    //webView.loadUrl(newText);
                 }
                 return false;
             }
@@ -302,7 +315,11 @@ public class WebActivity extends MBaseActivity {
         if (!TextUtils.isEmpty(searchKey)) {
             //执行搜索请求
             new Handler().postDelayed(() -> {
-                webView.loadUrl("http://"+searchKey);
+                if (!searchKey.toLowerCase().startsWith("http")) {
+                    webView.loadUrl("http://" + searchKey);
+                }else{
+                    webView.loadUrl(searchKey);
+                }
             }, 300);
         }
     }

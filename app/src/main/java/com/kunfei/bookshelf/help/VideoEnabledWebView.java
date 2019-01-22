@@ -10,9 +10,6 @@ import android.webkit.WebView;
 
 import java.util.Map;
 
-/**
- * Created by zengd on 2016/8/19 0019.
- */
 public class VideoEnabledWebView extends WebView {
     public class JavascriptInterface
     {
@@ -49,9 +46,6 @@ public class VideoEnabledWebView extends WebView {
         addedJavascriptInterface = false;
     }
 
-    /**
-     * Pass only a VideoEnabledWebChromeClient instance.
-     */
     @Override
     @SuppressLint("SetJavaScriptEnabled")
     public void setWebChromeClient(WebChromeClient client) {
