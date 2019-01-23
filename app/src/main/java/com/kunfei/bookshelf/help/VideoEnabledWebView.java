@@ -16,16 +16,12 @@ public class VideoEnabledWebView extends WebView {
         @android.webkit.JavascriptInterface @SuppressWarnings("unused")
         public void notifyVideoEnd()
         {
-            new Handler(Looper.getMainLooper()).post(new Runnable()
+            new Handler(Looper.getMainLooper()).post(() ->
             {
-                @Override
-                public void run()
-                {
                     if (videoEnabledWebChromeClient != null)
                     {
                         videoEnabledWebChromeClient.onHideCustomView();
                     }
-                }
             });
         }
     }
@@ -34,11 +30,11 @@ public class VideoEnabledWebView extends WebView {
     private boolean addedJavascriptInterface;
 
     public VideoEnabledWebView(Context context) {
-        this(context, null);
+        super(context);
     }
 
     public VideoEnabledWebView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
     }
 
     public VideoEnabledWebView(Context context, AttributeSet attrs, int defStyle) {

@@ -12,6 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.SslErrorHandler;
@@ -35,7 +37,6 @@ import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -127,15 +128,12 @@ public class WebActivity extends MBaseActivity {
             }
         };
 
-        webChromeClient.setOnToggledFullscreen(new VideoEnabledWebChromeClient.ToggledFullscreenCallback() {
-            @Override
-            public void toggledFullscreen(boolean fullscreen) {
+        webChromeClient.setOnToggledFullscreen(fullscreen -> {
                 if (fullscreen) {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 } else {
                     setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
-            }
         });
 
         webView.setWebChromeClient(webChromeClient);
@@ -259,11 +257,24 @@ public class WebActivity extends MBaseActivity {
             case R.id.action_book_source_manage:
                 BookSourceActivity.startThis(this);
                 break;
+            case R.id.clear_cookie:
+                clearWebViewCache();
+                showSnackBar(toolbar, "成功为您清除Cookie，请刷新网页!");
+                break;
             case android.R.id.home:
                 finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void clearWebViewCache() {
+        // 清除cookie即可彻底清除缓存
+        CookieSyncManager.createInstance(this);
+        CookieManager.getInstance().removeAllCookie();
+        CookieManager.getInstance().removeSessionCookie();
+        CookieSyncManager.getInstance().sync();
+        CookieSyncManager.getInstance().startSync();
     }
 
     private void initSearchView() {

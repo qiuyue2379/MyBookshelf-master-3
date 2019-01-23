@@ -71,30 +71,21 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPr
     @Override
     public void onShowCustomView(View view, CustomViewCallback callback) {
         if (view instanceof FrameLayout) {
-            // A video wants to be shown
             FrameLayout frameLayout = (FrameLayout) view;
             View focusedChild = frameLayout.getFocusedChild();
-            // Save video related variables
             this.isVideoFullscreen = true;
             this.videoViewContainer = frameLayout;
             this.videoViewCallback = callback;
-            // Hide the non-video view, add the video view, and show it
             activityNonVideoView.setVisibility(View.GONE);
             activityVideoView.addView(videoViewContainer, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             activityVideoView.setVisibility(View.VISIBLE);
             if (focusedChild instanceof VideoView) {
-                // VideoView (typically API level <11)
                 VideoView videoView = (VideoView) focusedChild;
-                // Handle all the required events
                 videoView.setOnPreparedListener(this);
                 videoView.setOnCompletionListener(this);
                 videoView.setOnErrorListener(this);
-            } else // Usually android.webkit.HTML5VideoFullScreen$VideoSurfaceView, sometimes android.webkit.HTML5VideoFullScreen$VideoTextureView
-            {
-                // HTML5VideoFullScreen (typically API level 11+)
-                // Handle HTML5 video ended event
+            } else {
                 if (webView != null && webView.getSettings().getJavaScriptEnabled()) {
-                    // Run javascript code that detects the video end and notifies the interface
                     String js = "javascript:";
                     js += "_ytrp_html5_video = document.getElementsByTagName('video')[0];";
                     js += "if (_ytrp_html5_video !== undefined) {";
@@ -102,7 +93,7 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPr
                         js += "function _ytrp_html5_video_ended() {";
                         {
                             js += "_ytrp_html5_video.removeEventListener('ended', _ytrp_html5_video_ended);";
-                            js += "_VideoEnabledWebView.notifyVideoEnd();"; // Must match Javascript interface name and method of VideoEnableWebView
+                            js += "_VideoEnabledWebView.notifyVideoEnd();";
                         }
                         js += "}";
                         js += "_ytrp_html5_video.addEventListener('ended', _ytrp_html5_video_ended);";
@@ -111,18 +102,15 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPr
                     webView.loadUrl(js);
                 }
             }
-
-            // Notify full-screen change
             if (toggledFullscreenCallback != null) {
                 toggledFullscreenCallback.toggledFullscreen(true);
             }
-
             setFullscreen(true);
         }
     }
 
     @Override  @SuppressWarnings("deprecation")
-    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback) // Only available in API level 14+
+    public void onShowCustomView(View view, int requestedOrientation, CustomViewCallback callback)
     {
         onShowCustomView(view, callback);
     }
@@ -130,20 +118,16 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPr
     @Override
     public void onHideCustomView() {
         if (isVideoFullscreen) {
-            // Hide the video view, remove it, and show the non-video view
             activityVideoView.setVisibility(View.GONE);//播放视频的
             activityVideoView.removeView(videoViewContainer);
             activityNonVideoView.setVisibility(View.VISIBLE);
 
-            // Call back
             if (videoViewCallback != null) videoViewCallback.onCustomViewHidden();
 
-            // Reset video related variables
             isVideoFullscreen = false;
             videoViewContainer = null;
             videoViewCallback = null;
 
-            // Notify full-screen change
             if (toggledFullscreenCallback != null) {
                 toggledFullscreenCallback.toggledFullscreen(false);
             }
@@ -201,12 +185,12 @@ public class VideoEnabledWebChromeClient extends WebChromeClient implements OnPr
     }
 
     private void setFullscreen(boolean enable) {
-        if (enable) { //show status bar
+        if (enable) {
             WindowManager.LayoutParams lp = mContext.getWindow().getAttributes();
             lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
             mContext.getWindow().setAttributes(lp);
             mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else { //hide status bar
+        } else {
             WindowManager.LayoutParams lp = mContext.getWindow().getAttributes();
             lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
             mContext.getWindow().setAttributes(lp);
