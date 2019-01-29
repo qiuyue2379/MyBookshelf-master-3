@@ -394,7 +394,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 LauncherIcon.Change();
                 break;
             case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebActivity.class));
+                startActivity(new Intent(MainActivity.this, x5webActivity.class));
                 break;
             case android.R.id.home:
                 if (drawer.isDrawerOpen(GravityCompat.START)
@@ -595,10 +595,8 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     @Override
     protected void firstRequest() {
         if (!isRecreate) {
-            handler.postDelayed(() -> {
-                versionUpRun();
-                requestPermission();
-            }, 10000);
+            versionUpRun();
+            requestPermission();
             handler.postDelayed(this::preloadReader, 200);
         }
         handler.postDelayed(() -> UpLastChapterModel.getInstance().startUpdate(), 60 * 1000);
