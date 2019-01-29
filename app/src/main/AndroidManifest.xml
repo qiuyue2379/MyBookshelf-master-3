@@ -160,8 +160,13 @@
             android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
             android:launchMode="singleTask" />
         <activity
+            android:name=".view.activity.x5webActivity"
+            android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".view.activity.ReceivingSharedActivity"
-            android:label="@string/receiving_shared_label">
+            android:label="@string/receiving_shared_label"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.PROCESS_TEXT" />
                 <category android:name="android.intent.category.DEFAULT" />

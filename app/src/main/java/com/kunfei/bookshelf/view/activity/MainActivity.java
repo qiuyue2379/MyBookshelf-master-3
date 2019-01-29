@@ -481,7 +481,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     handler.postDelayed(() -> DonateActivity.startThis(this), 200);
                     break;
                 case R.id.action_vod:
-                    handler.postDelayed(() -> WebActivity.startThis(this), 200);
+                    handler.postDelayed(() -> x5webActivity.startThis(this), 200);
                     break;
                 case R.id.action_backup:
                     handler.postDelayed(this::backup, 200);

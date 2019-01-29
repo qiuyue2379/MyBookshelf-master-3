@@ -7,7 +7,6 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-
 import java.util.Map;
 
 public class VideoEnabledWebView extends WebView {

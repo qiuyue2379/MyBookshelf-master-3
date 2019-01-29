@@ -234,3 +234,6 @@ public static java.lang.String TABLENAME;
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+-dontwarn com.tencent.**
+-keep class com.tencent.** { *;}

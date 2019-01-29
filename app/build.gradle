@@ -83,7 +83,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':basemvplib')
     testImplementation 'junit:junit:4.12'
-
+    implementation files('libs/tbs_sdk_thirdapp_v3.6.0.1315_43612_sharewithdownload_withoutGame_obfs_20180718_102847.jar')
     //fireBase
     //noinspection GradleDependency
     implementation 'com.google.firebase:firebase-core:16.0.1'
@@ -113,7 +113,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
     //CircleImageView
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'de.hdodenhof:circleimageview:3.0.0'
 
     //bind view
     implementation 'com.jakewharton:butterknife:10.0.0'
@@ -138,7 +138,7 @@ dependencies {
     implementation 'net.ricecode:string-similarity:1.0.0'
 
     //MarkDown
-    implementation 'ru.noties:markwon:2.0.0'
+    implementation 'ru.noties:markwon:2.0.1'
 
     //epub
     implementation('nl.siegmann.epublib:epublib-core:3.1') {

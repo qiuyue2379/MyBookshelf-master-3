@@ -139,7 +139,6 @@ public class WebActivity extends MBaseActivity {
         webView.setWebChromeClient(webChromeClient);
         webView.setWebViewClient(new InsideWebViewClient());
         webView.loadUrl("http://qiuyue.vicp.net:86/");
-
         refreshLayout.setColorSchemeColors(ThemeStore.accentColor(MApplication.getInstance()));
         refreshLayout.setOnRefreshListener(() -> {
             webView.reload();
@@ -154,6 +153,7 @@ public class WebActivity extends MBaseActivity {
     }
 
     private class InsideWebViewClient extends WebViewClient {
+
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
@@ -165,9 +165,9 @@ public class WebActivity extends MBaseActivity {
             //表示在当前的WebView继续打开网页
             if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP) {  //当Sdk版本大于21时才能使用此方法
                 view.loadUrl(request.getUrl().toString());
-                return false;
+                //return false;
             }
-            return true;
+            return false;
         }
 
         @Override
