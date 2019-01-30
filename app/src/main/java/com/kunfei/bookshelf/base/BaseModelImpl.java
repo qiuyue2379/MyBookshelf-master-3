@@ -1,17 +1,19 @@
 package com.kunfei.bookshelf.base;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.help.EncodeConverter;
 import com.kunfei.bookshelf.help.RetryInterceptor;
 import com.kunfei.bookshelf.help.SSLSocketClient;
 import com.kunfei.bookshelf.model.analyzeRule.AnalyzeUrl;
+import com.kunfei.bookshelf.model.impl.IHttpGetApi;
+import com.kunfei.bookshelf.model.impl.IHttpPostApi;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -21,11 +23,34 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import okhttp3.Request;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 public class BaseModelImpl {
     private static OkHttpClient.Builder clientBuilder;
+
+    public static Observable<Response<String>> getResponseO(AnalyzeUrl analyzeUrl) {
+        switch (analyzeUrl.getUrlMode()) {
+            case POST:
+                return getRetrofitString(analyzeUrl.getHost())
+                        .create(IHttpPostApi.class)
+                        .searchBook(analyzeUrl.getPath(),
+                                analyzeUrl.getQueryMap(),
+                                analyzeUrl.getHeaderMap());
+            case GET:
+                return getRetrofitString(analyzeUrl.getHost())
+                        .create(IHttpGetApi.class)
+                        .searchBook(analyzeUrl.getPath(),
+                                analyzeUrl.getQueryMap(),
+                                analyzeUrl.getHeaderMap());
+            default:
+                return getRetrofitString(analyzeUrl.getHost())
+                        .create(IHttpGetApi.class)
+                        .getWebContent(analyzeUrl.getPath(),
+                                analyzeUrl.getHeaderMap());
+        }
+    }
 
     public static Retrofit getRetrofitString(String url) {
         return new Retrofit.Builder().baseUrl(url)
@@ -76,7 +101,7 @@ public class BaseModelImpl {
     }
 
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
-    public static Observable<String> getAjaxHtml(Context context, AnalyzeUrl analyzeUrl) {
+    public static Observable<String> getAjaxHtml(AnalyzeUrl analyzeUrl) {
         return Observable.create(e -> {
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(() -> {
@@ -95,7 +120,7 @@ public class BaseModelImpl {
                         webView.destroy();
                     }
                 }
-                WebView webView = new WebView(context);
+                WebView webView = new WebView(MApplication.getInstance());
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.getSettings().setUserAgentString(analyzeUrl.getHeaderMap().get("User-Agent"));
                 webView.addJavascriptInterface(new MyJavaScriptInterface(webView), "HTMLOUT");

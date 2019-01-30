@@ -105,7 +105,7 @@ public class x5webActivity extends MBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RelativeLayout error =  ll_control_error.findViewById(R.id.online_error_btn_retry);
+        RelativeLayout error = ll_control_error.findViewById(R.id.online_error_btn_retry);
         loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null);
 
         mWebChromeClient = new MyWebChromeClient();

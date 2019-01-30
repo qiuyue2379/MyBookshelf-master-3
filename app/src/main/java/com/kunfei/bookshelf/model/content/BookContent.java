@@ -4,38 +4,41 @@ import android.text.TextUtils;
 
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
+import com.kunfei.bookshelf.base.BaseModelImpl;
 import com.kunfei.bookshelf.bean.BaseChapterBean;
 import com.kunfei.bookshelf.bean.BookContentBean;
 import com.kunfei.bookshelf.bean.BookSourceBean;
 import com.kunfei.bookshelf.bean.ChapterListBean;
 import com.kunfei.bookshelf.dao.ChapterListBeanDao;
 import com.kunfei.bookshelf.dao.DbHelper;
-import com.kunfei.bookshelf.model.analyzeRule.AnalyzeHeaders;
 import com.kunfei.bookshelf.model.analyzeRule.AnalyzeRule;
-import com.kunfei.bookshelf.model.impl.IHttpGetApi;
+import com.kunfei.bookshelf.model.analyzeRule.AnalyzeUrl;
 import com.kunfei.bookshelf.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
-import retrofit2.Call;
+import retrofit2.Response;
 
 class BookContent {
     private String tag;
     private BookSourceBean bookSourceBean;
     private String ruleBookContent;
+    private boolean isAjax = false;
 
     BookContent(String tag, BookSourceBean bookSourceBean) {
         this.tag = tag;
         this.bookSourceBean = bookSourceBean;
         ruleBookContent = bookSourceBean.getRuleBookContent();
         if (ruleBookContent.startsWith("$")) {
+            isAjax = true;
             ruleBookContent = ruleBookContent.substring(1);
         }
     }
 
-    Observable<BookContentBean> analyzeBookContent(final String s, final BaseChapterBean chapterBean) {
+    Observable<BookContentBean> analyzeBookContent(final String s, final BaseChapterBean chapterBean, Map<String, String> headerMap) {
         return Observable.create(e -> {
             if (TextUtils.isEmpty(s)) {
                 e.onError(new Throwable("内容获取失败"));
@@ -70,19 +73,24 @@ class BookContent {
                     if (nextChapter != null && webContentBean.nextUrl.equals(nextChapter.getDurChapterUrl())) {
                         break;
                     }
-                    Call<String> call = DefaultModel.getRetrofitString(bookSourceBean.getBookSourceUrl())
-                            .create(IHttpGetApi.class).getWebContentCall(webContentBean.nextUrl, AnalyzeHeaders.getMap(bookSourceBean));
-                    String response = "";
+                    AnalyzeUrl analyzeUrl = new AnalyzeUrl(webContentBean.nextUrl, null, null, headerMap);
                     try {
-                        response = call.execute().body();
+                        String body;
+                        if (isAjax) {
+                            body = BaseModelImpl.getAjaxHtml(analyzeUrl).blockingFirst();
+                        } else {
+                            Response<String> response = BaseModelImpl.getResponseO(analyzeUrl)
+                                    .blockingFirst();
+                            body = response.body();
+                        }
+                        webContentBean = analyzeBookContent(body, webContentBean.nextUrl);
+                        if (!TextUtils.isEmpty(webContentBean.content)) {
+                            bookContentBean.setDurChapterContent(bookContentBean.getDurChapterContent() + "\n" + webContentBean.content);
+                        }
                     } catch (Exception exception) {
                         if (!e.isDisposed()) {
                             e.onError(exception);
                         }
-                    }
-                    webContentBean = analyzeBookContent(response, webContentBean.nextUrl);
-                    if (!TextUtils.isEmpty(webContentBean.content)) {
-                        bookContentBean.setDurChapterContent(bookContentBean.getDurChapterContent() + "\n" + webContentBean.content);
                     }
                 }
             }
