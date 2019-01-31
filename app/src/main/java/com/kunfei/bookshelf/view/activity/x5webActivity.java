@@ -10,10 +10,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -22,25 +20,21 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
-import android.webkit.JavascriptInterface;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
-import com.kunfei.bookshelf.help.WebViewJavaScriptFunction;
 import com.kunfei.bookshelf.help.X5WebView;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -68,7 +62,6 @@ public class x5webActivity extends MBaseActivity {
     private String searchKey;
     private boolean showHistory;
     private MyWebChromeClient mWebChromeClient;
-    private View customView = null;
     private View loadingView;
     boolean isFullScrenn = false;
     Handler handler=new Handler(Looper.getMainLooper());
@@ -249,6 +242,7 @@ public class x5webActivity extends MBaseActivity {
             case R.id.clear_cookie:
                 clearWebViewCache();
                 showSnackBar(toolbar, "成功为您清除Cookie，请刷新网页!");
+                webView.reload();
                 break;
             case android.R.id.home:
                 finish();
