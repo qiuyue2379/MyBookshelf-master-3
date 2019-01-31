@@ -26,16 +26,18 @@ class BookContent {
     private String tag;
     private BookSourceBean bookSourceBean;
     private String ruleBookContent;
-    private boolean isAjax = false;
 
     BookContent(String tag, BookSourceBean bookSourceBean) {
         this.tag = tag;
         this.bookSourceBean = bookSourceBean;
         ruleBookContent = bookSourceBean.getRuleBookContent();
         if (ruleBookContent.startsWith("$")) {
-            isAjax = true;
             ruleBookContent = ruleBookContent.substring(1);
         }
+    }
+
+    Observable<BookContentBean> analyzeBookContent(final Response<String> response, final BaseChapterBean chapterBean, Map<String, String> headerMap) {
+        return analyzeBookContent(response.body(), chapterBean, headerMap);
     }
 
     Observable<BookContentBean> analyzeBookContent(final String s, final BaseChapterBean chapterBean, Map<String, String> headerMap) {
@@ -65,7 +67,7 @@ class BookContent {
             if (!TextUtils.isEmpty(webContentBean.nextUrl)) {
                 List<String> usedUrlList = new ArrayList<>();
                 usedUrlList.add(chapterBean.getDurChapterUrl());
-                ChapterListBean nextChapter = DbHelper.getInstance().getmDaoSession().getChapterListBeanDao().queryBuilder()
+                ChapterListBean nextChapter = DbHelper.getmDaoSession().getChapterListBeanDao().queryBuilder()
                         .where(ChapterListBeanDao.Properties.NoteUrl.eq(chapterBean.getNoteUrl()), ChapterListBeanDao.Properties.DurChapterIndex.eq(chapterBean.getDurChapterIndex() + 1))
                         .build().unique();
                 while (!TextUtils.isEmpty(webContentBean.nextUrl) && !usedUrlList.contains(webContentBean.nextUrl)) {
@@ -76,12 +78,8 @@ class BookContent {
                     AnalyzeUrl analyzeUrl = new AnalyzeUrl(webContentBean.nextUrl, null, null, headerMap);
                     try {
                         String body;
-                        //                        if (isAjax) {
-                        //                            body = BaseModelImpl.getAjaxHtml(analyzeUrl).blockingFirst();
-                        //                        } else {
-                        Response<String> response = BaseModelImpl.getResponseO(analyzeUrl).blockingFirst();
-                            body = response.body();
-                      //  }
+                        Response<String> response = BaseModelImpl.getInstance().getResponseO(analyzeUrl).blockingFirst();
+                        body = response.body();
                         webContentBean = analyzeBookContent(body, webContentBean.nextUrl);
                         if (!TextUtils.isEmpty(webContentBean.content)) {
                             bookContentBean.setDurChapterContent(bookContentBean.getDurChapterContent() + "\n" + webContentBean.content);

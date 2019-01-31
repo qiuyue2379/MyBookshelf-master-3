@@ -3,13 +3,16 @@ package com.kunfei.bookshelf.base;
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kunfei.bookshelf.MApplication;
+import com.kunfei.bookshelf.bean.CookieBean;
+import com.kunfei.bookshelf.dao.DbHelper;
 import com.kunfei.bookshelf.help.EncodeConverter;
-import com.kunfei.bookshelf.help.RetryInterceptor;
+import com.kunfei.bookshelf.help.HttpInterceptor;
 import com.kunfei.bookshelf.help.SSLSocketClient;
 import com.kunfei.bookshelf.model.analyzeRule.AnalyzeUrl;
 import com.kunfei.bookshelf.model.impl.IHttpGetApi;
@@ -30,7 +33,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 public class BaseModelImpl {
     private static OkHttpClient.Builder clientBuilder;
 
-    public static Observable<Response<String>> getResponseO(AnalyzeUrl analyzeUrl) {
+    public static BaseModelImpl getInstance() {
+        return new BaseModelImpl();
+    }
+
+    public Observable<Response<String>> getResponseO(AnalyzeUrl analyzeUrl) {
         switch (analyzeUrl.getUrlMode()) {
             case POST:
                 return getRetrofitString(analyzeUrl.getHost())
@@ -52,7 +59,7 @@ public class BaseModelImpl {
         }
     }
 
-    public static Retrofit getRetrofitString(String url) {
+    public Retrofit getRetrofitString(String url) {
         return new Retrofit.Builder().baseUrl(url)
                 //增加返回值为字符串的支持(以实体类返回)
                 .addConverterFactory(EncodeConverter.create())
@@ -62,7 +69,7 @@ public class BaseModelImpl {
                 .build();
     }
 
-    public static Retrofit getRetrofitString(String url, String encode) {
+    public Retrofit getRetrofitString(String url, String encode) {
         return new Retrofit.Builder().baseUrl(url)
                 //增加返回值为字符串的支持(以实体类返回)
                 .addConverterFactory(EncodeConverter.create(encode))
@@ -83,7 +90,7 @@ public class BaseModelImpl {
                     .hostnameVerifier(SSLSocketClient.getHostnameVerifier())
                     .protocols(Collections.singletonList(Protocol.HTTP_1_1))
                     .addInterceptor(getHeaderInterceptor())
-                    .addInterceptor(new RetryInterceptor(1));
+                    .addInterceptor(new HttpInterceptor(1));
         }
         return clientBuilder;
     }
@@ -100,13 +107,36 @@ public class BaseModelImpl {
         };
     }
 
+    protected Observable<Response<String>> setCookie(Response<String> response, String tag) {
+        return Observable.create(e -> {
+            if (!response.raw().headers("Set-Cookie").isEmpty()) {
+                StringBuilder cookieBuilder = new StringBuilder();
+                for (String s : response.raw().headers("Set-Cookie")) {
+                    String[] x = s.split(";");
+                    for (String y : x) {
+                        if (!TextUtils.isEmpty(y)) {
+                            cookieBuilder.append(y).append(";");
+                        }
+                    }
+                }
+                String cookie = cookieBuilder.toString();
+                if (!TextUtils.isEmpty(cookie)) {
+                    DbHelper.getmDaoSession().getCookieBeanDao().insertOrReplace(new CookieBean(tag, cookie));
+                }
+            }
+            e.onNext(response);
+            e.onComplete();
+        });
+    }
+
     @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
-    public static Observable<String> getAjaxHtml(AnalyzeUrl analyzeUrl) {
+    protected Observable<String> getAjaxHtml(AnalyzeUrl analyzeUrl) {
         return Observable.create(e -> {
             Handler handler = new Handler(Looper.getMainLooper());
             class HtmlOutJavaScriptInterface {
-                @JavascriptInterface
+
                 @SuppressWarnings("unused")
+                @JavascriptInterface
                 public void processHTML(String html) {
                     e.onNext(html);
                     e.onComplete();

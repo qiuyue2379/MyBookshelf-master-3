@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
+import android.webkit.CookieSyncManager;
 
 import com.kunfei.bookshelf.help.AppFrontBackHelper;
 import com.kunfei.bookshelf.help.Constant;
@@ -40,7 +41,6 @@ public class MApplication extends Application {
     private static String packageName;
 
     private SharedPreferences configPreferences;
-    private SharedPreferences cookiePreferences;
     private boolean donateHb;
 
     public static MApplication getInstance() {
@@ -84,7 +84,6 @@ public class MApplication extends Application {
             createChannelIdReadAloud();
         }
         configPreferences = getSharedPreferences("CONFIG", 0);
-        cookiePreferences = getSharedPreferences("COOKIE", 0);
         downloadPath = configPreferences.getString(getString(R.string.pk_download_path), "");
         if (TextUtils.isEmpty(downloadPath)) {
             setDownloadPath(FileHelp.getCachePath());
@@ -92,14 +91,17 @@ public class MApplication extends Application {
         if (!ThemeStore.isConfigured(this, versionCode)) {
             upThemeStore();
         }
+        CookieSyncManager.createInstance(getInstance());
         AppFrontBackHelper.getInstance().register(this, new AppFrontBackHelper.OnAppStatusListener() {
             @Override
             public void onFront() {
+                CookieSyncManager.getInstance().sync();
                 donateHb = System.currentTimeMillis() - configPreferences.getLong("DonateHb", 0) <= TimeUnit.DAYS.toMillis(3);
             }
 
             @Override
             public void onBack() {
+                CookieSyncManager.getInstance().sync();
                 if (UpLastChapterModel.model != null) {
                     UpLastChapterModel.model.onDestroy();
                 }
@@ -154,10 +156,6 @@ public class MApplication extends Application {
 
     public SharedPreferences getConfigPreferences() {
         return configPreferences;
-    }
-
-    public static SharedPreferences getCookiePreferences() {
-        return getInstance().cookiePreferences;
     }
 
     public boolean getDonateHb() {
