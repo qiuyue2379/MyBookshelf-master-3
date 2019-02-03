@@ -64,6 +64,7 @@ public class x5webActivity extends MBaseActivity {
     private MyWebChromeClient mWebChromeClient;
     private View loadingView;
     boolean isFullScrenn = false;
+
     Handler handler=new Handler(Looper.getMainLooper());
 
     public static void startThis(Context context) {
@@ -268,12 +269,6 @@ public class x5webActivity extends MBaseActivity {
     }
 
     class MyWebChromeClient extends WebChromeClient{
-
-        @Override
-        public void onHideCustomView() {
-            exitFullScreenOnMainThread();
-        }
-
         //视频加载添加默认图标
         @Override
         public Bitmap getDefaultVideoPoster() {
