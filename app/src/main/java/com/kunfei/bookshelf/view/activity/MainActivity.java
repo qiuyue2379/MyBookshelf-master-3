@@ -683,7 +683,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             return super.onKeyDown(keyCode, event);
         }
     }
-
     /**
      * 退出
      */
@@ -696,6 +695,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             finish();
         }
     }
+
 
     @Override
     protected void onDestroy() {

@@ -3,21 +3,15 @@ package com.kunfei.bookshelf.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.widget.FrameLayout;
@@ -33,6 +27,8 @@ import com.kunfei.bookshelf.help.X5WebView;
 import com.kunfei.bookshelf.utils.Theme.ThemeStore;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
+import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient.CustomViewCallback;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
@@ -56,16 +52,15 @@ public class x5webActivity extends MBaseActivity {
     LinearLayout ll_control_error;
     @BindView(R.id.progress)
     ProgressBar progressBar;
+    @BindView(R.id.frame_web_video)
+    FrameLayout video_fullView;
 
     private SearchView.SearchAutoComplete mSearchAutoComplete;
     private RelativeLayout error;
-    private String searchKey;
-    private boolean showHistory;
     private MyWebChromeClient mWebChromeClient;
     private View loadingView;
-    boolean isFullScrenn = false;
-
-    Handler handler=new Handler(Looper.getMainLooper());
+    private View xCustomView;
+    private CustomViewCallback xCustomViewCallback;
 
     public static void startThis(Context context) {
         Intent intent = new Intent(context, x5webActivity.class);
@@ -99,7 +94,7 @@ public class x5webActivity extends MBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        RelativeLayout error = ll_control_error.findViewById(R.id.online_error_btn_retry);
+        error = ll_control_error.findViewById(R.id.online_error_btn_retry);
         loadingView = getLayoutInflater().inflate(R.layout.view_loading_video, null);
 
         mWebChromeClient = new MyWebChromeClient();
@@ -119,96 +114,23 @@ public class x5webActivity extends MBaseActivity {
         });
 
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
-
         webView.getView().setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-    }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        try {
-            super.onConfigurationChanged(newConfig);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                Log.d("ppp", "onConfigurationChanged: " + "ORIENTATION_LANDSCAPE");
-            } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                Log.d("ppp", "onConfigurationChanged: " + "ORIENTATION_PORTRAIT");
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String s) {
+                webView.loadUrl(s);
+                return true;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+        });
 
-    FullscreenHolder fullscreenHolder;
-    protected static final FrameLayout.LayoutParams COVER_SCREEN_PARAMS = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-    // 向webview发出信息
-    private void enterFullScreenOnMainThread(){
-        if (Looper.myLooper()!=Looper.getMainLooper()){
-            handler.post(() -> enterFullScreen());
-        }else {
-            enterFullScreen();
-        }
-    }
-
-    private void enterFullScreen() {
-        FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
-        if (null != webView && null != rootView) {
-            rootView.removeView(webView);
-        }
-        fullscreenHolder = new FullscreenHolder(x5webActivity.this);
-        fullscreenHolder.addView(webView, COVER_SCREEN_PARAMS);
-        decorView.addView(fullscreenHolder, COVER_SCREEN_PARAMS);
-        //横屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        setStatusBarVisibility(false);
-        isFullScrenn=true;
-    }
-
-    private void exitFullScreenOnMainThread(){
-        if (Looper.myLooper()!=Looper.getMainLooper()){
-            handler.post(() -> exitFullScreen());
-        }else {
-            exitFullScreen();
-        }
-    }
-
-    private void exitFullScreen() {
-        FrameLayout decorView = (FrameLayout) getWindow().getDecorView();
-        fullscreenHolder.removeAllViews();
-        decorView.removeView(fullscreenHolder);
-        fullscreenHolder = null;
-        rootView.addView(webView);
-        //竖屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setStatusBarVisibility(true);
-        isFullScrenn=false;
-    }
-
-    /**
-     * 全屏容器界面
-     */
-    static class FullscreenHolder extends FrameLayout {
-
-        public FullscreenHolder(Context ctx) {
-            super(ctx);
-            setBackgroundColor(ctx.getResources().getColor(android.R.color.holo_red_dark));
-        }
-
-        @Override
-        public boolean onTouchEvent(MotionEvent evt) {
-            return true;
-        }
-    }
-
-    private void setStatusBarVisibility(boolean visible) {
-        int flag = visible ? 0 : WindowManager.LayoutParams.FLAG_FULLSCREEN;
-        getWindow().setFlags(flag, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     @Override
     public void onBackPressed() {
         /** 回退键 事件处理 优先级:视频播放全屏-网页回退-关闭页面 */
-        if (isFullScrenn) {
-            exitFullScreenOnMainThread();
+        if (inCustomView()) {
+            hideCustomView();
         } else if (webView.canGoBack()) {
             webView.goBack();
         } else {
@@ -269,6 +191,43 @@ public class x5webActivity extends MBaseActivity {
     }
 
     class MyWebChromeClient extends WebChromeClient{
+        /**
+         * 全屏播放配置
+         */
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            super.onShowCustomView(view, callback);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            webView.setVisibility(View.INVISIBLE);
+            // 如果一个视图已经存在，那么立刻终止并新建一个
+            if (xCustomView != null) {
+                callback.onCustomViewHidden();
+                return;
+            }
+            view.setVisibility(View.VISIBLE);
+            video_fullView.addView(view);
+            xCustomView = view;
+            xCustomView.setVisibility(View.VISIBLE);
+            xCustomViewCallback = callback;
+            video_fullView.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onHideCustomView() {
+            super.onHideCustomView();
+            if (xCustomView == null){
+                // 不是全屏播放状态
+                return;
+            }
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            xCustomView.setVisibility(View.GONE);
+            video_fullView.removeView(xCustomView);
+            xCustomView = null;
+            video_fullView.setVisibility(View.GONE);
+            xCustomViewCallback.onCustomViewHidden();
+            webView.setVisibility(View.VISIBLE);
+        }
+
         //视频加载添加默认图标
         @Override
         public Bitmap getDefaultVideoPoster() {
@@ -278,9 +237,9 @@ public class x5webActivity extends MBaseActivity {
             return bitmap;
         }
 
-        //视频加载时进程loading
         @Override
-        public View getVideoLoadingProgressView() {
+        public View getVideoLoadingProgressView()
+        {
             if (loadingView != null) {
                 loadingView.setVisibility(View.VISIBLE);
                 return loadingView;
@@ -306,4 +265,21 @@ public class x5webActivity extends MBaseActivity {
             searchView.setQueryHint(s);
         }
     };
+
+    /**
+     * 判断是否是全屏
+     *
+     * @return
+     */
+    public boolean inCustomView() {
+        return (xCustomView != null);
+    }
+
+    /**
+     * 全屏时按返加键执行退出全屏方法
+     */
+    public void hideCustomView() {
+        mWebChromeClient.onHideCustomView();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
 }
