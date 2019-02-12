@@ -2,6 +2,22 @@
 <shortcuts xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
+        android:shortcutId="booksearch"
+        android:enabled="true"
+        android:icon="@drawable/icon_search_book"
+        android:shortcutShortLabel="@string/booksearch"
+        android:shortcutLongLabel="@string/booksearch"
+        android:shortcutDisabledMessage="@string/booksearch"
+        tools:ignore="UnusedAttribute">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.gedoor.monkeybook.qiuyue"
+            android:targetClass="com.kunfei.bookshelf.view.activity.SearchBookActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+    <shortcut
         android:shortcutId="bookRead"
         android:enabled="true"
         android:icon="@drawable/icon_read_book"

@@ -4,10 +4,10 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.webkit.CookieManager;
+import com.tencent.smtt.sdk.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.bean.CookieBean;
