@@ -43,7 +43,7 @@ import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.utils.ScreenUtils;
 import com.kunfei.bookshelf.utils.StringUtils;
 import com.kunfei.bookshelf.utils.SystemUtil;
-import com.kunfei.bookshelf.utils.Theme.ThemeStore;
+import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.kunfei.bookshelf.utils.barUtil.BarHide;
 import com.kunfei.bookshelf.utils.barUtil.ImmersionBar;
 import com.kunfei.bookshelf.view.popupwindow.CheckAddShelfPop;
@@ -103,8 +103,8 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     ReadInterfacePop readInterfacePop;
     @BindView(R.id.moreSettingPop)
     MoreSettingPop moreSettingPop;
-    @BindView(R.id.hpb_next_page_progress)
-    ProgressBar hpbNextPageProgress;
+    @BindView(R.id.pb_nextPage)
+    ProgressBar progressBarNextPage;
 
     private Animation menuTopIn;
     private Animation menuTopOut;
@@ -190,9 +190,9 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         }
 
         if (readBookControl.getHideStatusBar()) {
-            hpbNextPageProgress.setY(0);
+            progressBarNextPage.setY(0);
         } else {
-            hpbNextPageProgress.setY(ImmersionBar.getStatusBarHeight(this));
+            progressBarNextPage.setY(ImmersionBar.getStatusBarHeight(this));
         }
 
         if (llMenuBottom.getVisibility() == View.VISIBLE) {
@@ -302,20 +302,20 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         mHandler.removeCallbacks(upHpbNextPage);
         mHandler.removeCallbacks(autoPageRunnable);
         if (autoPage) {
-            hpbNextPageProgress.setVisibility(View.VISIBLE);
+            progressBarNextPage.setVisibility(View.VISIBLE);
             nextPageTime = readBookControl.getClickSensitivity() * 1000;
-            hpbNextPageProgress.setMax(nextPageTime);
+            progressBarNextPage.setMax(nextPageTime);
             mHandler.postDelayed(upHpbNextPage, upHpbInterval);
             mHandler.postDelayed(autoPageRunnable, nextPageTime);
         } else {
-            hpbNextPageProgress.setVisibility(View.INVISIBLE);
+            progressBarNextPage.setVisibility(View.INVISIBLE);
         }
         llMenuBottom.setAutoPage(autoPage);
     }
 
     private void upHpbNextPage() {
         nextPageTime = nextPageTime - upHpbInterval;
-        hpbNextPageProgress.setProgress(nextPageTime);
+        progressBarNextPage.setProgress(nextPageTime);
         mHandler.postDelayed(upHpbNextPage, upHpbInterval);
     }
 
