@@ -8,21 +8,27 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.hwangjr.rxbus.RxBus;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.help.FileHelp;
 import com.kunfei.bookshelf.help.ProcessTextHelp;
-import com.kunfei.bookshelf.help.RxBusTag;
-import com.kunfei.bookshelf.utils.FileUtil;
+import com.kunfei.bookshelf.help.WebDavHelp;
+import com.kunfei.bookshelf.utils.FileUtils;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.view.activity.SettingActivity;
+import com.thegrizzlylabs.sardineandroid.DavResource;
+import com.thegrizzlylabs.sardineandroid.Sardine;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import cn.qqtheme.framework.picker.FilePicker;
+
+import static com.kunfei.bookshelf.constant.AppConstant.DEFAULT_WEB_DAV_URL;
 
 /**
  * Created by GKF on 2017/12/16.
@@ -36,6 +42,7 @@ public class WebDavSettingsFragment extends PreferenceFragment implements Shared
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesName("CONFIG");
         settingActivity = (SettingActivity) this.getActivity();
+        settingActivity.setupActionBar("WebDav设置");
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         boolean processTextEnabled = ProcessTextHelp.isProcessTextEnabled();
@@ -47,12 +54,31 @@ public class WebDavSettingsFragment extends PreferenceFragment implements Shared
         addPreferencesFromResource(R.xml.pref_settings_web_dav);
         bindPreferenceSummaryToValue(findPreference("web_dav_url"));
         bindPreferenceSummaryToValue(findPreference("web_dav_account"));
+        bindPreferenceSummaryToValue(findPreference("web_dav_password"));
     }
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (Preference preference, Object value) -> {
         String stringValue = value.toString();
 
-        if (preference instanceof ListPreference) {
+        if (preference.getKey().equals("web_dav_url")) {
+            if (TextUtils.isEmpty(stringValue)) {
+                preference.setSummary(DEFAULT_WEB_DAV_URL);
+            } else {
+                preference.setSummary(stringValue);
+            }
+        } else if (preference.getKey().equals("web_dav_account")) {
+            if (TextUtils.isEmpty(stringValue)) {
+                preference.setSummary("输入你的WebDav账号");
+            } else {
+                preference.setSummary(stringValue);
+            }
+        } else if (preference.getKey().equals("web_dav_password")) {
+            if (TextUtils.isEmpty(stringValue)) {
+                preference.setSummary("输入你的WebDav授权密码");
+            } else {
+                preference.setSummary("************");
+            }
+        } else if (preference instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) preference;
             int index = listPreference.findIndexOfValue(stringValue);
             // Set the summary to reflect the new value.
@@ -85,17 +111,21 @@ public class WebDavSettingsFragment extends PreferenceFragment implements Shared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pk_bookshelf_px))) {
-            RxBus.get().post(RxBusTag.RECREATE, true);
-        } else if (key.equals("process_text")) {
-            ProcessTextHelp.setProcessTextEnable(sharedPreferences.getBoolean("process_text", true));
-        }
+
     }
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference.getKey().equals(getString(R.string.pk_download_path))) {
-            selectDownloadPath(preference);
+        if (preference.getKey().equals("web_dav_restore")) {
+            Sardine sardine = WebDavHelp.getSardine();
+            try {
+                List<DavResource> resourceList = sardine.list(WebDavHelp.getWebDavUrl() + "YueDu");
+                for (DavResource resource : resourceList) {
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
@@ -110,7 +140,7 @@ public class WebDavSettingsFragment extends PreferenceFragment implements Shared
                 picker.setRootPath(preference.getSummary().toString());
                 picker.setItemHeight(30);
                 picker.setOnFilePickListener(currentPath -> {
-                    if (!currentPath.contains(FileUtil.getSdCardPath())) {
+                    if (!currentPath.contains(FileUtils.getSdCardPath())) {
                         MApplication.getInstance().setDownloadPath(FileHelp.getCachePath());
                     } else {
                         MApplication.getInstance().setDownloadPath(currentPath);

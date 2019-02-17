@@ -27,9 +27,9 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 @SuppressLint("NewApi")
-public final class FileUtil {
+public final class FileUtils {
 
-    private final static String TAG = "FileUtil";
+    private final static String TAG = "FileUtils";
 
     @NonNull
     public static String getSdCardPath() {

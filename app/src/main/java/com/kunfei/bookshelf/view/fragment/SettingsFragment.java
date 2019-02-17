@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.widget.Toast;
@@ -16,8 +15,8 @@ import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.help.FileHelp;
 import com.kunfei.bookshelf.help.ProcessTextHelp;
-import com.kunfei.bookshelf.help.RxBusTag;
-import com.kunfei.bookshelf.utils.FileUtil;
+import com.kunfei.bookshelf.constant.RxBusTag;
+import com.kunfei.bookshelf.utils.FileUtils;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.view.activity.SettingActivity;
 
@@ -37,6 +36,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesName("CONFIG");
         settingActivity = (SettingActivity) this.getActivity();
+        settingActivity.setupActionBar(getString(R.string.setting));
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         boolean processTextEnabled = ProcessTextHelp.isProcessTextEnabled();
@@ -99,7 +99,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             selectDownloadPath(preference);
         } else if (preference.getKey().equals("webDavSetting")) {
             WebDavSettingsFragment webDavSettingsFragment = new WebDavSettingsFragment();
-            getFragmentManager().beginTransaction().replace(R.id.settingsFrameLayout, webDavSettingsFragment).commit();
+            getFragmentManager().beginTransaction().replace(R.id.settingsFrameLayout, webDavSettingsFragment, "webDavSettings").commit();
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
@@ -114,7 +114,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 picker.setRootPath(preference.getSummary().toString());
                 picker.setItemHeight(30);
                 picker.setOnFilePickListener(currentPath -> {
-                    if (!currentPath.contains(FileUtil.getSdCardPath())) {
+                    if (!currentPath.contains(FileUtils.getSdCardPath())) {
                         MApplication.getInstance().setDownloadPath(FileHelp.getCachePath());
                     } else {
                         MApplication.getInstance().setDownloadPath(currentPath);

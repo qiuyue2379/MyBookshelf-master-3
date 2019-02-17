@@ -15,7 +15,7 @@ import com.kunfei.bookshelf.bean.SearchHistoryBean;
 import com.kunfei.bookshelf.dao.DbHelper;
 import com.kunfei.bookshelf.dao.SearchHistoryBeanDao;
 import com.kunfei.bookshelf.help.BookshelfHelp;
-import com.kunfei.bookshelf.help.RxBusTag;
+import com.kunfei.bookshelf.constant.RxBusTag;
 import com.kunfei.bookshelf.model.BookSourceManager;
 import com.kunfei.bookshelf.model.SearchBookModel;
 import com.kunfei.bookshelf.presenter.contract.SearchBookContract;

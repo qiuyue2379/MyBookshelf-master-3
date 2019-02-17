@@ -16,7 +16,7 @@ import com.kunfei.bookshelf.base.observer.SimpleObserver;
 import com.kunfei.bookshelf.bean.BookSourceBean;
 import com.kunfei.bookshelf.dao.DbHelper;
 import com.kunfei.bookshelf.help.DocumentHelper;
-import com.kunfei.bookshelf.help.RxBusTag;
+import com.kunfei.bookshelf.constant.RxBusTag;
 import com.kunfei.bookshelf.model.BookSourceManager;
 import com.kunfei.bookshelf.presenter.contract.BookSourceContract;
 import com.kunfei.bookshelf.service.CheckSourceService;
