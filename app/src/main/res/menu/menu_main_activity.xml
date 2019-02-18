@@ -45,10 +45,4 @@
         android:title="@string/clear_bookshelf"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_clearVod"
-        android:icon="@drawable/ic_launch_black_24dp"
-        android:title="@string/vod_html"
-        app:showAsAction="never" />
-
 </menu>

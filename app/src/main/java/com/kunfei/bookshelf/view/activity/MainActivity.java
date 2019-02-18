@@ -392,9 +392,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             case R.id.action_change_icon:
                 LauncherIcon.Change();
                 break;
-            case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebActivity.class));
-                break;
             case android.R.id.home:
                 if (drawer.isDrawerOpen(GravityCompat.START)
                         ) {
@@ -478,9 +475,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     break;
                 case R.id.action_donate:
                     handler.postDelayed(() -> DonateActivity.startThis(this), 200);
-                    break;
-                case R.id.action_vod:
-                    handler.postDelayed(() -> WebActivity.startThis(this), 200);
                     break;
                 case R.id.action_backup:
                     handler.postDelayed(this::backup, 200);
