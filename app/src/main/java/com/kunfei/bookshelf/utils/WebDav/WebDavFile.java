@@ -4,6 +4,11 @@ import com.kunfei.bookshelf.utils.WebDav.http.Handler;
 import com.kunfei.bookshelf.utils.WebDav.http.HttpAuth;
 import com.kunfei.bookshelf.utils.WebDav.http.OkHttp;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,7 +42,7 @@ public class WebDavFile {
     private URL url;
     private String httpUrl;
 
-    private String canon;
+    private String displayName;
     private long createTime;
     private long lastModified;
     private long size;
@@ -112,6 +117,7 @@ public class WebDavFile {
     public List<WebDavFile> listFiles(ArrayList<String> propsList) {
         Response response = propFindResponse(propsList);
         try {
+            assert response != null;
             if (response.isSuccessful()) {
                 return parseDir(response.body().string());
             }
@@ -124,7 +130,7 @@ public class WebDavFile {
     private Response propFindResponse(ArrayList<String> propsList) {
         StringBuilder requestProps = new StringBuilder();
         for (String p : propsList) {
-            requestProps.append("<a:" + p + "/>\n");
+            requestProps.append("<a:").append(p).append("/>\n");
         }
         String requestPropsStr;
         if (requestProps.toString().isEmpty()) {
@@ -154,8 +160,24 @@ public class WebDavFile {
 
     private List<WebDavFile> parseDir(String s) {
         List<WebDavFile> list = new ArrayList<>();
-
-
+        Document document = Jsoup.parse(s);
+        Elements elements = document.getElementsByTag("d:response");
+        String baseUrl = getUrl().endsWith("/") ? getUrl() : getUrl() + "/";
+        for (Element element : elements) {
+            String href = element.getElementsByTag("d:href").get(0).text();
+            if (!href.endsWith("/")) {
+                String fileName = element.getElementsByTag("d:displayname").get(0).text();
+                WebDavFile webDavFile;
+                try {
+                    webDavFile = new WebDavFile(baseUrl + fileName);
+                    webDavFile.setDisplayName(fileName);
+                    webDavFile.setSize(Long.parseLong(element.getElementsByTag("d:getcontentlength").get(0).text()));
+                    list.add(webDavFile);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         return list;
     }
 
@@ -236,12 +258,16 @@ public class WebDavFile {
      * @param localPath 本地文件路径
      * @return 是否成功成功
      */
-    public boolean upload(String localPath, String mimeType) {
+    public boolean upload(String localPath) {
+        return upload(localPath, null);
+    }
+
+    public boolean upload(String localPath, String contentType) {
         File file = new File((localPath));
         if (!file.exists()) return false;
-//         String fileMime = new MimetypesFileTypeMap().getContentType(file);  // 获取文件的MIME类型
+        MediaType mediaType = contentType == null ? null : MediaType.parse(contentType);
         // 务必注意RequestBody不要嵌套，不然上传时内容可能会被追加多余的文件信息
-        RequestBody fileBody = RequestBody.create(MediaType.parse(mimeType), file);
+        RequestBody fileBody = RequestBody.create(mediaType, file);
         Request.Builder request = new Request.Builder()
                 .url(getUrl())
                 .put(fileBody);
@@ -291,12 +317,12 @@ public class WebDavFile {
         return null;
     }
 
-    public String getCanon() {
-        return canon;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setCanon(String canon) {
-        this.canon = canon;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public long getCreateTime() {
@@ -325,10 +351,6 @@ public class WebDavFile {
 
     public boolean isDirectory() {
         return isDirectory;
-    }
-
-    public String getName() {
-        return getURLName();
     }
 
     public String getURLName() {

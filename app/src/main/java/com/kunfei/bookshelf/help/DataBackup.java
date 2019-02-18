@@ -1,6 +1,8 @@
 package com.kunfei.bookshelf.help;
 
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -21,11 +23,9 @@ import com.kunfei.bookshelf.utils.TimeUtils;
 import com.kunfei.bookshelf.utils.WebDav.WebDavFile;
 import com.kunfei.bookshelf.utils.XmlUtils;
 import com.kunfei.bookshelf.utils.ZipUtils;
-import com.thegrizzlylabs.sardineandroid.Sardine;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,12 +126,19 @@ public class DataBackup {
         try {
             FileHelp.deleteFile(zipFilePath);
             if (ZipUtils.zipFiles(filePaths, zipFilePath)) {
+            if (WebDavHelp.initWebDav()) {
+                new  WebDavFile(WebDavHelp.getWebDavUrl() + "YueDu").makeAsDir();
                 String putUrl = WebDavHelp.getWebDavUrl() + "YueDu/backup" + TimeUtils.date2String(TimeUtils.getNowDate(), new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())) + ".zip";
                 WebDavFile webDavFile = new WebDavFile(putUrl);
-                webDavFile.upload(zipFilePath, ".zip");
+                webDavFile.upload(zipFilePath);
             }
-        } catch (IOException e) {
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+            new Handler(Looper.getMainLooper())
+                    .post(() -> Toast
+                            .makeText(MApplication.getInstance(), e.getLocalizedMessage(), Toast.LENGTH_SHORT)
+                            .show());
         }
     }
 
