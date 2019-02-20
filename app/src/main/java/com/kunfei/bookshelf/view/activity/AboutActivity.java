@@ -16,6 +16,7 @@ import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
+import com.kunfei.bookshelf.help.UpdateManager;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
@@ -56,6 +57,10 @@ public class AboutActivity extends MBaseActivity {
     TextView tvUpdate;
     @BindView(R.id.vw_update)
     CardView vwUpdate;
+    @BindView(R.id.tv_update1)
+    TextView tvUpdate1;
+    @BindView(R.id.vw_update1)
+    CardView vwUpdate1;
     @BindView(R.id.tv_qq)
     TextView tvQq;
     @BindView(R.id.vw_qq)
@@ -118,6 +123,7 @@ public class AboutActivity extends MBaseActivity {
         vwDonate.setOnClickListener(view -> DonateActivity.startThis(this));
         vwDisclaimer.setOnClickListener(view -> moDialogHUD.showAssetMarkdown("disclaimer.md"));
         vwUpdate.setOnClickListener(view -> {UpdateChecker.checkForDialog(AboutActivity.this);});
+        vwUpdate1.setOnClickListener(view -> UpdateManager.getInstance(this).checkUpdate(true));
         vwQq.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText(null, qq);
