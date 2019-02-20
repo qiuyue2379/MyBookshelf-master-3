@@ -1,4 +1,4 @@
-package com.kunfei.bookshelf.utils.WebDav.http;
+package com.kunfei.bookshelf.utils.web_dav.http;
 
 import okhttp3.OkHttpClient;
 
@@ -11,10 +11,6 @@ public class OkHttp {
 
     public static OkHttp getInstance() {
         return SingletonHelper.INSTANCE;
-    }
-
-    public void setClient(OkHttpClient client) {
-        okHttpClient = client;
     }
 
     public OkHttpClient client() {

@@ -1,6 +1,5 @@
-package com.kunfei.bookshelf.utils.WebDav.http;
+package com.kunfei.bookshelf.utils.web_dav.http;
 
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
@@ -13,7 +12,7 @@ public class Handler extends URLStreamHandler {
         return 80;
     }
 
-    public URLConnection openConnection(URL u) throws IOException {
+    public URLConnection openConnection(URL u) {
         return null;
     }
 

@@ -22,7 +22,7 @@ import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.utils.ColorUtil;
 import com.kunfei.bookshelf.utils.theme.MaterialValueHelper;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
-import com.kunfei.bookshelf.utils.barUtil.ImmersionBar;
+import com.kunfei.bookshelf.utils.bar.ImmersionBar;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

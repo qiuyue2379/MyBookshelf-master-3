@@ -166,7 +166,7 @@ public final class TintHelper {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                     !background && view.getBackground() instanceof RippleDrawable) {
-                // Ripples for the above views (e.g. when you tap and hold a switch or checkbox)
+                // Ripples for the above views (e.g. when you tap and hold a switch or check_box)
                 RippleDrawable rd = (RippleDrawable) view.getBackground();
                 @SuppressLint("PrivateResource") final int unchecked = ContextCompat.getColor(view.getContext(),
                         isDark ? R.color.ripple_material_dark : R.color.ripple_material_light);
