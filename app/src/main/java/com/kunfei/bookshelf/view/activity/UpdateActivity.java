@@ -25,6 +25,8 @@ import com.kunfei.bookshelf.service.UpdateService;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -89,8 +91,31 @@ public class UpdateActivity extends MBaseActivity {
     protected void initData() {
         updateInfo = getIntent().getParcelableExtra("updateInfo");
         if (updateInfo != null) {
-            Markwon.setMarkdown(tvMarkdown, updateInfo.getDetail());
+            if (updateInfo.getUpDate()) {
+                Markwon.setMarkdown(tvMarkdown, updateInfo.getDetail());
+            } else {
+                Markwon.setMarkdown(tvMarkdown, readAssetsTxt(this,"updateLog"));
+            }
         }
+    }
+
+    /**
+     * 读取assets下的文件，返回utf-8 String
+     * @param fileName 不包括后缀
+     */
+    public static String readAssetsTxt(Context context,String fileName){
+        try {
+            InputStream is = context.getAssets().open(fileName+".md");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            String text = new String(buffer, "utf-8");
+            return text;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "读取错误，请检查文件名";
     }
 
     /**
