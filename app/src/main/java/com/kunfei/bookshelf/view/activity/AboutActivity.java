@@ -31,7 +31,6 @@ import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposable;
-import com.kunfei.bookshelf.update.UpdateChecker;
 /**
  * Created by GKF on 2017/12/15.
  * 关于
@@ -57,10 +56,6 @@ public class AboutActivity extends MBaseActivity {
     TextView tvUpdate;
     @BindView(R.id.vw_update)
     CardView vwUpdate;
-    @BindView(R.id.tv_update1)
-    TextView tvUpdate1;
-    @BindView(R.id.vw_update1)
-    CardView vwUpdate1;
     @BindView(R.id.tv_qq)
     TextView tvQq;
     @BindView(R.id.vw_qq)
@@ -122,8 +117,7 @@ public class AboutActivity extends MBaseActivity {
     protected void bindEvent() {
         vwDonate.setOnClickListener(view -> DonateActivity.startThis(this));
         vwDisclaimer.setOnClickListener(view -> moDialogHUD.showAssetMarkdown("disclaimer.md"));
-        vwUpdate.setOnClickListener(view -> {UpdateChecker.checkForDialog(AboutActivity.this);});
-        vwUpdate1.setOnClickListener(view -> UpdateManager.getInstance(this).checkUpdate(true));
+        vwUpdate.setOnClickListener(view -> UpdateManager.getInstance(this).checkUpdate(true));
         vwQq.setOnClickListener(view -> {
             ClipboardManager clipboard = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = ClipData.newPlainText(null, qq);
