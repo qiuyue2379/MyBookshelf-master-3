@@ -55,7 +55,7 @@ public class ReceivingSharedActivity extends AppCompatActivity {
             MApplication.getConfigPreferences().edit()
                     .putString("shared_url", result.toString())
                     .apply();
-            
+
             Intent intent = new Intent();
             intent.setClass(ReceivingSharedActivity.this, MainActivity.class);
             this.startActivity(intent);
