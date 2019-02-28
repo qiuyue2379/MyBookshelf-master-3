@@ -513,7 +513,6 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
             public void speechRateFollowSys() {
                 if (ReadAloudService.running) {
                     ReadAloudService.stop(ReadBookActivity.this);
-                    toast("跟随系统需要重新开始朗读");
                 }
             }
         });
@@ -909,7 +908,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         final String charset = mPresenter.getBookShelf().getBookInfoBean().getCharset();
         moDialogHUD.showInputBox("输入编码",
                 charset,
-                new String[]{"UTF-8", "GB2312", "GBK", "Unicode", "UTF-16", "ASCII"},
+                new String[]{"UTF-8", "GB2312", "GBK", "Unicode", "UTF-16", "UTF-16LE", "ASCII"},
                 (inputText -> {
                     inputText = inputText.trim();
                     if (!Objects.equals(charset, inputText)) {

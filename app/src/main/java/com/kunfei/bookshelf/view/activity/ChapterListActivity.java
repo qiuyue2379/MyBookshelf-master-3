@@ -42,7 +42,6 @@ public class ChapterListActivity extends BaseTabActivity {
 
     private ReadBookControl readBookControl = ReadBookControl.getInstance();
     private SearchView searchView;
-
     private BookShelfBean bookShelf;
 
     public static void startThis(MBaseActivity activity, BookShelfBean bookShelf) {
@@ -163,7 +162,6 @@ public class ChapterListActivity extends BaseTabActivity {
     public void onBackPressed() {
         if (mTlIndicator.getVisibility() != VISIBLE) {
             searchViewCollapsed();
-            return;
         }
         finish();
     }

@@ -20,9 +20,9 @@ import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.utils.ColorUtil;
+import com.kunfei.bookshelf.utils.bar.ImmersionBar;
 import com.kunfei.bookshelf.utils.theme.MaterialValueHelper;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
-import com.kunfei.bookshelf.utils.bar.ImmersionBar;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -204,9 +204,9 @@ public abstract class MBaseActivity<T extends IPresenter> extends BaseActivity<T
     }
 
     protected void setNightTheme(boolean isNightTheme) {
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("nightTheme", isNightTheme);
-        editor.apply();
+        preferences.edit()
+                .putBoolean("nightTheme", isNightTheme)
+                .apply();
         MApplication.getInstance().upThemeStore();
         initTheme();
     }
