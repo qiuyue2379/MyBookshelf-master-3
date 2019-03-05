@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".view.activity.WebActivity">
+
+    <LinearLayout
+        android:id="@+id/nonVideoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/action_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="?attr/actionBarStyle"
+            tools:ignore="UnusedAttribute">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/NoPaddingToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                android:transitionName="sharedView"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    app:cardBackgroundColor="@color/background_card"
+                    app:cardElevation="0dp">
+
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/searchView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="-5dp"
+                        android:imeOptions="actionSearch"
+                        app:iconifiedByDefault="false"
+                        app:queryBackground="@null"
+                        app:searchIcon="@null"
+                        app:submitBackground="@null"
+                        tools:ignore="RtlHardcoded,UnusedAttribute" />
+                </androidx.cardview.widget.CardView>
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refresh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.kunfei.bookshelf.help.VideoEnabledWebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <include layout="@layout/view_web_error"/>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:max="100"
+                android:progressDrawable="@drawable/progress" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/videoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:visibility="gone"
+        android:background="#000000" >
+    </FrameLayout>
+
+</LinearLayout>
