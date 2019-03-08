@@ -9,10 +9,8 @@ import com.kunfei.bookshelf.model.impl.IHttpGetApi;
 import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.utils.StringUtils;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -35,7 +33,7 @@ import static com.kunfei.bookshelf.constant.AppConstant.MAP_STRING;
 public class AnalyzeRule {
     private static final Pattern putPattern = Pattern.compile("@put:\\{.+?\\}", Pattern.CASE_INSENSITIVE);
     private static final Pattern getPattern = Pattern.compile("@get:\\{.+?\\}", Pattern.CASE_INSENSITIVE);
-    private static final Pattern jsPattern = Pattern.compile("(<js>[\\w\\W]*?</js>|@js:.+$)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern jsPattern = Pattern.compile("(<js>[\\w\\W]*?</js>|@js:[\\w\\W]*$)", Pattern.CASE_INSENSITIVE);
 
     private BaseBookBean book;
     private Object _object;
@@ -165,6 +163,7 @@ public class AnalyzeRule {
             }
             return urlList;
         }
+        if (result == null) return new ArrayList<>();
         return (List<String>) result;
     }
 
@@ -285,8 +284,8 @@ public class AnalyzeRule {
             ruleList.add(new SourceRule(jsMatcher.group(), Mode.Js));
             start = jsMatcher.end();
         }
-        if (ruleList.isEmpty()) {
-            ruleList.add(new SourceRule(ruleStr, mode));
+        if (ruleStr.length() > start) {
+            ruleList.add(new SourceRule(ruleStr.substring(start), mode));
         }
         return ruleList;
     }
@@ -345,13 +344,14 @@ public class AnalyzeRule {
      * js实现跨域访问,不能删
      */
     @SuppressWarnings("unused")
-    public String ajax(String url) {
+    public String ajax(String urlStr) {
         try {
-            Call<String> call = BaseModelImpl.getInstance().getRetrofitString(url)
-                    .create(IHttpGetApi.class).getWebContentCall(url, null);
+            String baseUrl = urlStr.substring(0, urlStr.indexOf("/", 9));
+            Call<String> call = BaseModelImpl.getInstance().getRetrofitString(baseUrl)
+                    .create(IHttpGetApi.class).getWebContentCall(urlStr, new HashMap<>());
             return call.execute().body();
         } catch (Exception e) {
-            return null;
+            return e.getLocalizedMessage();
         }
     }
 
