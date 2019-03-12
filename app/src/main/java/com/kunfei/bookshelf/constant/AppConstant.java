@@ -7,10 +7,6 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-/**
- * Created by newbiechen on 17-4-16.
- */
-
 public class AppConstant {
 
     //Book Date Convert Format
