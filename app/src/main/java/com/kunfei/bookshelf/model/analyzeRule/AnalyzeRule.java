@@ -11,6 +11,7 @@ import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +151,7 @@ public class AnalyzeRule {
         for (SourceRule rule : ruleList) {
             switch (rule.mode) {
                 case Js:
-                    if (result == null) result = String.valueOf(_object);
+                    if (result == null) result = _object;
                     result = evalJS(rule.rule, result, baseUrl);
                     break;
                 case JSon:
@@ -163,9 +164,16 @@ public class AnalyzeRule {
                     result = getAnalyzeByJSoup(result).getAllResultList(rule.rule);
             }
         }
-        if (result != null && !StringUtils.isTrimEmpty(baseUrl)) {
+        if (result == null) return new ArrayList<>();
+        List<String> stringList = new ArrayList<>();
+        if (result instanceof List) {
+            stringList.addAll((Collection<? extends String>) result);
+        } else {
+            stringList.add(String.valueOf(result));
+        }
+        if (!StringUtils.isTrimEmpty(baseUrl)) {
             List<String> urlList = new ArrayList<>();
-            for (String url : (List<String>) result) {
+            for (String url : stringList) {
                 url = NetworkUtil.getAbsoluteURL(baseUrl, url);
                 if (!urlList.contains(url)) {
                     urlList.add(url);
@@ -173,8 +181,7 @@ public class AnalyzeRule {
             }
             return urlList;
         }
-        if (result == null) return new ArrayList<>();
-        return (List<String>) result;
+        return stringList;
     }
 
     /**
@@ -188,14 +195,14 @@ public class AnalyzeRule {
         if (StringUtils.isTrimEmpty(ruleStr)) {
             return null;
         }
-        String result = null;
+        Object result = null;
         List<SourceRule> ruleList = splitSourceRule(ruleStr);
         for (SourceRule rule : ruleList) {
             if (!StringUtils.isTrimEmpty(rule.rule)) {
                 switch (rule.mode) {
                     case Js:
-                        if (result == null) result = String.valueOf(_object);
-                        result = (String) evalJS(rule.rule, result, _baseUrl);
+                        if (result == null) result = _object;
+                        result = evalJS(rule.rule, result, _baseUrl);
                         break;
                     case JSon:
                         result = getAnalyzeByJSonPath(result).read(rule.rule);
@@ -213,9 +220,9 @@ public class AnalyzeRule {
             }
         }
         if (!StringUtils.isTrimEmpty(_baseUrl)) {
-            result = NetworkUtil.getAbsoluteURL(_baseUrl, result);
+            result = NetworkUtil.getAbsoluteURL(_baseUrl, (String) result);
         }
-        return result;
+        return (String) result;
     }
 
     /**
@@ -227,7 +234,7 @@ public class AnalyzeRule {
         for (SourceRule rule : ruleList) {
             switch (rule.mode) {
                 case Js:
-                    if (result == null) result = String.valueOf(_object);
+                    if (result == null) result = _object;
                     result = evalJS(rule.rule, result, null);
                     break;
                 case JSon:
