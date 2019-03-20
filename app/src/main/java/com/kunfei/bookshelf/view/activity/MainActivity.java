@@ -381,7 +381,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     }
 
                     @Override
-                    public void onUserHasAlreadyTurnedDownAndDontAsk(String... permission) {
+                    public void onAlreadyTurnedDownAndNoAsk(String... permission) {
                         PermissionUtils.requestMorePermissions(MainActivity.this, permission, FILE_SELECT_RESULT);
                     }
                 });
@@ -566,7 +566,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             }
 
             @Override
-            public void onUserHasAlreadyTurnedDownAndDontAsk(String... permission) {
+            public void onAlreadyTurnedDownAndNoAsk(String... permission) {
                 PermissionUtils.requestMorePermissions(MainActivity.this, permission, BACKUP_RESULT);
             }
         });
@@ -594,7 +594,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             }
 
             @Override
-            public void onUserHasAlreadyTurnedDownAndDontAsk(String... permission) {
+            public void onAlreadyTurnedDownAndNoAsk(String... permission) {
                 PermissionUtils.requestMorePermissions(MainActivity.this, permission, RESTORE_RESULT);
             }
         });
@@ -679,7 +679,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             }
 
             @Override
-            public void onUserHasAlreadyTurnedDownAndDontAsk(String... permission) {
+            public void onAlreadyTurnedDownAndNoAsk(String... permission) {
                 switch (requestCode) {
                     case FILE_SELECT_RESULT:
                         MainActivity.this.toast(R.string.import_book_per);
