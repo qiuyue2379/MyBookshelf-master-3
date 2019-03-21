@@ -21,7 +21,7 @@ public class ScrollPageAnim extends PageAnimation {
     public ScrollPageAnim(int w, int h, int marginWidth, int marginTop, int marginBottom, View view, OnPageChangeListener listener) {
         super(w, h, marginWidth, marginTop, marginBottom, view, listener);
         mListener.resetScroll();
-        mBgBitmap = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.RGB_565);
+        mBgBitmap = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ScrollPageAnim extends PageAnimation {
                     if (isNext) {
                         startAnim(Direction.NEXT);
                     } else {
-                        startAnim(Direction.PRE);
+                        startAnim(Direction.PREV);
                     }
                 } else {
                     // 开启动画
@@ -123,7 +123,7 @@ public class ScrollPageAnim extends PageAnimation {
                 super.startAnim();
                 mScroller.startScroll(0, 0, 0, -mViewHeight + 300, animationSpeed);
                 break;
-            case PRE:
+            case PREV:
                 super.startAnim();
                 mScroller.startScroll(0, 0, 0, mViewHeight - 300, animationSpeed);
                 break;
@@ -145,11 +145,6 @@ public class ScrollPageAnim extends PageAnimation {
     @Override
     public Bitmap getBgBitmap(int pageOnCur) {
         return mBgBitmap;
-    }
-
-    @Override
-    public Bitmap getContentBitmap(int pageOnCur) {
-        return null;
     }
 
 }

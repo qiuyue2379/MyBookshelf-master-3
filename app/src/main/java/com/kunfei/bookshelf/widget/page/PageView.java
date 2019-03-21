@@ -151,11 +151,6 @@ public class PageView extends View {
         return statusBarHeight;
     }
 
-    public Bitmap getContentBitmap(int pageOnCur) {
-        if (mPageAnim == null) return null;
-        return mPageAnim.getContentBitmap(pageOnCur);
-    }
-
     public Bitmap getBgBitmap(int pageOnCur) {
         if (mPageAnim == null) return null;
         return mPageAnim.getBgBitmap(pageOnCur);
@@ -163,9 +158,9 @@ public class PageView extends View {
 
     public void autoPrevPage() {
         if (mPageAnim instanceof ScrollPageAnim) {
-            ((ScrollPageAnim) mPageAnim).startAnim(PageAnimation.Direction.PRE);
+            ((ScrollPageAnim) mPageAnim).startAnim(PageAnimation.Direction.PREV);
         } else {
-            startHorizonPageAnim(PageAnimation.Direction.PRE);
+            startHorizonPageAnim(PageAnimation.Direction.PREV);
         }
     }
 
@@ -219,14 +214,14 @@ public class PageView extends View {
     public void drawPage(int pageOnCur) {
         if (!isPrepare) return;
         if (mPageLoader != null) {
-            Bitmap content = (mPageAnim instanceof ScrollPageAnim) ? getBgBitmap(pageOnCur) : getContentBitmap(pageOnCur);
-            mPageLoader.drawPage(getBgBitmap(pageOnCur), content, pageOnCur);
-            if (mPageAnim instanceof SimulationPageAnim) {
-                ((SimulationPageAnim) mPageAnim).onPageDrawn(pageOnCur);
-            }
+            mPageLoader.drawPage(getBgBitmap(pageOnCur), pageOnCur);
         }
+        invalidate();
     }
 
+    /**
+     * 绘制滚动背景
+     */
     public void drawBackground(Canvas canvas) {
         if (!isPrepare) return;
         if (mPageLoader != null) {
@@ -234,13 +229,9 @@ public class PageView extends View {
         }
     }
 
-    public void drawBackground(int pageOnCur) {
-        if (!isPrepare) return;
-        if (mPageLoader != null) {
-            mPageLoader.drawPage(getBgBitmap(pageOnCur), null, pageOnCur);
-        }
-    }
-
+    /**
+     * 绘制滚动内容
+     */
     public void drawContent(Canvas canvas, float offset) {
         if (!isPrepare) return;
         if (mPageLoader != null) {
@@ -248,11 +239,27 @@ public class PageView extends View {
         }
     }
 
+    /**
+     * 绘制横翻背景
+     */
+    public void drawBackground(int pageOnCur) {
+        if (!isPrepare) return;
+        if (mPageLoader != null) {
+            mPageLoader.drawPage(getBgBitmap(pageOnCur), pageOnCur);
+        }
+        invalidate();
+    }
+
+    /**
+     * 绘制横翻内容
+     * @param pageOnCur 相对当前页的位置
+     */
     public void drawContent(int pageOnCur) {
         if (!isPrepare) return;
         if (mPageLoader != null) {
-            mPageLoader.drawPage(null, getContentBitmap(pageOnCur), pageOnCur);
+            mPageLoader.drawPage(getBgBitmap(pageOnCur), pageOnCur);
         }
+        invalidate();
     }
 
     @Override

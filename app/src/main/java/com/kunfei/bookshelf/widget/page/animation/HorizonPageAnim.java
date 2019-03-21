@@ -32,9 +32,9 @@ public abstract class HorizonPageAnim extends PageAnimation {
     HorizonPageAnim(int w, int h, View view, OnPageChangeListener listener) {
         super(w, h, view, listener);
         //创建图片
-        mPreBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
-        mCurBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
-        mNextBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.RGB_565);
+        mPreBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.ARGB_8888);
+        mCurBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.ARGB_8888);
+        mNextBitmap = Bitmap.createBitmap(mViewWidth, mViewHeight, Bitmap.Config.ARGB_8888);
     }
 
     /**
@@ -45,15 +45,19 @@ public abstract class HorizonPageAnim extends PageAnimation {
         switch (mDirection) {
             case NEXT:
                 mPreBitmap.recycle();
-                mPreBitmap = mCurBitmap.copy(Bitmap.Config.RGB_565, true);
+                mPreBitmap = null;
+                mPreBitmap = mCurBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 mCurBitmap.recycle();
-                mCurBitmap = mNextBitmap.copy(Bitmap.Config.RGB_565, true);
+                mCurBitmap = null;
+                mCurBitmap = mNextBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 break;
-            case PRE:
+            case PREV:
                 mNextBitmap.recycle();
-                mNextBitmap = mCurBitmap.copy(Bitmap.Config.RGB_565, true);
+                mNextBitmap = null;
+                mNextBitmap = mCurBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 mCurBitmap.recycle();
-                mCurBitmap = mPreBitmap.copy(Bitmap.Config.RGB_565, true);
+                mCurBitmap = null;
+                mCurBitmap = mPreBitmap.copy(Bitmap.Config.ARGB_8888, true);
                 break;
         }
     }
@@ -104,7 +108,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
                             //上一页的参数配置
                             isNext = false;
                             boolean hasPrev = mListener.hasPrev();
-                            setDirection(Direction.PRE);
+                            setDirection(Direction.PREV);
                             //如果上一页不存在
                             if (!hasPrev) {
                                 noNext = true;
@@ -153,7 +157,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
                         if (!hasPrev) {
                             return;
                         }
-                        setDirection(Direction.PRE);
+                        setDirection(Direction.PREV);
                     }
                 } else {
                     isCancel = Math.abs(mLastX - mStartX) < slop * 3 || isCancel;
@@ -183,7 +187,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
                     case NEXT:
                         canvas.drawBitmap(mNextBitmap, 0, 0, null);
                         break;
-                    case PRE:
+                    case PREV:
                         canvas.drawBitmap(mPreBitmap, 0, 0, null);
                         break;
                     default:
@@ -210,16 +214,6 @@ public abstract class HorizonPageAnim extends PageAnimation {
 
     @Override
     public Bitmap getBgBitmap(int pageOnCur) {
-        if (pageOnCur < 0) {
-            return mPreBitmap;
-        } else if (pageOnCur > 0) {
-            return mNextBitmap;
-        }
-        return mCurBitmap;
-    }
-
-    @Override
-    public Bitmap getContentBitmap(int pageOnCur) {
         if (pageOnCur < 0) {
             return mPreBitmap;
         } else if (pageOnCur > 0) {

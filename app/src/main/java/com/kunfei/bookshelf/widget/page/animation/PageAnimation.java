@@ -160,12 +160,6 @@ public abstract class PageAnimation {
     public abstract Bitmap getBgBitmap(int pageOnCur);
 
     /**
-     * 获取内容显示版面
-     * pageOnCur: 位于当前页的位置, 小于0上一页, 0 当前页, 大于0下一页
-     */
-    public abstract Bitmap getContentBitmap(int pageOnCur);
-
-    /**
      * 翻页模式
      */
     public enum Mode {
@@ -213,7 +207,7 @@ public abstract class PageAnimation {
      * 翻页方向
      */
     public enum Direction {
-        NONE(true), NEXT(true), PRE(true), UP(false), DOWN(false);
+        NONE(true), NEXT(true), PREV(true), UP(false), DOWN(false);
 
         public final boolean isHorizontal;
 

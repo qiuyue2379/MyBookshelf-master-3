@@ -684,14 +684,11 @@ public abstract class PageLoader {
     private void upPage() {
         if (mPageMode != PageAnimation.Mode.SCROLL) {
             mPageView.drawPage(0);
-            mPageView.invalidate();
             if (mCurPagePos > 0 || mCurChapter.getPosition() > 0) {
                 mPageView.drawPage(-1);
-                mPageView.invalidate();
             }
             if (mCurPagePos < mCurChapter.getPageSize() - 1 || mCurChapter.getPosition() < bookShelfBean.getChapterList().size() - 1) {
                 mPageView.drawPage(1);
-                mPageView.invalidate();
             }
         }
     }
@@ -720,7 +717,7 @@ public abstract class PageLoader {
                     mPageView.drawPage(1);
                 }
                 break;
-            case PRE:
+            case PREV:
                 if (mCurPagePos > 0) {
                     mCurPagePos = mCurPagePos - 1;
                 } else if (mCurChapterPos > 0) {
@@ -748,7 +745,7 @@ public abstract class PageLoader {
      * 绘制页面
      * pageOnCur: 位于当前页的位置, 小于0上一页, 0 当前页, 大于0下一页
      */
-    synchronized void drawPage(Bitmap bgBitmap, Bitmap bitmap, int pageOnCur) {
+    synchronized void drawPage(Bitmap bitmap, int pageOnCur) {
         TxtChapter txtChapter;
         TxtPage txtPage;
         if (mCurChapter == null) {
@@ -777,9 +774,8 @@ public abstract class PageLoader {
             }
         }
         if (txtChapter != null) {
-            if (bgBitmap != null)
-                drawBackground(bgBitmap, txtChapter, txtPage);
             if (bitmap != null)
+                drawBackground(bitmap, txtChapter, txtPage);
                 drawContent(bitmap, txtChapter, txtPage);
         }
     }
@@ -1213,6 +1209,9 @@ public abstract class PageLoader {
         }
     }
 
+    /**
+     * 获取状态文本
+     */
     private String getStatusText(TxtChapter chapter) {
         String tip = "";
         switch (chapter.getStatus()) {
@@ -1220,16 +1219,16 @@ public abstract class PageLoader {
                 tip = mContext.getString(R.string.loading);
                 break;
             case ERROR:
-                tip = String.format("加载失败\n%s", mCurChapter.getMsg());
+                tip = mContext.getString(R.string.load_error_msg, mCurChapter.getMsg());
                 break;
             case EMPTY:
-                tip = "文章内容为空";
+                tip = mContext.getString(R.string.content_empty);
                 break;
             case CATEGORY_EMPTY:
-                tip = "目录列表为空";
+                tip = mContext.getString(R.string.chapter_list_empty);
                 break;
             case CHANGE_SOURCE:
-                tip = "正在换源请等待...";
+                tip = mContext.getString(R.string.on_change_source);
         }
         return tip;
     }
@@ -1501,7 +1500,6 @@ public abstract class PageLoader {
                 mPageView.drawPage(1);
             }
         }
-        mPageView.invalidate();
     }
 
     private void drawScaledText(Canvas canvas, String line, float lineWidth, TextPaint paint, float top) {
