@@ -10,6 +10,7 @@ import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseFragment;
@@ -60,7 +61,7 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
     private FindRightAdapter findRightAdapter;
     private FindKindAdapter findKindAdapter;
     private LinearLayoutManager leftLayoutManager;
-    private LinearLayoutManager rightLayoutManager;
+    private RecyclerView.LayoutManager rightLayoutManager;
 
     @Override
     public int createLayoutId() {
@@ -86,8 +87,6 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
             mPresenter.initData();
             refreshLayout.setRefreshing(false);
         });
-        leftLayoutManager = new LinearLayoutManager(getContext());
-        rightLayoutManager = new LinearLayoutManager(getContext());
         initRecyclerView();
     }
 
@@ -106,7 +105,7 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
     }
 
     @Override
-    public synchronized void updateUI(List<RecyclerViewData> group) {
+    public synchronized void updateUI(List<RecyclerViewData> group, List<Object> dataAll) {
         if (rlEmptyView == null) return;
         if (group.size() == 0) {
             tvEmpty.setText(R.string.no_find);
@@ -116,7 +115,7 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
         }
         if (isFlexBox()) {
             findLeftAdapter.setData(group);
-            findRightAdapter.setData(group);
+            findRightAdapter.setData(dataAll);
             rlEmptyView.setVisibility(View.GONE);
             rvFindLeft.setVisibility(View.VISIBLE);
             vwDivider.setVisibility(View.VISIBLE);
@@ -129,17 +128,21 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
         }
     }
 
-    private boolean isFlexBox() {
+    @Override
+    public boolean isFlexBox() {
         return preferences.getBoolean("findTypeIsFlexBox", true);
     }
 
     private void initRecyclerView() {
         if (isFlexBox()) {
+            leftLayoutManager = new LinearLayoutManager(getContext());
+            rightLayoutManager = new FlexboxLayoutManager(getContext());
             findKindAdapter = null;
-            findLeftAdapter = new FindLeftAdapter(pos -> rightLayoutManager.scrollToPositionWithOffset(pos, 0));
+            findLeftAdapter = new FindLeftAdapter(pos ->
+                    rightLayoutManager.scrollToPosition(((FindKindGroupBean)findLeftAdapter.getData().get(pos).getGroupData()).getIndexAll()));
             rvFindLeft.setLayoutManager(leftLayoutManager);
             rvFindLeft.setAdapter(findLeftAdapter);
-            findRightAdapter = new FindRightAdapter(this);
+            findRightAdapter = new FindRightAdapter(this, this);
             rvFindRight.setLayoutManager(rightLayoutManager);
             rvFindRight.setAdapter(findRightAdapter);
             rvFindRight.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -147,14 +150,22 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                     super.onScrolled(recyclerView, dx, dy);
-                    int index = rightLayoutManager.findFirstVisibleItemPosition();
-                    if (findLeftAdapter != null) {
-                        findLeftAdapter.upShowIndex(index);
-                        leftLayoutManager.scrollToPositionWithOffset(index, rvFindLeft.getHeight() / 2);
+                    int index = ((FlexboxLayoutManager) rightLayoutManager).findFirstCompletelyVisibleItemPosition();
+                    for (int i = index; i >= 0; i--) {
+                        if (findRightAdapter.getData().get(index) instanceof FindKindGroupBean) {
+                            i = ((FindKindGroupBean) findRightAdapter.getData().get(index)).getIndex();
+                            if (findLeftAdapter != null) {
+                                findLeftAdapter.upShowIndex(i);
+                                leftLayoutManager.scrollToPositionWithOffset(i, rvFindLeft.getHeight() / 2);
+                                break;
+                            }
+                        }
                     }
                 }
             });
         } else {
+            leftLayoutManager = null;
+            rightLayoutManager = new LinearLayoutManager(getContext());
             rvFindLeft.setVisibility(View.GONE);
             vwDivider.setVisibility(View.GONE);
             findLeftAdapter = null;
@@ -175,8 +186,12 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
 
     @Override
     public void onChildItemClick(int position, int groupPosition, int childPosition, View view) {
-        FindKindBean kindBean = (FindKindBean) findKindAdapter.getAllDatas().get(groupPosition).getChild(childPosition);
-
+        FindKindBean kindBean;
+        if (isFlexBox()) {
+            kindBean = (FindKindBean) findRightAdapter.getData().get(position);
+        } else {
+            kindBean = (FindKindBean) findKindAdapter.getAllDatas().get(groupPosition).getChild(childPosition);
+        }
         Intent intent = new Intent(getContext(), ChoiceBookActivity.class);
         intent.putExtra("url", kindBean.getKindUrl());
         intent.putExtra("title", kindBean.getKindName());
@@ -189,7 +204,7 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
         if (getActivity() == null) return;
         FindKindGroupBean groupBean;
         if (isFlexBox()) {
-            groupBean = (FindKindGroupBean) findRightAdapter.getData().get(groupPosition).getGroupData();
+            groupBean = (FindKindGroupBean) findRightAdapter.getData().get(groupPosition);
         } else {
             groupBean = (FindKindGroupBean) findKindAdapter.getAllDatas().get(groupPosition).getGroupData();
         }
