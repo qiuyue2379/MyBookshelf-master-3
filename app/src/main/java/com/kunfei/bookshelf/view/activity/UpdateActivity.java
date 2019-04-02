@@ -91,11 +91,7 @@ public class UpdateActivity extends MBaseActivity {
     protected void initData() {
         updateInfo = getIntent().getParcelableExtra("updateInfo");
         if (updateInfo != null) {
-            if (updateInfo.getUpDate()) {
-                Markwon.setMarkdown(tvMarkdown, updateInfo.getDetail());
-            } else {
-                Markwon.setMarkdown(tvMarkdown, readAssetsTxt(this,"updateLog"));
-            }
+            Markwon.create(this).setMarkdown(tvMarkdown, updateInfo.getDetail());
         }
     }
 
