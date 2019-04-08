@@ -240,7 +240,7 @@ public class SearchBookPresenter extends BasePresenterImpl<SearchBookContract.Vi
     public void stopSearch() {
         searchBookModel.stopSearch();
     }
-    
+
     @Override
     public void attachView(@NonNull IView iView) {
         super.attachView(iView);
