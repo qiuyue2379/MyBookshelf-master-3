@@ -9,8 +9,8 @@ import com.kunfei.bookshelf.bean.BookContentBean;
 import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.bean.ChapterListBean;
 import com.kunfei.bookshelf.bean.SearchBookBean;
-import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.constant.RxBusTag;
+import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.model.content.WebBook;
 
 import java.util.List;
@@ -65,9 +65,6 @@ public class WebBookModel {
         return WebBook.getInstance(tag).findBook(url, page);
     }
 
-    /**
-     * 更新目录
-     */
     private Observable<BookShelfBean> upChapterList(BookShelfBean bookShelfBean, List<ChapterListBean> chapterList) {
         return Observable.create(e -> {
             for (int i = 0; i < chapterList.size(); i++) {
@@ -94,9 +91,6 @@ public class WebBookModel {
         });
     }
 
-    /**
-     * 保存章节
-     */
     @SuppressLint("DefaultLocale")
     private Observable<BookContentBean> saveContent(String bookName, BaseChapterBean chapterBean, BookContentBean bookContentBean) {
         return Observable.create(e -> {
