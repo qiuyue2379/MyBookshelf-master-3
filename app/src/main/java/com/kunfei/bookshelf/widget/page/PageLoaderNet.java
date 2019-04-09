@@ -1,13 +1,18 @@
 package com.kunfei.bookshelf.widget.page;
 
 import android.annotation.SuppressLint;
+import android.widget.Toast;
 
+import com.kunfei.bookshelf.MApplication;
+import com.kunfei.bookshelf.base.observer.MyObserver;
 import com.kunfei.bookshelf.bean.BookContentBean;
 import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.bean.ChapterListBean;
 import com.kunfei.bookshelf.help.BookshelfHelp;
+import com.kunfei.bookshelf.help.ChangeSourceHelp;
 import com.kunfei.bookshelf.help.DocumentHelper;
 import com.kunfei.bookshelf.model.WebBookModel;
+import com.kunfei.bookshelf.model.content.WebBook;
 import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.utils.RxUtils;
 
@@ -36,6 +41,7 @@ public class PageLoaderNet extends PageLoader {
     private List<String> downloadingChapterList = new ArrayList<>();
     private ExecutorService executorService;
     private Scheduler scheduler;
+    private ChangeSourceHelp changeSourceHelp;
 
     PageLoaderNet(PageView pageView, BookShelfBean bookShelfBean) {
         super(pageView, bookShelfBean);
@@ -79,7 +85,11 @@ public class PageLoaderNet extends PageLoader {
 
                         @Override
                         public void onError(Throwable e) {
-                            chapterError(e.getMessage());
+                            if (e instanceof WebBook.NoSourceThrowable) {
+                                autoChangeSource();
+                            } else {
+                                chapterError(e.getMessage());
+                            }
                         }
 
                         @Override
@@ -88,6 +98,26 @@ public class PageLoaderNet extends PageLoader {
                         }
                     });
         }
+    }
+
+    private void autoChangeSource() {
+        setStatus(TxtChapter.Status.CHANGE_SOURCE);
+        if (changeSourceHelp == null) {
+            changeSourceHelp = new ChangeSourceHelp();
+        }
+        changeSourceHelp.autoChange(bookShelfBean,
+                bookShelfBeanO -> bookShelfBeanO.subscribe(new MyObserver<BookShelfBean>() {
+                    @Override
+                    public void onNext(BookShelfBean bookShelfBean) {
+                        changeSourceFinish(bookShelfBean);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        skipToChapter(bookShelfBean.getDurChapter(), bookShelfBean.getDurChapterPage());
+                        Toast.makeText(MApplication.getInstance(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 
     @SuppressLint("DefaultLocale")
@@ -124,7 +154,11 @@ public class PageLoaderNet extends PageLoader {
                         public void onError(Throwable e) {
                             DownloadingList(listHandle.REMOVE, bookShelfBean.getChapter(chapterIndex).getDurChapterUrl());
                             if (chapterIndex == mCurChapterPos) {
-                                chapterError(e.getMessage());
+                                if (e instanceof WebBook.NoSourceThrowable) {
+                                    autoChangeSource();
+                                } else {
+                                    chapterError(e.getMessage());
+                                }
                             }
                         }
 
@@ -261,6 +295,9 @@ public class PageLoaderNet extends PageLoader {
     public void closeBook() {
         super.closeBook();
         executorService.shutdown();
+        if (changeSourceHelp != null) {
+            changeSourceHelp.stopSearch();
+        }
     }
 
     public enum listHandle {
