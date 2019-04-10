@@ -2,7 +2,6 @@ package com.kunfei.bookshelf.model;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.Toast;
 
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
@@ -84,6 +83,16 @@ public class SearchBookModel {
         });
     }
 
+    private void searchBookError(Throwable throwable) {
+        compositeDisposable.dispose();
+        compositeDisposable = new CompositeDisposable();
+        handler.post(() -> {
+            searchListener.refreshFinish(true);
+            searchListener.loadMoreFinish(true);
+            searchListener.searchBookError(throwable);
+        });
+    }
+
     public void onDestroy() {
         stopSearch();
         executorService.shutdown();
@@ -107,11 +116,7 @@ public class SearchBookModel {
             handler.post(() -> searchListener.refreshSearchBook());
         }
         if (searchEngineS.size() == 0) {
-            handler.post(() -> {
-                Toast.makeText(MApplication.getInstance(), "没有选中任何书源", Toast.LENGTH_SHORT).show();
-                searchListener.refreshFinish(true);
-                searchListener.loadMoreFinish(true);
-            });
+            searchBookError(new Throwable("没有选中任何书源"));
             return;
         }
         searchSuccessNum = 0;
@@ -186,9 +191,9 @@ public class SearchBookModel {
             if (searchEngineIndex >= searchEngineS.size() + threadsNum - 1) {
                 if (searchSuccessNum == 0 && searchListener.getItemCount() == 0) {
                     if (page == 1) {
-                        handler.post(() -> searchListener.searchBookError(true));
+                        searchBookError(new Throwable("未搜索到内容"));
                     } else {
-                        handler.post(() -> searchListener.searchBookError(false));
+                        searchBookError(new Throwable("未搜索到更多内容"));
                     }
                 } else {
                     if (page == 1) {
@@ -225,7 +230,7 @@ public class SearchBookModel {
 
         void loadMoreSearchBook(List<SearchBookBean> searchBookBeanList);
 
-        void searchBookError(Boolean isRefresh);
+        void searchBookError(Throwable throwable);
 
         int getItemCount();
     }

@@ -236,7 +236,9 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
                             long currentTime = System.currentTimeMillis();
                             String bookName = bookShelf.getBookInfoBean().getName();
                             BookSourceBean bookSourceBean = BookshelfHelp.getBookSourceByTag(tag);
-                            if (ChangeSourceView.savedSource.getBookSource() != null && currentTime - ChangeSourceView.savedSource.getSaveTime() < 60000 && ChangeSourceView.savedSource.getBookName().equals(bookName))
+                            if (ChangeSourceView.savedSource.getBookSource() != null
+                                    && currentTime - ChangeSourceView.savedSource.getSaveTime() < 60000
+                                    && ChangeSourceView.savedSource.getBookName().equals(bookName))
                                 ChangeSourceView.savedSource.getBookSource().increaseWeight(-450);
                             BookSourceManager.saveBookSource(ChangeSourceView.savedSource.getBookSource());
                             ChangeSourceView.savedSource.setBookName(bookName);
@@ -262,8 +264,10 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
         if (changeSourceHelp == null) {
             changeSourceHelp = new ChangeSourceHelp();
         }
-        changeSourceHelp.autoChange(bookShelf,
-                bookShelfBeanO -> bookShelfBeanO.subscribe(new MyObserver<BookShelfBean>() {
+        changeSourceHelp.autoChange(bookShelf, new ChangeSourceHelp.ChangeSourceListener() {
+            @Override
+            public void finish(Observable<BookShelfBean> bookShelfBeanO) {
+                bookShelfBeanO.subscribe(new MyObserver<BookShelfBean>() {
                     @Override
                     public void onNext(BookShelfBean bookShelfBean) {
                         RxBus.get().post(RxBusTag.HAD_REMOVE_BOOK, bookShelf);
@@ -277,7 +281,15 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
                         mView.toast(e.getMessage());
                         mView.changeSourceFinish(null);
                     }
-                }));
+                });
+            }
+
+            @Override
+            public void error(Throwable throwable) {
+                mView.toast(throwable.getMessage());
+                mView.changeSourceFinish(null);
+            }
+        });
     }
 
     @Override
