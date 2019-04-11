@@ -470,6 +470,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
 
     @Override
     public void finish() {
-
+        super.finish();
+        overridePendingTransition(0, android.R.anim.fade_out);
     }
 }
