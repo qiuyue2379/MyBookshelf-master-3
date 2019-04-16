@@ -22,9 +22,12 @@ import com.kunfei.bookshelf.bean.ChapterListBean;
 import com.kunfei.bookshelf.bean.SearchBookBean;
 import com.kunfei.bookshelf.constant.RxBusTag;
 import com.kunfei.bookshelf.help.BookshelfHelp;
+import com.kunfei.bookshelf.model.UpLastChapterModel;
 import com.kunfei.bookshelf.model.WebBookModel;
+import com.kunfei.bookshelf.utils.NetworkUtil;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.SoftInputUtil;
+import com.kunfei.bookshelf.utils.StringUtils;
 import com.kunfei.bookshelf.utils.TimeUtils;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.victor.loading.rotate.RotateLoading;
@@ -153,13 +156,30 @@ public class SourceDebugActivity extends MBaseActivity {
     }
 
     private void startDebug(String key) {
+        UpLastChapterModel.getInstance().onDestroy();
         if (TextUtils.isEmpty(DEBUG_TAG)) return;
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }
         compositeDisposable = new CompositeDisposable();
         loading.start();
-        tvContent.setText(String.format("%s %s", TimeUtils.getNowString(DEBUG_TIME_FORMAT), "开始搜索"));
+        if (NetworkUtil.isUrl(key)) {
+            tvContent.setText(String.format("%s %s", TimeUtils.getNowString(DEBUG_TIME_FORMAT), "≡关键字为Url"));
+            BookShelfBean bookShelfBean = new BookShelfBean();
+            bookShelfBean.setTag(StringUtils.getBaseUrl(key));
+            bookShelfBean.setNoteUrl(key);
+            bookShelfBean.setDurChapter(0);
+            bookShelfBean.setGroup(0);
+            bookShelfBean.setDurChapterPage(0);
+            bookShelfBean.setFinalDate(System.currentTimeMillis());
+            bookInfoDebug(bookShelfBean);
+        } else {
+            tvContent.setText(String.format("%s %s", TimeUtils.getNowString(DEBUG_TIME_FORMAT), "≡开始搜索指定关键字"));
+            searchDebug(key);
+        }
+    }
+
+    private void searchDebug(String key) {
         WebBookModel.getInstance().searchBook(key, 1, DEBUG_TAG)
                 .compose(RxUtils::toSimpleSingle)
                 .subscribe(new Observer<List<SearchBookBean>>() {
@@ -181,7 +201,7 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        tvContent.setText(String.format("\n%s %s", TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
+                        tvContent.setText(String.format("%s\n%s └%s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
                         loading.stop();
                     }
 
@@ -190,11 +210,10 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     }
                 });
-
     }
 
     private void bookInfoDebug(BookShelfBean bookShelfBean) {
-        tvContent.setText(String.format("%s\n\n%s 开始获取详情页", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
+        tvContent.setText(String.format("%s\n\n%s ≡开始获取详情页", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
         WebBookModel.getInstance().getBookInfo(bookShelfBean)
                 .compose(RxUtils::toSimpleSingle)
                 .subscribe(new Observer<BookShelfBean>() {
@@ -210,7 +229,7 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        tvContent.setText(String.format("%s\n\n%s %s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
+                        tvContent.setText(String.format("%s\n\n%s └%s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
                         loading.stop();
                     }
 
@@ -222,7 +241,7 @@ public class SourceDebugActivity extends MBaseActivity {
     }
 
     private void bookChapterListDebug(BookShelfBean bookShelfBean) {
-        tvContent.setText(String.format("%s\n\n%s 开始获取目录", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
+        tvContent.setText(String.format("%s\n\n%s ≡开始获取目录页", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
         WebBookModel.getInstance().getChapterList(bookShelfBean)
                 .compose(RxUtils::toSimpleSingle)
                 .subscribe(new Observer<BookShelfBean>() {
@@ -248,7 +267,7 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        tvContent.setText(String.format("%s\n%s %s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
+                        tvContent.setText(String.format("%s\n%s └%s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
                         loading.stop();
                     }
 
@@ -260,7 +279,7 @@ public class SourceDebugActivity extends MBaseActivity {
     }
 
     private void bookContentDebug(ChapterListBean chapterListBean, String bookName) {
-        tvContent.setText(String.format("%s\n\n%s 开始获取正文", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
+        tvContent.setText(String.format("%s\n\n%s ≡开始获取正文页", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT)));
         WebBookModel.getInstance().getBookContent(chapterListBean, bookName)
                 .compose(RxUtils::toSimpleSingle)
                 .subscribe(new Observer<BookContentBean>() {
@@ -276,7 +295,7 @@ public class SourceDebugActivity extends MBaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-                        tvContent.setText(String.format("%s\n%s %s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
+                        tvContent.setText(String.format("%s\n%s └%s", tvContent.getText(), TimeUtils.getNowString(DEBUG_TIME_FORMAT), e.getMessage()));
                         loading.stop();
                     }
 
