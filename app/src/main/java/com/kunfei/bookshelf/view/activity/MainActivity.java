@@ -69,6 +69,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     private static final int RESTORE_RESULT = 12;
     private static final int FILE_SELECT_RESULT = 13;
     private String[] mTitles;
+    private final int requestSource = 14;
 
     @BindView(R.id.drawer)
     DrawerLayout drawer;
@@ -432,7 +433,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 ) {
                     drawer.closeDrawers();
                 } else {
-                    drawer.openDrawer(GravityCompat.START);
+                    drawer.openDrawer(GravityCompat.START, !MApplication.isEInkMode);
                 }
                 break;
         }
@@ -491,10 +492,10 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         upThemeVw();
         vwNightTheme.setOnClickListener(view -> setNightTheme(!isNightTheme()));
         navigationView.setNavigationItemSelectedListener(menuItem -> {
-            drawer.closeDrawers();
+            drawer.openDrawer(GravityCompat.START, !MApplication.isEInkMode);
             switch (menuItem.getItemId()) {
                 case R.id.action_book_source_manage:
-                    handler.postDelayed(() -> BookSourceActivity.startThis(this), 200);
+                    handler.postDelayed(() -> BookSourceActivity.startThis(this, requestSource), 200);
                     break;
                 case R.id.action_replace_rule:
                     handler.postDelayed(() -> ReplaceRuleActivity.startThis(this), 200);
@@ -696,6 +697,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         });
     }
 
+    @SuppressLint("RtlHardcoded")
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Boolean mo = moDialogHUD.onKeyDown(keyCode, event);
@@ -707,7 +709,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         } else {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawers();
+                    drawer.closeDrawer(GravityCompat.START, !MApplication.isEInkMode);
                     return true;
                 }
                 exit();
@@ -738,7 +740,13 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case requestSource:
+                    RxBus.get().post(RxBusTag.UP_FIND_STYLE, new Object());
+                    break;
+            }
+        }
     }
 
     private void preloadReader() {
