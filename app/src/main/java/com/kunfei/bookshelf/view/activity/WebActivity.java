@@ -254,9 +254,6 @@ public class WebActivity extends MBaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_book_source_manage:
-                BookSourceActivity.startThis(this);
-                break;
             case R.id.clear_cookie:
                 clearWebViewCache();
                 showSnackBar(toolbar, "成功为您清除Cookie，请刷新网页!");
