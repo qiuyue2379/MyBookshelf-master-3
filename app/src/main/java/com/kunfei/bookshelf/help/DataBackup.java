@@ -5,25 +5,27 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kunfei.bookshelf.BuildConfig;
+import com.kunfei.bookshelf.DbHelper;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.bean.BookSourceBean;
 import com.kunfei.bookshelf.bean.ReplaceRuleBean;
 import com.kunfei.bookshelf.bean.SearchHistoryBean;
-import com.kunfei.bookshelf.dao.DbHelper;
 import com.kunfei.bookshelf.model.BookSourceManager;
 import com.kunfei.bookshelf.model.ReplaceRuleManager;
 import com.kunfei.bookshelf.utils.FileUtils;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.TimeUtils;
-import com.kunfei.bookshelf.utils.web_dav.WebDavFile;
 import com.kunfei.bookshelf.utils.XmlUtils;
 import com.kunfei.bookshelf.utils.ZipUtils;
+import com.kunfei.bookshelf.utils.web_dav.WebDavFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +35,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import androidx.documentfile.provider.DocumentFile;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.SingleOnSubscribe;
@@ -130,12 +131,12 @@ public class DataBackup {
         try {
             FileHelp.deleteFile(zipFilePath);
             if (ZipUtils.zipFiles(filePaths, zipFilePath)) {
-            if (WebDavHelp.initWebDav()) {
-                new  WebDavFile(WebDavHelp.getWebDavUrl() + "YueDu").makeAsDir();
-                String putUrl = WebDavHelp.getWebDavUrl() + "YueDu/backup" + TimeUtils.date2String(TimeUtils.getNowDate(), new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())) + ".zip";
-                WebDavFile webDavFile = new WebDavFile(putUrl);
-                webDavFile.upload(zipFilePath);
-            }
+                if (WebDavHelp.initWebDav()) {
+                    new  WebDavFile(WebDavHelp.getWebDavUrl() + "YueDu").makeAsDir();
+                    String putUrl = WebDavHelp.getWebDavUrl() + "YueDu/backup" + TimeUtils.date2String(TimeUtils.getNowDate(), new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())) + ".zip";
+                    WebDavFile webDavFile = new WebDavFile(putUrl);
+                    webDavFile.upload(zipFilePath);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
