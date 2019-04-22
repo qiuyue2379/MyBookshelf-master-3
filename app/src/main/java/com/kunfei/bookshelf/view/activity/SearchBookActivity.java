@@ -416,7 +416,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
 
     @Override
     public void refreshSearchBook() {
-        searchBookAdapter.clearAll();
+        searchBookAdapter.upData(SearchBookAdapter.DataAction.CLEAR, null, null);
     }
 
     @Override
@@ -443,7 +443,7 @@ public class SearchBookActivity extends MBaseActivity<SearchBookContract.Present
 
     @Override
     public void loadMoreSearchBook(final List<SearchBookBean> books) {
-        searchBookAdapter.addAll(books, mSearchAutoComplete.getText().toString().trim());
+        searchBookAdapter.upData(SearchBookAdapter.DataAction.ADD, books, mSearchAutoComplete.getText().toString().trim());
     }
 
     @Override
