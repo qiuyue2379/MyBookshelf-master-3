@@ -737,7 +737,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
     @Override
     protected void onDestroy() {
-        UpLastChapterModel.getInstance().onDestroy();
+        UpLastChapterModel.destroy();
         super.onDestroy();
     }
 
