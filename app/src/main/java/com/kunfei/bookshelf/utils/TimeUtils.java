@@ -11,14 +11,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 
-/**
- * <pre>
- *     author: Blankj
- *     blog  : http://blankj.com
- *     time  : 2016/08/02
- *     desc  : utils about time
- * </pre>
- */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public final class TimeUtils {
 
     private static final ThreadLocal<SimpleDateFormat> SDF_THREAD_LOCAL = new ThreadLocal<>();

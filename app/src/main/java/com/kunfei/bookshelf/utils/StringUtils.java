@@ -19,11 +19,7 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.StringRes;
 
-/**
- * Created by newbiechen on 17-4-22.
- * 对文字操作的工具类
- */
-
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class StringUtils {
     private static final String TAG = "StringUtils";
     private static final int HOUR_OF_DAY = 24;

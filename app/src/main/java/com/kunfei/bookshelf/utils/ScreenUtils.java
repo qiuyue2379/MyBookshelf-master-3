@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Created by newbiechen on 17-5-1.
  */
-
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ScreenUtils {
 
     public static int dpToPx(int dp) {
