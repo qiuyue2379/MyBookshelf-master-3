@@ -70,10 +70,8 @@ public class SettingActivity extends MBaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
-            case android.R.id.home:
-                finish();
-                break;
+        if (id == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

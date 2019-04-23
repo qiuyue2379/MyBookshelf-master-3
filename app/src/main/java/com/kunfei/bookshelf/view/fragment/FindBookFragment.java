@@ -241,10 +241,8 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case SourceEditActivity.EDIT_SOURCE:
-                    mPresenter.initData();
-                    break;
+            if (requestCode == SourceEditActivity.EDIT_SOURCE) {
+                mPresenter.initData();
             }
         }
     }

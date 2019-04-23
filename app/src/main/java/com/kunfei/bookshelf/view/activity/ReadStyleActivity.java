@@ -267,12 +267,10 @@ public class ReadStyleActivity extends MBaseActivity implements ColorPickerDialo
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case ResultSelectBg:
-                if (resultCode == RESULT_OK && null != data) {
-                    setCustomBg(data.getData());
-                }
-                break;
+        if (requestCode == ResultSelectBg) {
+            if (resultCode == RESULT_OK && null != data) {
+                setCustomBg(data.getData());
+            }
         }
     }
 
