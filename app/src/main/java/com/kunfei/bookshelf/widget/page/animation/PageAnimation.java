@@ -48,7 +48,7 @@ public abstract class PageAnimation {
     float mLastY;
 
     boolean isRunning = false;
-    boolean changePage = false;
+    boolean isMoving = false;
 
     PageAnimation(int w, int h, View view, OnPageChangeListener listener) {
         this(w, h, 0, 0, 0, view, listener);
@@ -94,8 +94,13 @@ public abstract class PageAnimation {
         return isRunning;
     }
 
-    public boolean isChangePage() {
-        return changePage;
+    public boolean isMoving() {
+        return isMoving;
+    }
+
+    public void movingFinish() {
+        isMoving = false;
+        isRunning = false;
     }
 
     /**
@@ -103,6 +108,7 @@ public abstract class PageAnimation {
      */
     public void startAnim() {
         isRunning = true;
+        isMoving = true;
         mView.postInvalidate();
     }
 
@@ -139,9 +145,6 @@ public abstract class PageAnimation {
 
             setTouchPoint(x, y);
 
-            if (mScroller.getFinalX() == x && mScroller.getFinalY() == y) {
-                isRunning = false;
-            }
             mView.postInvalidate();
         }
     }
@@ -151,7 +154,7 @@ public abstract class PageAnimation {
      */
     public abstract void abortAnim();
 
-    public abstract void changePageEnd();
+    public abstract boolean changePage();
 
     /**
      * 获取背景板
@@ -207,7 +210,7 @@ public abstract class PageAnimation {
      * 翻页方向
      */
     public enum Direction {
-        NONE(true), NEXT(true), PREV(true), UP(false), DOWN(false);
+        NONE(true), NEXT(true), PREV(true);
 
         public final boolean isHorizontal;
 

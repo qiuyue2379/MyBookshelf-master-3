@@ -276,11 +276,29 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     private void showFindMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenu().add(0, 0, 0, getString(R.string.switch_display_style));
+        boolean findTypeIsFlexBox = preferences.getBoolean("findTypeIsFlexBox", true);
+        boolean showFindLeftView = preferences.getBoolean("showFindLeftView", true);
+        if (findTypeIsFlexBox) {
+            popupMenu.getMenu().add(0, 0, 1, showFindLeftView ? "隐藏左侧栏" : "显示左侧栏");
+        }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("findTypeIsFlexBox", !preferences.getBoolean("findTypeIsFlexBox", true));
-            editor.apply();
-            RxBus.get().post(RxBusTag.UP_FIND_STYLE, new Object());
+            if (menuItem.getOrder() == 0) {
+                preferences.edit()
+                        .putBoolean("findTypeIsFlexBox", !findTypeIsFlexBox)
+                        .apply();
+                FindBookFragment findBookFragment = getFindFragment();
+                if (findBookFragment != null) {
+                    findBookFragment.upStyle();
+                }
+            } else if (menuItem.getOrder() == 1) {
+                preferences.edit()
+                        .putBoolean("showFindLeftView", !showFindLeftView)
+                        .apply();
+                FindBookFragment findBookFragment = getFindFragment();
+                if (findBookFragment != null) {
+                    findBookFragment.upUI();
+                }
+            }
             return true;
         });
         popupMenu.setOnDismissListener(popupMenu1 -> updateTabItemIcon(1, false));
@@ -330,6 +348,14 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
     public ViewPager getViewPager() {
         return mVp;
+    }
+
+    public FindBookFragment getFindFragment() {
+        try {
+            return (FindBookFragment) mFragmentList.get(1);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -746,7 +772,10 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == requestSource) {
-                RxBus.get().post(RxBusTag.UP_FIND_STYLE, new Object());
+                FindBookFragment findBookFragment = getFindFragment();
+                if (findBookFragment != null) {
+                    findBookFragment.refreshData();
+                }
             }
         }
     }
