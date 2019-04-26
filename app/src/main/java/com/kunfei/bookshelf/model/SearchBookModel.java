@@ -160,11 +160,7 @@ public class SearchBookModel {
                                                 }
                                             }
                                         }
-                                        if (!searchListener.checkIsExist(searchBookBeans.get(0))) {
-                                            searchListener.loadMoreSearchBook(searchBookBeans);
-                                        } else {
-                                            searchEngine.setHasMore(false);
-                                        }
+                                        searchListener.loadMoreSearchBook(searchBookBeans);
                                     } else {
                                         searchEngine.setHasMore(false);
                                     }
@@ -225,8 +221,6 @@ public class SearchBookModel {
         void refreshFinish(Boolean isAll);
 
         void loadMoreFinish(Boolean isAll);
-
-        Boolean checkIsExist(SearchBookBean searchBookBean);
 
         void loadMoreSearchBook(List<SearchBookBean> searchBookBeanList);
 

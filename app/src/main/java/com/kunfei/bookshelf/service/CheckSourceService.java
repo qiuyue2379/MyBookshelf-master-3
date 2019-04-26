@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 
 import com.hwangjr.rxbus.RxBus;
-import com.kunfei.bookshelf.BitIntentDataManager;
+import com.kunfei.basemvplib.BitIntentDataManager;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.bean.BookSourceBean;
