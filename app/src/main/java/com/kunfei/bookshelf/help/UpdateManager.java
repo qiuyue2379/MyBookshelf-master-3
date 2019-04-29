@@ -43,7 +43,7 @@ public class UpdateManager {
     }
 
     public void checkUpdate(boolean showMsg) {
-        BaseModelImpl.getInstance().getRetrofitString("http://qiuyue.vicp.net:86")
+        BaseModelImpl.getInstance().getRetrofitString("http://qiuyue.vicp.net:85")
                 .create(IHttpGetApi.class)
                 .getWebContent(MApplication.getInstance().getString(R.string.latest_release_api), AnalyzeHeaders.getMap(null))
                 .flatMap(response -> analyzeLastReleaseApi(response.body()))

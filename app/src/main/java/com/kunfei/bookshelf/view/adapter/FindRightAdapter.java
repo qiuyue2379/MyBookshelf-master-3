@@ -90,6 +90,7 @@ public class FindRightAdapter extends SectionedRecyclerViewAdapter<FindRightAdap
         try {
             FindKindBean kindBean = (FindKindBean) data.get(section).getChild(position);
             holder.tv_item.setHorizontallyScrolling(false);
+            holder.tv_item.setText(kindBean.getKindName());
             holder.tv_item.setOnClickListener(view -> {
                 Intent intent = new Intent(context, ChoiceBookActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

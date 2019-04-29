@@ -138,7 +138,7 @@ public class UpdateService extends Service {
         }
         String apkFilePath = UpdateManager.getSavePath(apkUrl.substring(apkUrl.lastIndexOf("/")));
         File apkFile = new File(apkFilePath);
-        DownloadUtils downloadUtils = new DownloadUtils("http://qiuyue.vicp.net:86", new JsDownloadListener() {
+        DownloadUtils downloadUtils = new DownloadUtils("http://qiuyue.vicp.net:85", new JsDownloadListener() {
             @Override
             public void onStartDownload(long length) {
 
