@@ -381,7 +381,7 @@ public class BitmapUtil {
         //设置模糊半径
         script.setRadius(8);
 
-        //启动ScriptIntrinisicBlur,
+        //启动 ScriptIntrinsicBlur
         script.forEach(output);
 
         //将输出复制到模糊的位图

@@ -14,6 +14,7 @@ public class AppFrontBackHelper {
     public static AppFrontBackHelper getInstance() {
         return new AppFrontBackHelper();
     }
+
     /**
      * 注册状态监听，仅在Application中使用
      */

@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Scroller;
 
+import androidx.annotation.NonNull;
+
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.help.ReadBookControl;
-
-import androidx.annotation.NonNull;
 
 /**
  * 翻页动画抽象类

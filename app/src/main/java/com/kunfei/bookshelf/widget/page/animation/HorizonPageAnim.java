@@ -199,7 +199,7 @@ public abstract class HorizonPageAnim extends PageAnimation {
         if (isRunning && !noNext) {
             drawMove(canvas);
         } else {
-                canvas.drawBitmap(mCurBitmap, 0, 0, null);
+            canvas.drawBitmap(mCurBitmap, 0, 0, null);
             isCancel = true;
         }
     }

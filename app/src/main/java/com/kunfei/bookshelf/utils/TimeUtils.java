@@ -1,5 +1,7 @@
 package com.kunfei.bookshelf.utils;
 
+import androidx.annotation.NonNull;
+
 import com.kunfei.bookshelf.constant.TimeConstants;
 
 import java.text.DateFormat;
@@ -8,8 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public final class TimeUtils {

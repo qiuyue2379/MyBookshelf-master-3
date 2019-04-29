@@ -107,7 +107,7 @@ class BookList {
     }
 
     private SearchBookBean getItem(AnalyzeRule analyzer, String baseUrl) throws Exception {
-    SearchBookBean item = new SearchBookBean();
+        SearchBookBean item = new SearchBookBean();
         analyzer.setBook(item);
         Debug.printLog(tag, ">书籍网址:" + baseUrl);
         Debug.printLog(tag, "┌获取书名");

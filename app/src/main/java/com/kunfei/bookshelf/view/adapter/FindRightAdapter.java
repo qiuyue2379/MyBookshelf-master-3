@@ -126,3 +126,4 @@ public class FindRightAdapter extends SectionedRecyclerViewAdapter<FindRightAdap
         }
     }
 }
+

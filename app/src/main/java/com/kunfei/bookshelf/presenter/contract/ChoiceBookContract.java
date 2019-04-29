@@ -36,4 +36,5 @@ public interface ChoiceBookContract {
         void startRefreshAnim();
     }
 
+
 }

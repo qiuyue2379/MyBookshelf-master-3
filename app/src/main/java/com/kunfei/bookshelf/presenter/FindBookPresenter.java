@@ -136,7 +136,6 @@ public class FindBookPresenter extends BasePresenterImpl<FindBookContract.View> 
     @Override
     public void detachView() {
 
-
     }
 
 }

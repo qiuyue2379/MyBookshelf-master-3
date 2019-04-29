@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import androidx.annotation.StringRes;
+
 import com.kunfei.bookshelf.MApplication;
 
 import java.nio.charset.StandardCharsets;
@@ -16,8 +18,6 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import androidx.annotation.StringRes;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class StringUtils {

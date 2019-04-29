@@ -138,7 +138,7 @@ public class WebBook extends BaseModelImpl {
             } else {
                 return getResponseO(analyzeUrl)
                         .flatMap(response -> setCookie(response, tag))
-                        .flatMap(response -> bookContent.analyzeBookContent(response.body(), chapterBean, headerMap));
+                        .flatMap(response -> bookContent.analyzeBookContent(response, chapterBean, headerMap));
             }
         } catch (Exception e) {
             return Observable.error(new Throwable(String.format("url错误:%s", chapterBean.getDurChapterUrl())));

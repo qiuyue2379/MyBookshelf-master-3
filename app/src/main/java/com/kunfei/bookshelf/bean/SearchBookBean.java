@@ -165,6 +165,7 @@ public class SearchBookBean implements Parcelable, BaseBookBean {
         return noteUrl;
     }
 
+    @Override
     public void setNoteUrl(String noteUrl) {
         this.noteUrl = noteUrl;
     }
@@ -192,7 +193,6 @@ public class SearchBookBean implements Parcelable, BaseBookBean {
     public void setAuthor(String author) {
         this.author = BookshelfHelp.formatAuthor(author);
     }
-
 
     public String getLastChapter() {
         return lastChapter==null?"":lastChapter;

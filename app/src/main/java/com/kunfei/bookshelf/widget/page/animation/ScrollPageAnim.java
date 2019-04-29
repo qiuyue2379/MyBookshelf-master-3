@@ -69,6 +69,7 @@ public class ScrollPageAnim extends PageAnimation {
                     if (!readBookControl.getCanClickTurn() || readBookControl.disableScrollClickTurn()) {
                         return;
                     }
+
                     //是否翻阅下一页。true表示翻到下一页，false表示上一页。
                     boolean isNext = x > mScreenWidth / 2 || readBookControl.getClickAllNext();
                     if (isNext) {

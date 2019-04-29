@@ -42,7 +42,6 @@ public class MApplication extends Application {
     private static MApplication instance;
     private static String versionName;
     private static int versionCode;
-
     private SharedPreferences configPreferences;
     private boolean donateHb;
 
@@ -66,7 +65,6 @@ public class MApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-
         CrashHandler.getInstance().init(this);
         RxJavaPlugins.setErrorHandler(Functions.emptyConsumer());
         try {

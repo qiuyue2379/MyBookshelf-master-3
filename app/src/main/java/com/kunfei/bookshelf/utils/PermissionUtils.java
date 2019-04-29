@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <pre>
@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat;
  *     version: 1.0
  * </pre>
  */
-
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class PermissionUtils {
 
@@ -97,6 +96,7 @@ public class PermissionUtils {
         List<String> permissionList = checkMorePermissions(context, permissions);
         requestMorePermissions(context, permissionList, requestCode);
     }
+
 
     /**
      * 检测权限

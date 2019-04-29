@@ -207,15 +207,15 @@ public class BookSourcePresenter extends BasePresenterImpl<BookSourceContract.Vi
     @Subscribe(thread = EventThread.MAIN_THREAD, tags = {@Tag(RxBusTag.CHECK_SOURCE_STATE)})
     public void upCheckSourceState(String msg) {
         mView.refreshBookSource();
-        if (progressSnackBar == null) {
-            progressSnackBar = mView.getSnackBar(msg, Snackbar.LENGTH_INDEFINITE);
-            progressSnackBar.setAction(mView.getContext().getString(R.string.cancel), view -> CheckSourceService.stop(mView.getContext()));
-        } else {
-            progressSnackBar.setText(msg);
-        }
-        if (!progressSnackBar.isShown()) {
-            progressSnackBar.show();
-        }
+            if (progressSnackBar == null) {
+                progressSnackBar = mView.getSnackBar(msg, Snackbar.LENGTH_INDEFINITE);
+                progressSnackBar.setAction(mView.getContext().getString(R.string.cancel), view -> CheckSourceService.stop(mView.getContext()));
+            } else {
+                progressSnackBar.setText(msg);
+            }
+            if (!progressSnackBar.isShown()) {
+                progressSnackBar.show();
+            }
     }
 
     @Subscribe(thread = EventThread.MAIN_THREAD, tags = {@Tag(RxBusTag.CHECK_SOURCE_FINISH)})
