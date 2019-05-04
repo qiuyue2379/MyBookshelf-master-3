@@ -61,7 +61,8 @@ import com.kunfei.bookshelf.view.popupwindow.MoreSettingPop;
 import com.kunfei.bookshelf.view.popupwindow.ReadAdjustPop;
 import com.kunfei.bookshelf.view.popupwindow.ReadBottomMenu;
 import com.kunfei.bookshelf.view.popupwindow.ReadInterfacePop;
-import com.kunfei.bookshelf.widget.modialog.EditBookmarkView;
+import com.kunfei.bookshelf.widget.modialog.BookmarkDialog;
+import com.kunfei.bookshelf.widget.modialog.DownLoadDialog;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
 import com.kunfei.bookshelf.widget.page.PageLoader;
 import com.kunfei.bookshelf.widget.page.PageView;
@@ -119,7 +120,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     private Animation menuBottomOut;
     private ActionBar actionBar;
     private PageLoader mPageLoader;
-    private Handler mHandler  = new Handler();
+    private Handler mHandler = new Handler();
     private Runnable autoPageRunnable;
     private Runnable keepScreenRunnable;
     private Runnable upHpbNextPage;
@@ -835,22 +836,23 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
                 bookmarkBean.setPageIndex(mPresenter.getBookShelf().getDurChapterPage());
                 bookmarkBean.setChapterName(mPresenter.getBookShelf().getDurChapterName());
             }
-            moDialogHUD.showBookmark(bookmarkBean, isAdd, new EditBookmarkView.OnBookmarkClick() {
-                @Override
-                public void saveBookmark(BookmarkBean bookmarkBean) {
-                    mPresenter.saveBookmark(bookmarkBean);
-                }
+            BookmarkDialog.builder(this, bookmarkBean, isAdd)
+                    .setPositiveButton(new BookmarkDialog.CallBack() {
+                        @Override
+                        public void saveBookmark(BookmarkBean bookmarkBean) {
+                            mPresenter.saveBookmark(bookmarkBean);
+                        }
 
-                @Override
-                public void delBookmark(BookmarkBean bookmarkBean) {
-                    mPresenter.delBookmark(bookmarkBean);
-                }
+                        @Override
+                        public void delBookmark(BookmarkBean bookmarkBean) {
+                            mPresenter.delBookmark(bookmarkBean);
+                        }
 
-                @Override
-                public void openChapter(int chapterIndex, int pageIndex) {
-                    skipToChapter(chapterIndex, pageIndex);
-                }
-            });
+                        @Override
+                        public void openChapter(int chapterIndex, int pageIndex) {
+                            skipToChapter(chapterIndex, pageIndex);
+                        }
+                    }).show();
         }
 
     }
@@ -897,12 +899,8 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         if (mPresenter.getBookShelf() != null) {
             //弹出离线下载界面
             int endIndex = mPresenter.getBookShelf().getChapterListSize() - 1;
-            moDialogHUD.showDownloadList(mPresenter.getBookShelf().getDurChapter(), endIndex,
-                    mPresenter.getBookShelf().getChapterListSize(),
-                    (start, end) -> {
-                        moDialogHUD.dismiss();
-                        mPresenter.addDownload(start, end);
-                    });
+            DownLoadDialog.builder(this, mPresenter.getBookShelf().getDurChapter(), endIndex, mPresenter.getBookShelf().getChapterListSize())
+                    .setPositiveButton((start, end) -> mPresenter.addDownload(start, end)).show();
         }
     }
 
