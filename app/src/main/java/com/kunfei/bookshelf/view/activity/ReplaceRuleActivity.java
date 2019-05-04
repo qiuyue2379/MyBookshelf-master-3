@@ -3,6 +3,7 @@ package com.kunfei.bookshelf.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,10 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.hwangjr.rxbus.RxBus;
+import com.kunfei.basemvplib.BitIntentDataManager;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.base.observer.MySingleObserver;
+import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.bean.ReplaceRuleBean;
 import com.kunfei.bookshelf.constant.RxBusTag;
 import com.kunfei.bookshelf.help.ItemTouchCallback;
@@ -34,6 +37,7 @@ import com.kunfei.bookshelf.utils.StringUtils;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.kunfei.bookshelf.view.adapter.ReplaceRuleAdapter;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
+import com.kunfei.bookshelf.widget.modialog.ReplaceRuleDialog;
 
 import java.util.List;
 
@@ -56,17 +60,17 @@ public class ReplaceRuleActivity extends MBaseActivity<ReplaceRuleContract.Prese
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private BookShelfBean bookShelfBean;
     private MoDialogHUD moDialogHUD;
     private ReplaceRuleAdapter adapter;
     private boolean selectAll = true;
 
-    @Override
-    protected void initData() {
-
-    }
-
-    public static void startThis(Context context) {
-        context.startActivity(new Intent(context, ReplaceRuleActivity.class));
+    public static void startThis(Context context, BookShelfBean shelfBean) {
+        String key = String.valueOf(System.currentTimeMillis());
+        Intent intent = new Intent(context, ReplaceRuleActivity.class);
+        BitIntentDataManager.getInstance().putData(key, shelfBean);
+        intent.putExtra("data_key", key);
+        context.startActivity(intent);
     }
 
     @Override
@@ -86,7 +90,11 @@ public class ReplaceRuleActivity extends MBaseActivity<ReplaceRuleContract.Prese
     }
 
     @Override
-    protected void bindView() {
+    protected void initData() {
+        String dataKey = getIntent().getStringExtra("data_key");
+        if (!TextUtils.isEmpty(dataKey)) {
+            bookShelfBean = (BookShelfBean) BitIntentDataManager.getInstance().getData(dataKey);
+        }
         ButterKnife.bind(this);
         this.setSupportActionBar(toolbar);
         setupActionBar();
@@ -107,14 +115,15 @@ public class ReplaceRuleActivity extends MBaseActivity<ReplaceRuleContract.Prese
     }
 
     public void editReplaceRule(ReplaceRuleBean replaceRuleBean) {
-        moDialogHUD.showPutReplaceRule(replaceRuleBean, ruleBean ->
-                ReplaceRuleManager.saveData(ruleBean)
-                        .subscribe(new MySingleObserver<Boolean>() {
-                            @Override
-                            public void onSuccess(Boolean aBoolean) {
-                                refresh();
-                            }
-                        }));
+        ReplaceRuleDialog.builder(this, replaceRuleBean, bookShelfBean)
+                .setPositiveButton(replaceRuleBean1 ->
+                        ReplaceRuleManager.saveData(replaceRuleBean1)
+                                .subscribe(new MySingleObserver<Boolean>() {
+                                    @Override
+                                    public void onSuccess(Boolean aBoolean) {
+                                        refresh();
+                                    }
+                                })).show();
     }
 
     public void upDateSelectAll() {
