@@ -941,7 +941,7 @@ public abstract class PageLoader {
             mBatteryPaint.setStrokeWidth(border);
             canvas.drawRect(outFrame, mBatteryPaint);
 
-           //绘制电量
+            //绘制电量
             mBatteryPaint.setStyle(Paint.Style.FILL);
             Paint.FontMetrics fontMetrics = mBatteryPaint.getFontMetrics();
             String batteryLevel = String.valueOf(mBatteryLevel);
