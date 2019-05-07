@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.utils.StringUtils;
 
-import com.kunfei.bookshelf.MApplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ReceivingSharedActivity extends AppCompatActivity {
@@ -49,7 +49,6 @@ public class ReceivingSharedActivity extends AppCompatActivity {
         for (String url : urls) {
             if (url.matches("http.+"))
                 result.append("\n").append(url.trim());
-
         }
         if (result.length() > 1) {
             MApplication.getConfigPreferences().edit()

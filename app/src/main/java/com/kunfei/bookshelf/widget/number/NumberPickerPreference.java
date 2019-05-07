@@ -154,4 +154,6 @@ public class NumberPickerPreference extends DialogPreference {
     private void updateSummary(int val) {
         setSummary(String.format(getSummaryPattern(), Integer.toString(val)));
     }
+
+
 }

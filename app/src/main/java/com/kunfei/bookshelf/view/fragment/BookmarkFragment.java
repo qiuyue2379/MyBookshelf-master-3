@@ -133,7 +133,6 @@ public class BookmarkFragment extends MBaseFragment {
                         }
                     }
                 }).show();
-
     }
 
     private ChapterListActivity getFatherActivity() {

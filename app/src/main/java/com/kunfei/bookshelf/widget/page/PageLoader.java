@@ -46,9 +46,11 @@ public abstract class PageLoader {
     private static final String TAG = "PageLoader";
 
     // 默认的显示参数配置
+    private static final int CONTENT_MARGIN_HEIGHT = 1;
     private static final int DEFAULT_MARGIN_HEIGHT = 20;
     public static final int DEFAULT_MARGIN_WIDTH = 15;
     private static final int DEFAULT_TIP_SIZE = 12;
+    private static final int EXTRA_TITLE_SIZE = 1;
     private static final float MAX_SCROLL_OFFSET = 100;
     private static final int TIP_ALPHA = 180;
     // 监听器
@@ -99,7 +101,7 @@ public abstract class PageLoader {
     int contentMarginHeight;
     private int tipMarginTop;
     private int tipMarginBottom;
-    private int oneSpPx;
+
     //标题的大小
     private int mTitleSize;
     //字体的大小
@@ -152,7 +154,6 @@ public abstract class PageLoader {
         mCurChapterPos = bookShelfBean.getDurChapter();
         mCurPagePos = bookShelfBean.getDurChapterPage();
         compositeDisposable = new CompositeDisposable();
-        oneSpPx = ScreenUtils.spToPx(1);
         // 初始化数据
         initData();
         // 初始化画笔
@@ -185,7 +186,7 @@ public abstract class PageLoader {
         mMarginBottom = ScreenUtils.dpToPx(readBookControl.getTipPaddingBottom() + readBookControl.getPaddingBottom() + DEFAULT_MARGIN_HEIGHT);
         mMarginLeft = ScreenUtils.dpToPx(readBookControl.getPaddingLeft());
         mMarginRight = ScreenUtils.dpToPx(readBookControl.getPaddingRight());
-        contentMarginHeight = oneSpPx;
+        contentMarginHeight = ScreenUtils.dpToPx(CONTENT_MARGIN_HEIGHT);
         tipMarginTop = ScreenUtils.dpToPx(readBookControl.getTipPaddingTop() + DEFAULT_MARGIN_HEIGHT);
         tipMarginBottom = ScreenUtils.dpToPx(readBookControl.getTipPaddingBottom() + DEFAULT_MARGIN_HEIGHT);
 
@@ -217,8 +218,8 @@ public abstract class PageLoader {
     private void setUpTextParams() {
         // 文字大小
         mTextSize = ScreenUtils.spToPx(readBookControl.getTextSize());
-        mTitleSize = mTextSize + oneSpPx;
-        mTextEndSize = mTextSize - oneSpPx;
+        mTitleSize = mTextSize + ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
+        mTextEndSize = mTextSize - ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
         // 行间距(大小为字体的一半)
         mTextInterval = (int) (mTextSize * readBookControl.getLineMultiplier() / 2);
         mTitleInterval = (int) (mTitleSize * readBookControl.getLineMultiplier() / 2);
@@ -288,8 +289,7 @@ public abstract class PageLoader {
         mBatteryPaint = new TextPaint();
         mBatteryPaint.setAntiAlias(true);
         mBatteryPaint.setDither(true);
-        mBatteryPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE - 3));
-        mBatteryPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "number.ttf"));
+        mBatteryPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE - 2));
 
         setupTextInterval();
         // 初始化页面样式
@@ -917,12 +917,13 @@ public abstract class PageLoader {
             canvas.drawText(time, timeTipLeft, tipBottomBot, mTipPaint);
 
             //绘制电池
+            int outFrameWidth = (int) mBatteryPaint.measureText("xxxx");
+            int outFrameHeight = (int) mBatteryPaint.getTextSize();
+            int visibleBottom = mDisplayHeight - (tipMarginBottom - outFrameHeight) / 2;
+
             int polarHeight = ScreenUtils.dpToPx(4);
             int polarWidth = ScreenUtils.dpToPx(2);
             int border = 2;
-            int outFrameWidth = (int) mBatteryPaint.measureText("0000") + polarWidth;
-            int outFrameHeight = (int) mBatteryPaint.getTextSize() + oneSpPx;
-            int visibleBottom = mDisplayHeight - (tipMarginBottom - outFrameHeight) / 2;
 
             //电极的制作
             int polarLeft = visibleRight - polarWidth;
@@ -943,11 +944,8 @@ public abstract class PageLoader {
 
             //绘制电量
             mBatteryPaint.setStyle(Paint.Style.FILL);
-            Paint.FontMetrics fontMetrics = mBatteryPaint.getFontMetrics();
-            String batteryLevel = String.valueOf(mBatteryLevel);
-            float batTextLeft = outFrameLeft + (outFrameWidth - mBatteryPaint.measureText(batteryLevel)) / 2;
-            float batTextBaseLine = visibleBottom - outFrameHeight / 2f - fontMetrics.top / 2 - fontMetrics.bottom / 2;
-            canvas.drawText(batteryLevel, batTextLeft, batTextBaseLine, mBatteryPaint);
+            float batTipLeft = outFrameLeft + ScreenUtils.dpToPx(4);
+            canvas.drawText(String.valueOf(mBatteryLevel), batTipLeft, tipBottomBot - 2, mBatteryPaint);
         }
     }
 

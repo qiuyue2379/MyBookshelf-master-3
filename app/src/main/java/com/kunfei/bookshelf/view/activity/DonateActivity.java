@@ -11,6 +11,10 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+
 import com.kunfei.basemvplib.impl.IPresenter;
 import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
@@ -18,9 +22,6 @@ import com.kunfei.bookshelf.base.MBaseActivity;
 import com.kunfei.bookshelf.help.Donate;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -32,6 +33,8 @@ import butterknife.ButterKnife;
 public class DonateActivity extends MBaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.cv_wx_gzh)
+    CardView cvWxGzh;
     @BindView(R.id.vw_zfb_tz)
     CardView vwZfbTz;
     @BindView(R.id.vw_zfb_hb)
@@ -84,6 +87,14 @@ public class DonateActivity extends MBaseActivity {
     @Override
     protected void bindEvent() {
         vwZfbTz.setOnClickListener(view -> Donate.aliDonate(this));
+        cvWxGzh.setOnClickListener(view -> {
+            ClipboardManager clipboard = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = ClipData.newPlainText(null, "开源阅读软件");
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clipData);
+                toast(R.string.copy_complete);
+            }
+        });
         vwZfbHb.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/zfbhbrwm.png"));
         vwZfbRwm.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/zfbskrwm.jpg"));
         vwWxRwm.setOnClickListener(view -> openActionViewIntent("https://gedoor.github.io/MyBookshelf/wxskrwm.jpg"));
