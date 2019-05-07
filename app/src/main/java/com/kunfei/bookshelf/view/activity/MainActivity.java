@@ -408,6 +408,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
                     @Override
                     public void onAlreadyTurnedDownAndNoAsk(String... permission) {
+                        MainActivity.this.toast(R.string.please_grant_storage_permission);
                         PermissionUtils.requestMorePermissions(MainActivity.this, permission, FILE_SELECT_RESULT);
                     }
                 });
@@ -595,6 +596,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
 
             @Override
             public void onAlreadyTurnedDownAndNoAsk(String... permission) {
+                MainActivity.this.toast(R.string.backup_permission);
                 PermissionUtils.requestMorePermissions(MainActivity.this, permission, BACKUP_RESULT);
             }
         });
