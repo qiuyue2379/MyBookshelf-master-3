@@ -19,6 +19,19 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -38,6 +51,7 @@ import com.kunfei.bookshelf.presenter.contract.MainContract;
 import com.kunfei.bookshelf.service.WebService;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.utils.StringUtils;
+import com.kunfei.bookshelf.utils.theme.ATH;
 import com.kunfei.bookshelf.utils.theme.NavigationViewUtil;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.kunfei.bookshelf.view.fragment.BookListFragment;
@@ -49,24 +63,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.kunfei.bookshelf.utils.NetworkUtil.isNetWorkAvailable;
 
-public class MainActivity extends BaseTabActivity<MainContract.Presenter> implements MainContract.View, BookListFragment.CallBackValue {
+public class MainActivity extends BaseTabActivity<MainContract.Presenter> implements MainContract.View, BookListFragment.CallbackValue {
     private static final int BACKUP_RESULT = 11;
     private static final int RESTORE_RESULT = 12;
     private static final int FILE_SELECT_RESULT = 13;
@@ -131,7 +133,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             InputDialog.builder(this)
                     .setTitle(getString(R.string.add_book_url))
                     .setDefaultValue(shared_url)
-                    .setCallBack(inputText -> {
+                    .setCallback(inputText -> {
                         inputText = StringUtils.trim(inputText);
                         mPresenter.addBookUrl(inputText);
                     }).show();
@@ -395,7 +397,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         int id = item.getItemId();
         switch (id) {
             case R.id.action_add_local:
-                PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
+                PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
                     @Override
                     public void onHasPermission() {
                         startActivity(new Intent(MainActivity.this, ImportBookActivity.class));
@@ -416,7 +418,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             case R.id.action_add_url:
                 InputDialog.builder(this)
                         .setTitle(getString(R.string.add_book_url))
-                        .setCallBack(inputText -> {
+                        .setCallback(inputText -> {
                             inputText = StringUtils.trim(inputText);
                             mPresenter.addBookUrl(inputText);
                         }).show();
@@ -577,7 +579,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
      * 备份
      */
     private void backup() {
-        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
+        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
             @Override
             public void onHasPermission() {
                 new AlertDialog.Builder(MainActivity.this)
@@ -606,7 +608,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
      * 恢复
      */
     private void restore() {
-        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
+        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
             @Override
             public void onHasPermission() {
                 new AlertDialog.Builder(MainActivity.this)
@@ -679,7 +681,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallBack() {
+        PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
             @Override
             public void onHasPermission() {
                 switch (requestCode) {
