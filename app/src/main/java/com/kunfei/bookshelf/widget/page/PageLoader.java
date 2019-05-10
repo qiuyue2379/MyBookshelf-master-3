@@ -581,7 +581,7 @@ public abstract class PageLoader {
      */
     public String getUnReadContent() {
         if (mCurChapter == null) return null;
-        if (mCurChapter.getStatus() == TxtChapter.Status.MP3) return mCurChapter.getMsg();
+        if (bookShelfBean.isMusic()) return mCurChapter.getMsg();
         if (mCurChapter.getTxtPageList() == null) return null;
         StringBuilder s = new StringBuilder();
         String content = getContent();
@@ -846,7 +846,6 @@ public abstract class PageLoader {
     @SuppressLint("DefaultLocale")
     private synchronized void drawBackground(final Canvas canvas, TxtChapter txtChapter, TxtPage txtPage) {
         if (canvas == null) return;
-        if (txtChapter.getStatus() == TxtChapter.Status.MP3) return;
         if (!bookShelfBean.getChapterList().isEmpty()) {
             String title = isChapterListPrepare ? bookShelfBean.getChapter(txtChapter.getPosition()).getDurChapterName() : "";
             title = ChapterContentHelp.getInstance().replaceContent(bookShelfBean.getBookInfoBean().getName(), bookShelfBean.getTag(), title);
@@ -956,7 +955,6 @@ public abstract class PageLoader {
      */
     private synchronized void drawContent(Bitmap bitmap, TxtChapter txtChapter, TxtPage txtPage) {
         if (bitmap == null) return;
-        if (txtChapter.getStatus() == TxtChapter.Status.MP3) return;
 
         Canvas canvas = new Canvas(bitmap);
         if (mPageMode == PageAnimation.Mode.SCROLL) {
@@ -1036,7 +1034,6 @@ public abstract class PageLoader {
          */
     @SuppressWarnings("ConstantConditions")
     void drawContent(final Canvas canvas, float offset) {
-        if (mCurChapter.getStatus() == TxtChapter.Status.MP3) return;
 
         if (offset > MAX_SCROLL_OFFSET) {
             offset = MAX_SCROLL_OFFSET;

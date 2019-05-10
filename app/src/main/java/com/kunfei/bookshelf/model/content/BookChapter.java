@@ -28,8 +28,6 @@ class BookChapter {
     private String tag;
     private BookSourceBean bookSourceBean;
     private AnalyzeRule analyzer;
-    private List<AnalyzeRule.SourceRule> nameRule;
-    private List<AnalyzeRule.SourceRule> urlRule;
 
     BookChapter(String tag, BookSourceBean bookSourceBean) {
         this.tag = tag;
@@ -100,6 +98,7 @@ class BookChapter {
             LinkedHashSet<ChapterListBean> lh = new LinkedHashSet<>(chapterList);
             chapterList = new ArrayList<>(lh);
             Collections.reverse(chapterList);
+            Debug.printLog(tag, "-目录解析完成");
             e.onNext(chapterList);
             e.onComplete();
         });
@@ -110,8 +109,6 @@ class BookChapter {
         List<String> nextUrlList = new ArrayList<>();
 
         analyzer.setContent(s, chapterUrl);
-        nameRule = analyzer.splitSourceRule(bookSourceBean.getRuleChapterName());
-        urlRule = analyzer.splitSourceRule(bookSourceBean.getRuleContentUrl());
         if (!TextUtils.isEmpty(bookSourceBean.getRuleChapterUrlNext())) {
             Debug.printLog(tag, "┌获取目录下一页网址", printLog);
             nextUrlList = analyzer.getStringList(bookSourceBean.getRuleChapterUrlNext(), true);
@@ -122,9 +119,9 @@ class BookChapter {
             Debug.printLog(tag, "└" + nextUrlList.toString(), printLog);
         }
 
-        if(ruleChapterList.startsWith("AllInOne")) {
+        if (ruleChapterList.startsWith("+")) {
             Debug.printLog(tag, "┌解析目录列表", printLog);
-            List<Object> collections = analyzer.getElements(ruleChapterList.substring(8));
+            List<Object> collections = analyzer.getElements(ruleChapterList.substring(1));
             Debug.printLog(tag, "└找到 " + collections.size() + " 个章节", printLog);
             NativeObject nativeObject = (NativeObject)collections.get(0);
             Debug.printLog(tag, "┌获取章节名称");
@@ -160,6 +157,8 @@ class BookChapter {
         Debug.printLog(tag, "┌解析目录列表", printLog);
         List<Object> collections = analyzer.getElements(ruleChapterList);
         Debug.printLog(tag, "└找到 " + collections.size() + " 个章节", printLog);
+        List<AnalyzeRule.SourceRule> nameRule = analyzer.splitSourceRule(bookSourceBean.getRuleChapterName());
+        List<AnalyzeRule.SourceRule> urlRule = analyzer.splitSourceRule(bookSourceBean.getRuleContentUrl());
         for (int i = 0; i < collections.size(); i++) {
             Object object = collections.get(i);
             analyzer.setContent(object, chapterUrl);
