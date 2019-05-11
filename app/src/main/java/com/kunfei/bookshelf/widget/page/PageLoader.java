@@ -289,6 +289,7 @@ public abstract class PageLoader {
         mBatteryPaint.setAntiAlias(true);
         mBatteryPaint.setDither(true);
         mBatteryPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE - 3));
+        mBatteryPaint.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "number.ttf"));
 
         setupTextInterval();
         // 初始化页面样式
@@ -945,10 +946,11 @@ public abstract class PageLoader {
             Paint.FontMetrics fontMetrics = mBatteryPaint.getFontMetrics();
             String batteryLevel = String.valueOf(mBatteryLevel);
             float batTextLeft = outFrameLeft + (outFrameWidth - mBatteryPaint.measureText(batteryLevel)) / 2;
-            float batTextBaseLine = tipBottomBot - outFrameHeight / 2f - fontMetrics.top / 2 - fontMetrics.bottom / 2;
+            float batTextBaseLine = visibleBottom - outFrameHeight / 2f - fontMetrics.top / 2 - fontMetrics.bottom / 2;
             canvas.drawText(batteryLevel, batTextLeft, batTextBaseLine, mBatteryPaint);
         }
     }
+
 
     /**
      * 绘制内容
@@ -1022,16 +1024,17 @@ public abstract class PageLoader {
             }
         }
     }
-        public void drawCover(Canvas canvas, float top) {
-        }
 
-        private int getCoverHeight() {
-            return cover == null ? 0 : cover.getHeight() + 20;
-        }
+    public void drawCover(Canvas canvas, float top) {
+    }
 
-        /**
-         * 绘制内容-滚动
-         */
+    private int getCoverHeight() {
+        return cover == null ? 0 : cover.getHeight() + 20;
+    }
+
+    /**
+     * 绘制内容-滚动
+     */
     @SuppressWarnings("ConstantConditions")
     void drawContent(final Canvas canvas, float offset) {
 
