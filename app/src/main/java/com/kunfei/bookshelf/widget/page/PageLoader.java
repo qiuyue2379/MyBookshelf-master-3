@@ -53,7 +53,7 @@ public abstract class PageLoader {
     private static final int TIP_ALPHA = 180;
     // 监听器
     OnPageChangeListener mPageChangeListener;
-    private Context mContext;
+    Context mContext;
     BookShelfBean bookShelfBean;
     // 页面显示类
     PageView mPageView;
@@ -581,7 +581,7 @@ public abstract class PageLoader {
      */
     public String getUnReadContent() {
         if (mCurChapter == null) return null;
-        if (bookShelfBean.isMusic()) return mCurChapter.getMsg();
+        if (bookShelfBean.isAudio()) return mCurChapter.getMsg();
         if (mCurChapter.getTxtPageList() == null) return null;
         StringBuilder s = new StringBuilder();
         String content = getContent();
