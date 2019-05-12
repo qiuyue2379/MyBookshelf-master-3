@@ -26,6 +26,7 @@ import static com.kunfei.bookshelf.constant.AppConstant.EXP_PATTERN;
 import static com.kunfei.bookshelf.constant.AppConstant.JS_PATTERN;
 import static com.kunfei.bookshelf.constant.AppConstant.MAP_STRING;
 import static com.kunfei.bookshelf.constant.AppConstant.SCRIPT_ENGINE;
+import static com.kunfei.bookshelf.utils.NetworkUtil.headerPattern;
 
 
 /**
@@ -67,6 +68,7 @@ public class AnalyzeRule {
         if (body == null) throw new AssertionError("Content cannot be null");
         isJSON = StringUtils.isJsonType(String.valueOf(body));
         object = body;
+        this.baseUrl = headerPattern.matcher(baseUrl).replaceAll("");
         this.baseUrl = baseUrl;
         objectChangedXP = true;
         objectChangedJS = true;
@@ -259,7 +261,7 @@ public class AnalyzeRule {
     /**
      * 保存变量
      */
-    private void putVar(Map<String, String> map) throws Exception {
+    private void putRule(Map<String, String> map) throws Exception {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             if (book != null) {
                 book.putVariable(entry.getKey(), getString(entry.getValue()));
@@ -276,7 +278,7 @@ public class AnalyzeRule {
             String find = putMatcher.group();
             ruleStr = ruleStr.replace(find, "");
             Map<String, String> map = new Gson().fromJson(find.substring(5), MAP_STRING);
-            putVar(map);
+            putRule(map);
         }
         return ruleStr;
     }
@@ -397,6 +399,23 @@ public class AnalyzeRule {
 
     private enum Mode {
         XPath, JSon, Default, Js
+    }
+
+    public String put(String key, String value) {
+        if (book != null) {
+            book.putVariable(key, value);
+        }
+        return value;
+    }
+
+    public String get(String key) {
+        if (book == null) {
+            return null;
+        }
+        if (book.getVariableMap() == null) {
+            return null;
+        }
+        return book.getVariableMap().get(key);
     }
 
     /**
