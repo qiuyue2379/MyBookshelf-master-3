@@ -38,6 +38,7 @@ public class BookChapter {
     private boolean dx = false;
     private boolean analyzeNextUrl;
     private CompositeDisposable compositeDisposable;
+    private String chapterListUrl;
 
     BookChapter(String tag, BookSourceBean bookSourceBean, boolean analyzeNextUrl) {
         this.tag = tag;
@@ -61,7 +62,8 @@ public class BookChapter {
                 dx = true;
                 ruleChapterList = ruleChapterList.substring(1);
             }
-            WebChapterBean webChapterBean = analyzeChapterList(s, bookShelfBean.getBookInfoBean().getChapterUrl(), ruleChapterList, analyzeNextUrl);
+            chapterListUrl = bookShelfBean.getBookInfoBean().getChapterUrl();
+            WebChapterBean webChapterBean = analyzeChapterList(s, chapterListUrl, ruleChapterList, analyzeNextUrl);
             final List<ChapterListBean> chapterList = webChapterBean.getData();
 
             final List<String> chapterUrlS = new ArrayList<>(webChapterBean.getNextUrlList());
@@ -159,21 +161,6 @@ public class BookChapter {
         emitter.onComplete();
     }
 
-    // 纯java模式正则表达式获取目录列表
-    private List<ChapterListBean> Reger(String str, String[] regex, int index, int s1, int s2, List<ChapterListBean> chapterBeans) {
-        Matcher m = Pattern.compile(regex[index]).matcher(str);
-        if (index + 1 == regex.length) {
-            while (m.find()) {
-                chapterBeans.add(new ChapterListBean(tag, m.group(s1), m.group(s2)));
-            }
-            return chapterBeans;
-        } else {
-            StringBuilder result = new StringBuilder();
-            while (m.find()) result.append(m.group());
-            return Reger(result.toString(), regex, ++index, s1, s2, chapterBeans);
-        }
-    }
-
     private WebChapterBean analyzeChapterList(String s, String chapterUrl, String ruleChapterList, boolean printLog) throws Exception {
         List<String> nextUrlList = new ArrayList<>();
         analyzer.setContent(s, chapterUrl);
@@ -192,9 +179,9 @@ public class BookChapter {
         // 仅使用java正则表达式提取目录列表
         if (ruleChapterList.startsWith("J$")) {
             ruleChapterList = ruleChapterList.substring(2);
-            chapterBeans = Reger(s, ruleChapterList.split("&&"), 0,
-                    Integer.parseInt(bookSourceBean.getRuleChapterName()),
-                    Integer.parseInt(bookSourceBean.getRuleContentUrl()),
+            chapterBeans = regexChapter(s, ruleChapterList.split("&&"), 0,
+                    bookSourceBean.getRuleChapterName(),
+                    bookSourceBean.getRuleContentUrl(),
                     chapterBeans
             );
             if (chapterBeans.size() == 0) {
@@ -222,7 +209,7 @@ public class BookChapter {
                     name = ((Element) object).text();
                     link = ((Element) object).attr(linkRule);
                 }
-                chapterBeans.add(new ChapterListBean(tag, name, link));
+                addChapter(chapterBeans, name, link);
             }
         }
         // 使用默认规则解析流程提取目录列表
@@ -236,11 +223,7 @@ public class BookChapter {
             List<AnalyzeRule.SourceRule> linkRule = analyzer.splitSourceRule(bookSourceBean.getRuleContentUrl());
             for (Object object : collections) {
                 analyzer.setContent(object, chapterUrl);
-                chapterBeans.add(new ChapterListBean(
-                        tag,
-                        analyzer.getString(nameRule),
-                        analyzer.getString(linkRule)
-                ));
+                addChapter(chapterBeans, analyzer.getString(nameRule), analyzer.getString(linkRule));
             }
         }
         Debug.printLog(tag, "└找到 " + chapterBeans.size() + " 个章节", printLog);
@@ -252,4 +235,41 @@ public class BookChapter {
         return new WebChapterBean(chapterBeans, new LinkedHashSet<>(nextUrlList));
     }
 
+    private void addChapter(final List<ChapterListBean> chapterBeans, String name, String link) {
+        if (TextUtils.isEmpty(name)) return;
+        if (TextUtils.isEmpty(link)) link = chapterListUrl;
+        chapterBeans.add(new ChapterListBean(tag, name, link));
+    }
+
+    // 纯java模式正则表达式获取目录列表
+    private List<ChapterListBean> regexChapter(String str, String[] regex, int index,
+                                               String nameRule, String linkRule,
+                                               List<ChapterListBean> chapterBeans) {
+        Matcher m = Pattern.compile(regex[index]).matcher(str);
+        if (index + 1 == regex.length) {
+            int vipGroup = 0, nameGroup = 0, linkGroup = 0;
+            linkGroup = Integer.parseInt(linkRule);
+            if(nameRule.contains("?")){
+                String[] nameGroups = nameRule.split("\\?");
+                vipGroup = Integer.parseInt(nameGroups[0]);
+                nameGroup = Integer.parseInt(nameGroups[1]);
+                while (m.find()) {
+                    addChapter(chapterBeans,
+                            ((m.group(vipGroup)==null?"":"\uD83D\uDD12") + m.group(nameGroup)),
+                            m.group(linkGroup));
+                }
+            }
+            else{
+                nameGroup = Integer.parseInt(nameRule);
+                while (m.find()) {
+                    addChapter(chapterBeans, m.group(nameGroup), m.group(linkGroup));
+                }
+            }
+            return chapterBeans;
+        } else {
+            StringBuilder result = new StringBuilder();
+            while (m.find()) result.append(m.group());
+            return regexChapter(result.toString(), regex, ++index, nameRule, linkRule, chapterBeans);
+        }
+    }
 }
