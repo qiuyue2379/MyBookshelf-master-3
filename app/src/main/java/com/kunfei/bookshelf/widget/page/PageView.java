@@ -174,10 +174,10 @@ public class PageView extends View {
         }
     }
 
-    private void startHorizonPageAnim(PageAnimation.Direction direction) {
+    private synchronized void startHorizonPageAnim(PageAnimation.Direction direction) {
         if (mTouchListener == null) return;
-        //是否正在执行动画
-        abortAnimation();
+        //结束动画
+        mPageAnim.abortAnim();
         if (direction == PageAnimation.Direction.NEXT) {
             int x = mViewWidth;
             int y = mViewHeight;
@@ -193,7 +193,7 @@ public class PageView extends View {
                 ((HorizonPageAnim) mPageAnim).setNoNext(true);
                 return;
             }
-        } else {
+        } else if (direction == PageAnimation.Direction.PREV) {
             int x = 0;
             int y = mViewHeight;
             //初始化动画
@@ -207,6 +207,8 @@ public class PageView extends View {
                 ((HorizonPageAnim) mPageAnim).setNoNext(true);
                 return;
             }
+        } else {
+            return;
         }
         ((HorizonPageAnim) mPageAnim).setNoNext(false);
         ((HorizonPageAnim) mPageAnim).setCancel(false);
@@ -332,11 +334,6 @@ public class PageView extends View {
             showSnackBar("没有下一页");
             return false;
         }
-    }
-
-    //如果滑动状态没有停止就取消状态，重新设置Anim的触碰点
-    public void abortAnimation() {
-        mPageAnim.abortAnim();
     }
 
     public boolean isRunning() {
