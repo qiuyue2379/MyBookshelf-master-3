@@ -3,9 +3,9 @@ package com.kunfei.bookshelf.widget.page;
 import android.annotation.SuppressLint;
 
 import com.kunfei.bookshelf.base.observer.MyObserver;
+import com.kunfei.bookshelf.bean.BookChapterBean;
 import com.kunfei.bookshelf.bean.BookContentBean;
 import com.kunfei.bookshelf.bean.BookShelfBean;
-import com.kunfei.bookshelf.bean.ChapterListBean;
 import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.model.WebBookModel;
 import com.kunfei.bookshelf.model.content.WebBook;
@@ -43,14 +43,8 @@ public class PageLoaderNet extends PageLoader {
 
     @Override
     public void refreshChapterList() {
-        if (bookShelfBean.getChapterList().size() > 0) {
+        if (!bookShelfBean.getChapterList().isEmpty()) {
             isChapterListPrepare = true;
-
-            // 目录加载完成，执行回调操作。
-            if (mPageChangeListener != null) {
-                mPageChangeListener.onCategoryFinish(bookShelfBean.getChapterList());
-            }
-
             // 打开章节
             skipToChapter(bookShelfBean.getDurChapter(), bookShelfBean.getDurChapterPage());
         } else {
@@ -66,7 +60,8 @@ public class PageLoaderNet extends PageLoader {
                         public void onNext(BookShelfBean bookShelfBean) {
                             isChapterListPrepare = true;
                             // 目录加载完成
-                            if (mPageChangeListener != null) {
+                            if (mPageChangeListener != null && !bookShelfBean.getChapterList().isEmpty()) {
+                                BookshelfHelp.delChapterList(bookShelfBean.getNoteUrl());
                                 mPageChangeListener.onCategoryFinish(bookShelfBean.getChapterList());
                             }
                             // 加载并显示当前章节
@@ -174,13 +169,13 @@ public class PageLoaderNet extends PageLoader {
     }
 
     @Override
-    protected String getChapterContent(ChapterListBean chapter) {
+    protected String getChapterContent(BookChapterBean chapter) {
         return BookshelfHelp.getChapterCache(bookShelfBean, chapter);
     }
 
     @SuppressLint("DefaultLocale")
     @Override
-    protected boolean noChapterData(ChapterListBean chapter) {
+    protected boolean noChapterData(BookChapterBean chapter) {
         return !BookshelfHelp.isChapterCached(bookShelfBean.getBookInfoBean(), chapter);
     }
 
