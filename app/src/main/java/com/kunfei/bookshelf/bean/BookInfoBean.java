@@ -23,8 +23,6 @@ import org.greenrobot.greendao.annotation.Transient;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -49,13 +47,8 @@ public class BookInfoBean implements Cloneable {
     private String bookInfoHtml;
     @Transient
     private String chapterListHtml;
-    @Transient
-    private List<BookChapterBean> chapterList = new ArrayList<>();    //章节列表
-    @Transient
-    private List<BookmarkBean> bookmarkList = new ArrayList<>();    //书签列表
 
     public BookInfoBean() {
-
     }
 
     @Generated(hash = 906814482)
@@ -117,17 +110,6 @@ public class BookInfoBean implements Cloneable {
         this.chapterUrl = chapterUrl;
     }
 
-    public List<BookChapterBean> getChapterList() {
-        if (chapterList == null) {
-            chapterList = new ArrayList<>();
-        }
-        return chapterList;
-    }
-
-    public void setChapterList(List<BookChapterBean> chapterList) {
-        this.chapterList = chapterList;
-    }
-
     public long getFinalRefreshData() {
         return finalRefreshData;
     }
@@ -170,17 +152,6 @@ public class BookInfoBean implements Cloneable {
 
     public void setOrigin(String origin) {
         this.origin = origin;
-    }
-
-    public List<BookmarkBean> getBookmarkList() {
-        if (bookmarkList == null) {
-            return new ArrayList<>();
-        }
-        return bookmarkList;
-    }
-
-    public void setBookmarkList(List<BookmarkBean> bookmarkList) {
-        this.bookmarkList = bookmarkList;
     }
 
     public String getCharset() {
