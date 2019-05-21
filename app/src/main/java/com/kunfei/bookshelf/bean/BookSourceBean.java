@@ -37,7 +37,6 @@ public class BookSourceBean implements Cloneable {
     private boolean enable;
     //发现规则
     private String ruleFindUrl;
-    private String ruleSearchUrl;
     private String ruleFindList;
     private String ruleFindName;
     private String ruleFindAuthor;
@@ -45,8 +44,9 @@ public class BookSourceBean implements Cloneable {
     private String ruleFindIntroduce;
     private String ruleFindLastChapter;
     private String ruleFindCoverUrl;
-    //搜索规则
     private String ruleFindNoteUrl;
+    //搜索规则
+    private String ruleSearchUrl;
     private String ruleSearchList;
     private String ruleSearchName;
     private String ruleSearchAuthor;
@@ -78,12 +78,12 @@ public class BookSourceBean implements Cloneable {
     @Transient
     private transient ArrayList<String> groupList;
 
-    @Generated(hash = 2073735048)
-    public BookSourceBean(String bookSourceUrl, String bookSourceName, String bookSourceGroup, String bookSourceType, String loginUrl, Long lastUpdateTime, int serialNumber, int weight, boolean enable, String ruleFindUrl, String ruleSearchUrl,
-            String ruleFindList, String ruleFindName, String ruleFindAuthor, String ruleFindKind, String ruleFindIntroduce, String ruleFindLastChapter, String ruleFindCoverUrl, String ruleFindNoteUrl, String ruleSearchList,
-            String ruleSearchName, String ruleSearchAuthor, String ruleSearchKind, String ruleSearchIntroduce, String ruleSearchLastChapter, String ruleSearchCoverUrl, String ruleSearchNoteUrl, String ruleBookUrlPattern,
-            String ruleBookInfoInit, String ruleBookName, String ruleBookAuthor, String ruleCoverUrl, String ruleIntroduce, String ruleBookKind, String ruleBookLastChapter, String ruleChapterUrl, String ruleChapterUrlNext,
-            String ruleChapterList, String ruleChapterName, String ruleContentUrl, String ruleContentUrlNext, String ruleBookContent, String httpUserAgent) {
+    @Generated(hash = 1840823895)
+    public BookSourceBean(String bookSourceUrl, String bookSourceName, String bookSourceGroup, String bookSourceType, String loginUrl, Long lastUpdateTime, int serialNumber, int weight, boolean enable, String ruleFindUrl,
+                          String ruleFindList, String ruleFindName, String ruleFindAuthor, String ruleFindKind, String ruleFindIntroduce, String ruleFindLastChapter, String ruleFindCoverUrl, String ruleFindNoteUrl, String ruleSearchUrl,
+                          String ruleSearchList, String ruleSearchName, String ruleSearchAuthor, String ruleSearchKind, String ruleSearchIntroduce, String ruleSearchLastChapter, String ruleSearchCoverUrl, String ruleSearchNoteUrl,
+                          String ruleBookUrlPattern, String ruleBookInfoInit, String ruleBookName, String ruleBookAuthor, String ruleCoverUrl, String ruleIntroduce, String ruleBookKind, String ruleBookLastChapter, String ruleChapterUrl,
+                          String ruleChapterUrlNext, String ruleChapterList, String ruleChapterName, String ruleContentUrl, String ruleContentUrlNext, String ruleBookContent, String httpUserAgent) {
         this.bookSourceUrl = bookSourceUrl;
         this.bookSourceName = bookSourceName;
         this.bookSourceGroup = bookSourceGroup;
@@ -94,7 +94,6 @@ public class BookSourceBean implements Cloneable {
         this.weight = weight;
         this.enable = enable;
         this.ruleFindUrl = ruleFindUrl;
-        this.ruleSearchUrl = ruleSearchUrl;
         this.ruleFindList = ruleFindList;
         this.ruleFindName = ruleFindName;
         this.ruleFindAuthor = ruleFindAuthor;
@@ -103,6 +102,7 @@ public class BookSourceBean implements Cloneable {
         this.ruleFindLastChapter = ruleFindLastChapter;
         this.ruleFindCoverUrl = ruleFindCoverUrl;
         this.ruleFindNoteUrl = ruleFindNoteUrl;
+        this.ruleSearchUrl = ruleSearchUrl;
         this.ruleSearchList = ruleSearchList;
         this.ruleSearchName = ruleSearchName;
         this.ruleSearchAuthor = ruleSearchAuthor;

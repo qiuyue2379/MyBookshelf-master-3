@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.PorterDuff;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -42,9 +41,7 @@ import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.base.BaseTabActivity;
 import com.kunfei.bookshelf.constant.RxBusTag;
-import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.help.FileHelp;
-import com.kunfei.bookshelf.help.LauncherIcon;
 import com.kunfei.bookshelf.help.ProcessTextHelp;
 import com.kunfei.bookshelf.model.UpLastChapterModel;
 import com.kunfei.bookshelf.presenter.MainPresenter;
@@ -53,6 +50,7 @@ import com.kunfei.bookshelf.service.WebService;
 import com.kunfei.bookshelf.utils.ACache;
 import com.kunfei.bookshelf.utils.PermissionUtils;
 import com.kunfei.bookshelf.utils.StringUtils;
+import com.kunfei.bookshelf.utils.theme.ATH;
 import com.kunfei.bookshelf.utils.theme.NavigationViewUtil;
 import com.kunfei.bookshelf.utils.theme.ThemeStore;
 import com.kunfei.bookshelf.view.fragment.BookListFragment;
@@ -73,8 +71,8 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     private static final int BACKUP_RESULT = 11;
     private static final int RESTORE_RESULT = 12;
     private static final int FILE_SELECT_RESULT = 13;
-    private String[] mTitles;
     private final int requestSource = 14;
+    private String[] mTitles;
 
     @BindView(R.id.drawer)
     DrawerLayout drawer;
@@ -123,7 +121,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         ButterKnife.bind(this);
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -141,7 +138,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             preferences.edit()
                     .putString("shared_url", "")
                     .apply();
-
         }
     }
 
@@ -201,7 +197,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
             params.setScrollFlags(0);
         }
-
         //点击跳转搜索页
         cardSearch.setOnClickListener(view -> startActivityByAnim(new Intent(this, SearchBookActivity.class),
                 toolbar, "sharedView", android.R.anim.fade_in, android.R.anim.fade_out));
@@ -444,29 +439,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 editor.apply();
                 recreate();
                 break;
-            case R.id.action_clear_cache:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.clear_content)
-                        .setMessage(getString(R.string.sure_del_download_book))
-                        .setPositiveButton(R.string.yes, (dialog, which) -> BookshelfHelp.clearCaches(true))
-                        .setNegativeButton(R.string.no, (dialogInterface, i) -> BookshelfHelp.clearCaches(false))
-                        .show();
-                break;
-            case R.id.action_clearBookshelf:
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.clear_bookshelf)
-                        .setMessage(R.string.clear_bookshelf_s)
-                        .setPositiveButton(R.string.ok, (dialog, which) -> mPresenter.clearBookshelf())
-                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                        })
-                        .show();
-                break;
-            case R.id.action_change_icon:
-                LauncherIcon.Change();
-                break;
-            case R.id.action_clearVod:
-                startActivity(new Intent(MainActivity.this, WebActivity.class));
-                break;
             case R.id.action_web_start:
                 WebService.startThis(this);
                 break;
@@ -534,7 +506,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         upThemeVw();
         vwNightTheme.setOnClickListener(view -> setNightTheme(!isNightTheme()));
         navigationView.setNavigationItemSelectedListener(menuItem -> {
-            drawer.openDrawer(GravityCompat.START, !MApplication.isEInkMode);
+            drawer.closeDrawer(GravityCompat.START, !MApplication.isEInkMode);
             switch (menuItem.getItemId()) {
                 case R.id.action_book_source_manage:
                     handler.postDelayed(() -> BookSourceActivity.startThis(this, requestSource), 200);
@@ -589,13 +561,14 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
             @Override
             public void onHasPermission() {
-                new AlertDialog.Builder(MainActivity.this)
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.backup_confirmation)
                         .setMessage(R.string.backup_message)
                         .setPositiveButton(R.string.ok, (dialog, which) -> mPresenter.backupData())
                         .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
                         })
                         .show();
+                ATH.setAlertDialogTint(alertDialog);
             }
 
             @Override
@@ -618,13 +591,14 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         PermissionUtils.checkMorePermissions(this, MApplication.PerList, new PermissionUtils.PermissionCheckCallback() {
             @Override
             public void onHasPermission() {
-                new AlertDialog.Builder(MainActivity.this)
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.restore_confirmation)
                         .setMessage(R.string.restore_message)
                         .setPositiveButton(R.string.ok, (dialog, which) -> mPresenter.restoreData())
                         .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
                         })
                         .show();
+                ATH.setAlertDialogTint(alertDialog);
             }
 
             @Override
@@ -668,7 +642,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
     protected void firstRequest() {
         if (!isRecreate) {
             versionUpRun();
-            handler.postDelayed(this::preloadReader, 200);
         }
         if (!Objects.equals(MApplication.downloadPath, FileHelp.getFilesPath())) {
             requestPermission();
@@ -763,6 +736,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             return super.onKeyDown(keyCode, event);
         }
     }
+
     /**
      * 退出
      */
@@ -774,7 +748,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             finish();
         }
     }
-
 
     @Override
     protected void onDestroy() {
@@ -794,12 +767,6 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                 }
             }
         }
-    }
-
-    private void preloadReader() {
-        AsyncTask.execute(() -> {
-
-        });
     }
 
 }

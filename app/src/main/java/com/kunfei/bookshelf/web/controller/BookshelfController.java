@@ -3,9 +3,9 @@ package com.kunfei.bookshelf.web.controller;
 import android.text.TextUtils;
 
 import com.kunfei.bookshelf.DbHelper;
+import com.kunfei.bookshelf.bean.BookChapterBean;
 import com.kunfei.bookshelf.bean.BookContentBean;
 import com.kunfei.bookshelf.bean.BookShelfBean;
-import com.kunfei.bookshelf.bean.BookChapterBean;
 import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.model.WebBookModel;
 import com.kunfei.bookshelf.utils.GsonUtils;
@@ -54,7 +54,7 @@ public class BookshelfController {
             return returnData.setData(content);
         }
         try {
-            BookContentBean bookContentBean = WebBookModel.getInstance().getBookContent(bookShelfBean.getBookInfoBean(), chapter).blockingFirst();
+            BookContentBean bookContentBean = WebBookModel.getInstance().getBookContent(bookShelfBean, chapter).blockingFirst();
             return returnData.setData(bookContentBean.getDurChapterContent());
         } catch (Exception e) {
             return returnData.setErrorMsg(e.getMessage());

@@ -274,17 +274,17 @@ public class ReadBookPresenter extends BasePresenterImpl<ReadBookContract.View> 
         }
         changeSourceHelp.autoChange(bookShelf, new ChangeSourceHelp.ChangeSourceListener() {
 
-                    @Override
-                    public void finish(BookShelfBean bookShelfBean, List<BookChapterBean> chapterBeanList) {
-                        if (!chapterBeanList.isEmpty()) {
-                            RxBus.get().post(RxBusTag.HAD_REMOVE_BOOK, bookShelf);
-                            RxBus.get().post(RxBusTag.HAD_ADD_BOOK, bookShelfBean);
-                            bookShelf = bookShelfBean;
-                            ReadBookPresenter.this.chapterBeanList = chapterBeanList;
-                            mView.changeSourceFinish(bookShelf);
-                        } else {
-                            mView.changeSourceFinish(null);
-                        }
+            @Override
+            public void finish(BookShelfBean bookShelfBean, List<BookChapterBean> chapterBeanList) {
+                if (!chapterBeanList.isEmpty()) {
+                    RxBus.get().post(RxBusTag.HAD_REMOVE_BOOK, bookShelf);
+                    RxBus.get().post(RxBusTag.HAD_ADD_BOOK, bookShelfBean);
+                    bookShelf = bookShelfBean;
+                    ReadBookPresenter.this.chapterBeanList = chapterBeanList;
+                    mView.changeSourceFinish(bookShelf);
+                } else {
+                    mView.changeSourceFinish(null);
+                }
             }
 
             @Override

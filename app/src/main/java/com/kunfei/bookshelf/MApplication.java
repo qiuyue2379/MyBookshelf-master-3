@@ -179,7 +179,7 @@ public class MApplication extends Application {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //用唯一的ID创建渠道对象
         NotificationChannel downloadChannel = new NotificationChannel(channelIdDownload,
-                getString(R.string.web_service),
+                getString(R.string.download_offline),
                 NotificationManager.IMPORTANCE_LOW);
         //初始化channel
         downloadChannel.enableLights(false);
@@ -197,7 +197,7 @@ public class MApplication extends Application {
 
         //用唯一的ID创建渠道对象
         NotificationChannel webChannel = new NotificationChannel(channelIdWeb,
-                getString(R.string.web_edit_source),
+                getString(R.string.web_service),
                 NotificationManager.IMPORTANCE_LOW);
         //初始化channel
         webChannel.enableLights(false);

@@ -118,8 +118,8 @@ public class BookDetailPresenter extends BasePresenterImpl<BookDetailContract.Vi
                     }
 
                     @Override
-                        public void onNext(List<BookChapterBean> bookChapterBeans) {
-                            chapterBeanList = bookChapterBeans;
+                    public void onNext(List<BookChapterBean> bookChapterBeans) {
+                        chapterBeanList = bookChapterBeans;
                         mView.updateView();
                     }
 

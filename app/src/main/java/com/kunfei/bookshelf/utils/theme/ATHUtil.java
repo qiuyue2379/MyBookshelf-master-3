@@ -6,6 +6,7 @@ import android.content.res.TypedArray;
 import androidx.annotation.AttrRes;
 
 import com.kunfei.bookshelf.utils.ColorUtil;
+
 /**
  * @author Aidan Follestad (afollestad)
  */
