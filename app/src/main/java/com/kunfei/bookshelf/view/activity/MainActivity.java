@@ -29,6 +29,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.appbar.AppBarLayout;
@@ -323,9 +324,9 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         if (customView == null) return;
         ImageView im = customView.findViewById(R.id.tabicon);
         if (showMenu) {
-            im.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+            im.setImageResource(R.drawable.ic_arrow_drop_up);
         } else {
-            im.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+            im.setImageResource(R.drawable.ic_arrow_drop_down);
         }
     }
 
@@ -349,8 +350,12 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         tv.setText(name);
         ImageView im = tabView.findViewById(R.id.tabicon);
         im.setVisibility(View.VISIBLE);
-        im.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+        im.setImageResource(R.drawable.ic_arrow_drop_down);
         return tabView;
+    }
+
+    public TabLayout getTabLayout() {
+        return mTlIndicator;
     }
 
     public ViewPager getViewPager() {
@@ -443,8 +448,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                     RxBus.get().post(RxBusTag.DOWNLOAD_ALL, 10000);
                 break;
             case R.id.action_list_grid:
-                editor.putBoolean("bookshelfIsList", !viewIsList);
-                editor.apply();
+                editor.putBoolean("bookshelfIsList", !viewIsList).apply();
                 recreate();
                 break;
             case R.id.action_arrange_bookshelf:
@@ -558,7 +562,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
      */
     private void upThemeVw() {
         if (isNightTheme()) {
-            vwNightTheme.setImageResource(R.drawable.ic_daytime_24dp);
+            vwNightTheme.setImageResource(R.drawable.ic_daytime);
             vwNightTheme.setContentDescription(getString(R.string.click_to_day));
         } else {
             vwNightTheme.setImageResource(R.drawable.ic_brightness);
@@ -760,6 +764,19 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         } else {
             finish();
         }
+    }
+
+    @Override
+    public void recreate() {
+        try {//避免重启太快恢复
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            for (Fragment fragment : mFragmentList) {
+                fragmentTransaction.remove(fragment);
+            }
+            fragmentTransaction.commitAllowingStateLoss();
+        } catch (Exception ignored) {
+        }
+        super.recreate();
     }
 
     @Override
