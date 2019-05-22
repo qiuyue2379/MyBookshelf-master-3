@@ -106,7 +106,7 @@ public class PageLoaderNet extends PageLoader {
                     .flatMap(index -> WebBookModel.getInstance().getBookContent(book, callback.getChapterList().get(chapterIndex)))
                     .subscribeOn(scheduler)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<BookContentBean>() {
+                    .subscribe(new MyObserver<BookContentBean>() {
                         @Override
                         public void onSubscribe(Disposable d) {
                             compositeDisposable.add(d);
@@ -122,17 +122,11 @@ public class PageLoaderNet extends PageLoader {
                         @Override
                         public void onError(Throwable e) {
                             DownloadingList(listHandle.REMOVE, callback.getChapterList().get(chapterIndex).getDurChapterUrl());
-                            if (chapterIndex == mCurChapterPos) {
-                                if (e instanceof WebBook.NoSourceThrowable) {
-                                    mPageView.autoChangeSource();
-                                } else {
-                                    chapterError(e.getMessage());
-                                }
+                            if (e instanceof WebBook.NoSourceThrowable) {
+                                mPageView.autoChangeSource();
+                            } else {
+                                chapterError(e.getMessage());
                             }
-                        }
-
-                        @Override
-                        public void onComplete() {
                         }
                     });
         }
