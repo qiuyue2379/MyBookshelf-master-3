@@ -294,9 +294,9 @@ public class BookListFragment extends MBaseFragment<BookListContract.Presenter> 
             emitter.onSuccess(true);
         }).compose(RxUtils::toSimpleSingle)
                 .subscribe(new MySingleObserver<Boolean>() {
+                    @Override
                     public void onSuccess(Boolean aBoolean) {
                         mPresenter.queryBookShelf(false, group);
-                        bookShelfAdapter.setArrange(false);
                     }
                 });
     }
@@ -307,7 +307,6 @@ public class BookListFragment extends MBaseFragment<BookListContract.Presenter> 
         int getGroup();
 
         ViewPager getViewPager();
-
     }
 
 }
