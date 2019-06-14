@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'org.greenrobot.greendao'
 
 static def releaseTime() {
@@ -84,6 +86,14 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':basemvplib')
 
+    compile "androidx.core:core-ktx:1.0.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //anko
+    def anko_version = '0.10.8'
+    implementation "org.jetbrains.anko:anko-sdk27:$anko_version"
+    implementation "org.jetbrains.anko:anko-sdk27-listeners:$anko_version"
+
     //fireBase
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
@@ -157,4 +167,8 @@ greendao {
     schemaVersion 63
     daoPackage 'com.kunfei.bookshelf.dao'
     targetGenDir 'src/main/java'
+}
+
+repositories {
+    mavenCentral()
 }
