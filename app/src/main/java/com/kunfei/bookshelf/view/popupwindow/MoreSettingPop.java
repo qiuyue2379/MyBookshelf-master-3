@@ -280,6 +280,7 @@ public class MoreSettingPop extends FrameLayout {
         }
     }
 
+    
     private void upScreenTimeOut(int screenTimeOut) {
         tvScreenTimeOut.setText(context.getResources().getStringArray(R.array.screen_time_out)[screenTimeOut]);
     }
