@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.kunfei.bookshelf.DbHelper;
 import com.kunfei.bookshelf.R;
+import com.kunfei.bookshelf.bean.BookInfoBean;
 import com.kunfei.bookshelf.bean.BookShelfBean;
 import com.kunfei.bookshelf.help.BookshelfHelp;
 import com.kunfei.bookshelf.help.ItemTouchCallback;
@@ -117,6 +118,8 @@ public class BookShelfGridAdapter extends RecyclerView.Adapter<BookShelfGridAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, @SuppressLint("RecyclerView") int index) {
         BookShelfBean bookShelfBean = books.get(index);
+        BookInfoBean bookInfoBean = bookShelfBean.getBookInfoBean();
+
         if (isArrange) {
             if (selectList.contains(bookShelfBean.getNoteUrl())) {
                 holder.vwSelect.setBackgroundResource(R.color.ate_button_disabled_light);
@@ -137,8 +140,9 @@ public class BookShelfGridAdapter extends RecyclerView.Adapter<BookShelfGridAdap
         } else {
             holder.vwSelect.setVisibility(View.GONE);
         }
-        holder.tvName.setText(bookShelfBean.getBookInfoBean().getName());
+        holder.tvName.setText(bookInfoBean.getName());
         holder.tvName.setBackgroundColor(ThemeStore.backgroundColor(activity));
+
         if (!activity.isFinishing()) {
             if (TextUtils.isEmpty(bookShelfBean.getCustomCoverPath())) {
                 Glide.with(activity).load(bookShelfBean.getBookInfoBean().getCoverUrl())

@@ -224,6 +224,7 @@ public class BookSourceActivity extends MBaseActivity<BookSourceContract.Present
                         .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
                         .list();
             }
+
             adapter.resetDataS(sourceBeanList);
         } else {
             adapter.resetDataS(BookSourceManager.getAllBookSource());

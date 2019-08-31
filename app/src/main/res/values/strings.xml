@@ -450,6 +450,7 @@
     <string name="dsm_end"><![CDATA[>]]></string>
     <string name="replace_rule_Default">默认启用替换净化</string>
     <string name="show_enabled">显示勾选</string>
+    <string name="to_lh">扩展到刘海</string>
 
     <string name="vod">影视</string>
     <string name="vod_html">影视网站</string>
