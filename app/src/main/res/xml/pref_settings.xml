@@ -51,7 +51,7 @@
         <com.kunfei.bookshelf.widget.prefs.ATESwitchPreference
             android:defaultValue="true"
             android:key="replaceEnableDefault"
-            android:title="@string/replace_rule_Default" />
+            android:title="默认启用替换净化" />
 
         <Preference
             android:key="@string/pk_download_path"
