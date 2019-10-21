@@ -185,6 +185,10 @@
         android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
         android:launchMode="singleTask" />
         <activity
+            android:name=".view.activity.BookCoverEditActivity"
+            android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+            android:launchMode="singleTask" />
+        <activity
             android:name=".help.permission.PermissionActivity"
             android:theme="@style/Activity.Permission" />
 
