@@ -256,7 +256,7 @@
     <string name="read_aloud_speed">朗讀語速</string>
     <string name="auto_next_page">自動翻頁</string>
     <string name="auto_next_page_stop">停止自動翻頁</string>
-    <string name="auto_next_page_speed">自動翻頁間隔</string>
+    <string name="auto_next_page_speed">自動翻頁時每分鐘閱讀字數(CPM)</string>
     <string name="book_info">書籍資訊</string>
     <string name="ps_default_read">默認打開書架</string>
     <string name="pt_default_read">自動跳轉最近閱讀</string>
@@ -422,6 +422,7 @@
     <string name="content_padding">正文邊距</string>
     <string name="tip_padding">Tip邊距</string>
     <string name="text_letter_spacing">字距</string>
+
     <string name="e_ink_mode">E-Ink 模式</string>
     <string name="e_ink_mode_detail">去除動畫,優化電紙書使用體驗</string>
     <string name="web_menu">Web服務</string>
@@ -434,6 +435,10 @@
     <string name="skip_next">下一個</string>
     <string name="music">音樂</string>
     <string name="audio">音訊</string>
+    <string name="is_enable">启用</string>
+    <string name="cannot_empty">输入不能为空</string>
+    <string name="clear_find_cache">清空发现缓存</string>
+    <string name="edit_find">编辑发现</string>
     <string name="change_icon_summary">切換應用顯示在桌面的圖示</string>
     <string name="show_enabled">顯示勾選</string>
     <string name="to_lh">擴展到劉海</string>
@@ -441,10 +446,7 @@
     <string name="layout_grid3">網格視圖三列</string>
     <string name="layout_grid4">網格視圖四列</string>
     <string name="all_source">全部書源</string>
-
-    <string name="vod">影视</string>
-    <string name="vod_html">影视网站</string>
-    <string name="vod_err">数据获取失败\n  请检测网络设置后，戳我重试！</string>
-    <string name="vod_Cookie">清除Cookie</string>
-    <string name="booksearch">搜书</string>
+    <string name="cover_change_source">封面换源</string>
+    <string name="select_local_image">选择本地图片</string>
+    <string name="refresh_cover">刷新封面</string>
 </resources>
