@@ -8,7 +8,6 @@ static def releaseTime() {
     return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
 }
 
-
 def getVersionCode = { ->
     try {
         def stdout = new ByteArrayOutputStream()
