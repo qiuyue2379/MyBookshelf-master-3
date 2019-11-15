@@ -84,6 +84,7 @@ import com.kunfei.bookshelf.widget.modialog.ChangeSourceDialog;
 import com.kunfei.bookshelf.widget.modialog.DownLoadDialog;
 import com.kunfei.bookshelf.widget.modialog.InputDialog;
 import com.kunfei.bookshelf.widget.modialog.MoDialogHUD;
+import com.kunfei.bookshelf.widget.modialog.PageKeyDialog;
 import com.kunfei.bookshelf.widget.modialog.ReplaceRuleDialog;
 import com.kunfei.bookshelf.widget.page.PageLoader;
 import com.kunfei.bookshelf.widget.page.PageLoaderNet;
@@ -99,7 +100,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import kotlin.Unit;
-
 
 
 /**
@@ -175,8 +175,6 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     private boolean autoPage = false;
     private boolean aloudNextPage;
     private int lastX, lastY;
-
-    private boolean disReSetPage = false;
 
     @Override
     protected ReadBookContract.Presenter initInjector() {
@@ -1215,11 +1213,24 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
             case R.id.action_login:
                 SourceLoginActivity.startThis(this, mPresenter.getBookSource());
                 break;
+            case R.id.menu_page_key:
+                customPageKey();
+                break;
             case android.R.id.home:
                 finish();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void customPageKey() {
+        PageKeyDialog.builder(this)
+                .setDefaultValue("")
+                .setTitle("请按需要录入的按键")
+                .setCallback(inputText -> preferences.edit()
+                        .putInt("pageKeyCode", Integer.valueOf(inputText))
+                        .apply())
+                .show();
     }
 
     /**
@@ -1677,6 +1688,12 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
                 }
                 return true;
             } else if (flMenu.getVisibility() != View.VISIBLE) {
+                if (keyCode == preferences.getInt("pageKeyCode", 0)) {
+                    if (mPageLoader != null) {
+                        mPageLoader.skipToNextPage();
+                    }
+                    return true;
+                }
                 if (readBookControl.getCanKeyTurn(aloudStatus == ReadAloudService.Status.PLAY) && keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
                     if (mPageLoader != null) {
                         mPageLoader.skipToNextPage();
@@ -1700,7 +1717,9 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (flMenu.getVisibility() != View.VISIBLE) {
             if (readBookControl.getCanKeyTurn(aloudStatus == ReadAloudService.Status.PLAY)
-                    && (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
+                    && (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                    || keyCode == KeyEvent.KEYCODE_VOLUME_UP
+                    || keyCode == preferences.getInt("pageKeyCode", 0))) {
                 return true;
             }
         }
