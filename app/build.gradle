@@ -29,7 +29,7 @@ def keyFile = file('1.jks')
 
 android {
     def currentVersionCode = getVersionCode()
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
 signingConfigs {
@@ -45,7 +45,7 @@ signingConfigs {
     defaultConfig {
         applicationId "com.gedoor.monkeybook.qiuyue"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode currentVersionCode
         versionName version
         project.ext.set("archivesBaseName", name + "_" + version)
